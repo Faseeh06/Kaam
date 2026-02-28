@@ -7,8 +7,8 @@ import './globals.css'
 const hostGrotesk = Host_Grotesk({ subsets: ["latin"], variable: "--font-host-grotesk" });
 
 export const metadata: Metadata = {
-  title: 'Skydda | Illuminate the Unknown',
-  description: 'Autonomous AI sentinel that cuts through the digital fog to detect and neutralize zero-day threats before they reach your gateway.',
+  title: 'Kaam | Multi-Society Task Management',
+  description: 'Manage societies and teams with ease. Assign tasks, track progress, and organize everything in one unified platform.',
   generator: 'v0.app',
   icons: {
     icon: [

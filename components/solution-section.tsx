@@ -4,7 +4,7 @@ import React from "react"
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Brain, Shield, Zap, ChevronRight } from "lucide-react";
+import { CheckSquare, Users, Bell, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Feature {
@@ -18,26 +18,26 @@ interface Feature {
 const features: Feature[] = [
   {
     id: 1,
-    title: "1 – Learn",
+    title: "1 – Setup Teams",
     description:
-      "Aegis Core observes and learns the unique heartbeat of your organization's digital ecosystem.",
-    icon: <Brain className="w-5 h-5" />,
+      "Create your society structure, invite members, and build dedicated sub-teams based on roles.",
+    icon: <Users className="w-5 h-5" />,
     image: "/images/solution-learn.png",
   },
   {
     id: 2,
-    title: "2 – Detect",
+    title: "2 – Manage Tasks",
     description:
-      "Autonomously distinguishes between harmless anomalies and genuine attacks in real-time.",
-    icon: <Shield className="w-5 h-5" />,
+      "Easily assign and track work using Kanban-like boards for different teams and projects.",
+    icon: <CheckSquare className="w-5 h-5" />,
     image: "/images/solution-detect.png",
   },
   {
     id: 3,
-    title: "3 – Neutralize",
+    title: "3 – Track Progress",
     description:
-      "Incinerates threats instantly while allowing legitimate business traffic to flow seamlessly.",
-    icon: <Zap className="w-5 h-5" />,
+      "Submit task links directly, monitor your team's real-time productivity, and manage attendance.",
+    icon: <Bell className="w-5 h-5" />,
     image: "/images/solution-neutralize.png",
   },
 ];
@@ -64,7 +64,7 @@ export function SolutionSection() {
             </span>
           </div>
           <h2 className="text-balance text-4xl md:text-5xl font-normal leading-[1.1] tracking-tight text-white">
-            {"Introducing Aegis Core™".split(" ").map((word, i) => (
+            {"One Platform for All".split(" ").map((word, i) => (
               <motion.span
                 key={i}
                 initial={{ filter: "blur(10px)", opacity: 0 }}
@@ -78,11 +78,7 @@ export function SolutionSection() {
             ))}
           </h2>
           <p className="text-balance text-zinc-400 text-base leading-relaxed">
-            The world's first generative defense engine. Unlike static rule
-            sets, Aegis learns the "heartbeat" of your organization. It
-            autonomously distinguishes between an anomaly and an attack,
-            creating a secure gateway that allows business to flow while
-            incinerating threats instantly.
+            Stop switching between different tools. Kaam brings your teams, tasks, role-based invites, and progress tracking all into a single, cohesive interface. From everyday attendance to high-level goal planning, we've got you covered.
           </p>
         </div>
 
@@ -205,7 +201,7 @@ export function SolutionSection() {
             whileTap={{ scale: 0.95 }}
             className="px-8 py-4 bg-white text-black font-medium flex items-center gap-2"
           >
-            Explore Aegis Core
+            Explore Kaam Workspaces
             <ChevronRight className="w-4 h-4" />
           </motion.button>
         </div>

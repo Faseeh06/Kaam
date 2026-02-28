@@ -14,33 +14,33 @@ interface FAQItem {
 const faqs: FAQItem[] = [
   {
     id: "1",
-    question: "How does Aegis Core differ from traditional firewalls?",
+    question: "How does Kaam differ from WhatsApp or Slack?",
     answer:
-      "Traditional firewalls rely on static rules and signature-based detection, which can't keep pace with modern AI-driven attacks. Aegis Core uses autonomous machine learning to predict and neutralize zero-day threats in real-time, learning your network's unique patterns and adapting without manual updates or human intervention.",
+      "WhatsApp and Slack are great for chatting, but terrible for tracking tasks. Kaam is designed specifically for student societies and organizations, combining structured sub-teams, role-based access, Kanban task boards, and attendance tracking into a single unified platform.",
   },
   {
     id: "2",
-    question: "What is the typical deployment timeline?",
+    question: "Can members belong to multiple teams?",
     answer:
-      "Most organizations can deploy Skydda in under 48 hours. Our autonomous system learns your network baseline within 3-5 days and reaches full operational capacity within two weeks. Unlike legacy solutions that take months to configure, Aegis Core self-optimizes as it learns your environment.",
+      "Yes! Our structure supports many-to-many relationships. A member can be part of the HR team and the Media team simultaneously, allowing them to see tasks for both departments on their personalized dashboard.",
   },
   {
     id: "3",
-    question: "Does Skydda integrate with existing security infrastructure?",
+    question: "How does the invite and approval system work?",
     answer:
-      "Yes. Skydda seamlessly integrates with your existing SIEM, SOC tools, and security stack. Our API-first architecture allows bidirectional data flow with platforms like Splunk, CrowdStrike, and Palo Alto Networks, enhancing your current investments rather than replacing them.",
+      "Society admins can generate invite links. When a user clicks the link, their request enters a pending state until approved by the society president or director, ensuring only authorized students gain access to internal data.",
   },
   {
     id: "4",
-    question: "What kind of threats can Aegis Core detect?",
+    question: "Does Kaam work offline?",
     answer:
-      "Aegis Core detects and neutralizes zero-day exploits, advanced persistent threats (APTs), ransomware, credential stuffing, DDoS attacks, and insider threats. Our predictive heuristics analyze 10,000+ attack vectors per second to identify threats before they breach your perimeter.",
+      "Yes, Kaam is built as a Progressive Web App (PWA). You can install it on your mobile device or desktop. It provides offline support for viewing task boards and basic views, automatically syncing when your connection is restored.",
   },
   {
     id: "5",
-    question: "Do you offer compliance support and reporting?",
+    question: "Can we track attendance for meetings?",
     answer:
-      "Absolutely. Skydda automatically generates compliance reports for SOC 2, ISO 27001, GDPR, HIPAA, and PCI DSS. Every threat detection and response is documented with full audit trails, making compliance audits straightforward and reducing your team's workload significantly.",
+      "Absolutely. Admins can create events and take attendance for each member. The platform computes real-time attendance percentages, which are visible on the member's profile dashboard.",
   },
 ];
 
@@ -66,7 +66,7 @@ export function FaqSection() {
                 FAQ
               </span>
             </div>
-            
+
             <h2 className="text-balance text-4xl md:text-5xl lg:text-6xl font-normal text-white tracking-tight leading-[1.1]">
               {"Common Questions".split(" ").map((word, i) => (
                 <motion.span
@@ -83,8 +83,8 @@ export function FaqSection() {
             </h2>
 
             <p className="text-balance text-base md:text-lg text-zinc-400 leading-relaxed max-w-md">
-              Get quick answers about Skydda's AI-powered security platform and
-              how autonomous threat detection protects your organization. Can't
+              Get quick answers about Kaam's task management platform and
+              how we unify your organization's workflow. Can't
               find what you're looking for? Reach out below.
             </p>
           </div>

@@ -18,10 +18,10 @@ export function Hero() {
           backgroundImage: "url('/images/hero-bg.jpg')",
         }}
       />
-      
+
       {/* Subtle overlay for text readability */}
       <div className="absolute inset-0 bg-slate-950/20" />
-      
+
       {/* Content */}
       <div className="relative z-10 flex h-full flex-col">
         {/* Navigation */}
@@ -29,9 +29,9 @@ export function Hero() {
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2 text-white">
               <Shield className="h-5 w-5 text-amber-500" />
-              <span className="font-medium">Skydda</span>
+              <span className="font-medium">Kaam</span>
             </Link>
-            
+
             {/* Desktop Navigation */}
             <div className="hidden items-center gap-6 text-sm text-white/70 lg:flex">
               <Link href="#" className="transition-colors hover:text-white">
@@ -50,7 +50,7 @@ export function Hero() {
                 FAQ
               </Link>
             </div>
-            
+
             <div className="flex items-center gap-4">
               <Link
                 href="#"
@@ -58,7 +58,7 @@ export function Hero() {
               >
                 Get Started
               </Link>
-              
+
               {/* Hamburger Menu Button */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -128,7 +128,7 @@ export function Hero() {
         {/* Hero Content - Positioned in upper portion */}
         <div className="flex flex-1 flex-col items-center px-6 pt-16 text-center md:pt-24">
           <h1 className="max-w-3xl text-balance text-5xl font-normal tracking-tight text-white md:text-6xl lg:text-7xl">
-            {"AI Defense That Sees Through the Dark".split(" ").map((word, i) => (
+            {"Manage Societies & Teams with Ease".split(" ").map((word, i) => (
               <motion.span
                 key={i}
                 initial={{ filter: "blur(10px)", opacity: 0 }}
@@ -141,9 +141,9 @@ export function Hero() {
               </motion.span>
             ))}
           </h1>
-          
+
           <p className="mt-6 max-w-xl text-balance text-center text-sm leading-relaxed text-white/70 md:text-base">
-            Our autonomous AI sentinel detects and neutralizes zero-day threats before they reach your gateway.
+            The ultimate multi-society task management platform. Assign tasks, track progress, and manage teams all in one place.
           </p>
 
           {/* CTAs - Two buttons side by side */}
@@ -152,20 +152,20 @@ export function Hero() {
               size="lg"
               className="bg-white px-6 text-slate-900 hover:bg-white/90"
             >
-              Deploy the Sentinel
+              Get Started
             </Button>
             <Button
               variant="outline"
               size="lg"
               className="border-white/30 bg-transparent px-6 text-white hover:bg-white/10 hover:text-white"
             >
-              Read the Whitepaper
+              Learn More
             </Button>
           </div>
         </div>
 
         {/* Scroll Indicator - At bottom */}
-        
+
       </div>
     </section>
   )

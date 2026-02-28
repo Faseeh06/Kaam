@@ -3,7 +3,7 @@
 import React from "react"
 
 import { motion } from "framer-motion";
-import { Brain, Shield, Globe } from "lucide-react";
+import { CheckSquare, Users, Bell, ShieldCheck, CalendarCheck, WifiOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -17,45 +17,45 @@ interface FeatureItem {
 const DEFAULT_FEATURES: FeatureItem[] = [
   {
     id: "1",
-    icon: <Brain className="w-5 h-5 text-white" />,
-    title: "Predictive Heuristics",
+    icon: <CheckSquare className="w-5 h-5 text-white" />,
+    title: "Task Management",
     description:
-      "We don't just react. Our AI models attack vectors 10,000 times a second to predict where the next breach will attempt to strike.",
+      "Create, assign, and track tasks with status updates. Enjoy a Kanban-like interface to manage your society's workflow.",
   },
   {
     id: "2",
-    icon: <Shield className="w-5 h-5 text-white" />,
-    title: "Autonomous Patching",
+    icon: <Users className="w-5 h-5 text-white" />,
+    title: "Society & Team Creation",
     description:
-      "When a vulnerability is detected, Aegis rewrites the security protocol in real-time, closing the door before it can be opened.",
+      "Organize members into specific sub-teams. Perfect for keeping HR, Media, and technical departments aligned.",
   },
   {
     id: "3",
-    icon: <Globe className="w-5 h-5 text-white" />,
-    title: "Deep Web Reconnaissance",
+    icon: <Bell className="w-5 h-5 text-white" />,
+    title: "Real-Time Notifications",
     description:
-      "We scan the dark web for your credentials, alerting you to leaks before they become breaches.",
+      "Get instantly notified about task assignments, approaching deadlines, and incoming task submissions.",
   },
   {
     id: "4",
-    icon: <Brain className="w-5 h-5 text-white" />,
-    title: "Behavioral Analytics",
+    icon: <ShieldCheck className="w-5 h-5 text-white" />,
+    title: "Role-Based Access",
     description:
-      "Advanced machine learning tracks user behavior patterns to detect anomalies and insider threats before damage occurs.",
+      "Secure invitation system with approval workflows ensuring only authorized members can view team data.",
   },
   {
     id: "5",
-    icon: <Shield className="w-5 h-5 text-white" />,
-    title: "Zero-Trust Architecture",
+    icon: <CalendarCheck className="w-5 h-5 text-white" />,
+    title: "Attendance Tracking",
     description:
-      "Every request is verified, every session authenticated. Trust nothing, verify everything, protect all endpoints.",
+      "Monitor member engagement with built-in attendance percentage tracking for meetings and events.",
   },
   {
     id: "6",
-    icon: <Globe className="w-5 h-5 text-white" />,
-    title: "Real-Time Threat Intelligence",
+    icon: <WifiOff className="w-5 h-5 text-white" />,
+    title: "Offline PWA Support",
     description:
-      "Continuously updated threat feeds from global sources ensure you're protected against the latest attack methods.",
+      "Install the app on desktop or mobile. Keep track of your task boards even when you have no internet connection.",
   },
 ];
 
@@ -81,7 +81,6 @@ const itemVariants = {
     y: 0,
     transition: {
       duration: 0.5,
-      ease: "easeOut",
     },
   },
 };
@@ -95,7 +94,7 @@ interface FeaturesSectionProps {
 
 export function FeaturesSection({
   preHeading = "Key Capabilities",
-  headline = "Built for the Post-Perimeter Era",
+  headline = "Built for Scale and Organization",
   features = DEFAULT_FEATURES,
   className,
 }: FeaturesSectionProps) {
@@ -190,7 +189,7 @@ export function FeaturesSection({
             variant="outline"
             className="border-zinc-600 text-white hover:bg-zinc-800 bg-transparent px-8"
           >
-            Compare vs. Legacy
+            View Documentation
           </Button>
         </motion.div>
       </div>

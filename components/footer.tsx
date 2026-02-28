@@ -8,7 +8,7 @@ export function Footer() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
           <Shield className="h-6 w-6 text-amber-500" />
-          <span className="text-lg font-medium text-white">Skydda</span>
+          <span className="text-lg font-medium text-white">Kaam</span>
         </Link>
 
         {/* Social Links */}

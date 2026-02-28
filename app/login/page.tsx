@@ -4,7 +4,9 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Shield } from "lucide-react";
+import { Shield, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
     Card,
     CardContent,
@@ -15,6 +17,31 @@ import {
 } from "@/components/ui/card";
 
 export default function LoginPage() {
+    const router = useRouter();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState("");
+
+    const handleLogin = (e: React.FormEvent) => {
+        e.preventDefault();
+        setError("");
+        setIsLoading(true);
+
+        // Simulate network request
+        setTimeout(() => {
+            if (
+                (email === "admin@test.com" && password === "admin123") ||
+                (email === "user@test.com" && password === "user123")
+            ) {
+                router.push("/dashboard");
+            } else {
+                setError("Invalid email or password");
+                setIsLoading(false);
+            }
+        }, 1000);
+    };
+
     return (
         <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-zinc-950">
             {/* Background */}
@@ -26,7 +53,7 @@ export default function LoginPage() {
 
             <div className="relative z-10 w-full max-w-md px-6">
                 <div className="flex justify-center mb-8">
-                    <Link href="/" className="flex items-center gap-2 text-white">
+                    <Link href="/" className="flex items-center gap-2 text-white transition-opacity hover:opacity-80">
                         <Shield className="h-8 w-8 text-amber-500" />
                         <span className="font-medium text-2xl tracking-tight">Kaam</span>
                     </Link>
@@ -41,49 +68,61 @@ export default function LoginPage() {
                             Enter your credentials to access your account
                         </CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="email" className="text-zinc-300">Email</Label>
-                            <Input
-                                id="email"
-                                type="email"
-                                placeholder="m@example.com"
-                                className="bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-500 focus-visible:ring-amber-500"
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <div className="flex items-center justify-between">
-                                <Label htmlFor="password" className="text-zinc-300">Password</Label>
-                                <Link href="#" className="text-xs text-amber-500 hover:text-amber-400">
-                                    Forgot password?
-                                </Link>
+                    <form onSubmit={handleLogin}>
+                        <CardContent className="space-y-4">
+                            {error && (
+                                <div className="p-3 text-sm text-rose-500 bg-rose-500/10 border border-rose-500/20 rounded-md">
+                                    {error}
+                                </div>
+                            )}
+                            <div className="space-y-2">
+                                <Label htmlFor="email" className="text-zinc-300">Email</Label>
+                                <Input
+                                    id="email"
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder="m@example.com"
+                                    className="bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-500 focus-visible:ring-amber-500"
+                                    required
+                                />
                             </div>
-                            <Input
-                                id="password"
-                                type="password"
-                                placeholder="********"
-                                className="bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-500 focus-visible:ring-amber-500"
-                            />
-                        </div>
-                        <Button className="w-full bg-white text-zinc-900 hover:bg-zinc-200">
-                            Sign In
-                        </Button>
+                            <div className="space-y-2">
+                                <div className="flex items-center justify-between">
+                                    <Label htmlFor="password" className="text-zinc-300">Password</Label>
+                                    <Link href="#" className="text-xs text-amber-500 hover:text-amber-400">
+                                        Forgot password?
+                                    </Link>
+                                </div>
+                                <Input
+                                    id="password"
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    placeholder="********"
+                                    className="bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-500 focus-visible:ring-amber-500"
+                                    required
+                                />
+                            </div>
 
-                        <div className="relative my-4">
-                            <div className="absolute inset-0 flex items-center">
-                                <span className="w-full border-t border-zinc-700" />
-                            </div>
-                            <div className="relative flex justify-center text-xs uppercase">
-                                <span className="bg-zinc-900 px-2 text-zinc-500">
-                                    Or continue with
-                                </span>
-                            </div>
-                        </div>
+                            <Button
+                                type="submit"
+                                disabled={isLoading}
+                                className="w-full bg-white text-zinc-900 hover:bg-zinc-200 transition-all active:scale-95"
+                            >
+                                {isLoading ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Signing In...
+                                    </>
+                                ) : (
+                                    "Sign In"
+                                )}
+                            </Button>
 
-                        <Button variant="outline" className="w-full bg-transparent border-zinc-700 text-white hover:bg-zinc-800 hover:text-white">
-                            GitHub
-                        </Button>
-                    </CardContent>
+
+                        </CardContent>
+                    </form>
                     <CardFooter>
                         <p className="text-center text-sm text-zinc-400 w-full mt-2">
                             Don't have an account?{" "}

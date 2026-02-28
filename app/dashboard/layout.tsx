@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { Shield, LayoutDashboard, KanbanSquare, Settings, User, ChevronLeft, ChevronRight } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ export default function DashboardLayout({
     children: React.ReactNode;
 }) {
     const [isCollapsed, setIsCollapsed] = useState(false);
+    const pathname = usePathname();
 
     return (
         <div className="flex h-screen bg-zinc-950 text-white overflow-hidden selection:bg-amber-500/30">
@@ -42,23 +44,39 @@ export default function DashboardLayout({
                         <div className="h-4 mb-4" />
                     )}
 
-                    <Link href="/dashboard" className={`flex items-center ${isCollapsed ? 'justify-center px-0' : 'gap-3 px-3'} py-2.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-900/50 transition-colors group relative`} title="Overview">
-                        <LayoutDashboard className="h-5 w-5 shrink-0 group-hover:!text-amber-500 transition-colors" />
+                    <Link
+                        href="/dashboard"
+                        className={`flex items-center ${isCollapsed ? 'justify-center px-0' : 'gap-3 px-3'} py-2.5 rounded-lg transition-colors group relative ${pathname === '/dashboard' ? 'text-amber-500 bg-zinc-900/40 hover:bg-zinc-900/80' : 'text-zinc-400 hover:text-white hover:bg-zinc-900/50'}`}
+                        title="Overview"
+                    >
+                        <LayoutDashboard className={`h-5 w-5 shrink-0 transition-colors ${pathname === '/dashboard' ? 'text-amber-500' : 'group-hover:!text-amber-500'}`} />
                         {!isCollapsed && <span className="text-sm font-medium">Overview</span>}
                     </Link>
 
-                    <Link href="/dashboard/board" className={`flex items-center ${isCollapsed ? 'justify-center px-0' : 'gap-3 px-3'} py-2.5 rounded-lg text-amber-500 bg-zinc-900/40 hover:bg-zinc-900/80 transition-colors group relative`} title="Board">
-                        <KanbanSquare className="h-5 w-5 shrink-0" />
+                    <Link
+                        href="/dashboard/board"
+                        className={`flex items-center ${isCollapsed ? 'justify-center px-0' : 'gap-3 px-3'} py-2.5 rounded-lg transition-colors group relative ${pathname === '/dashboard/board' ? 'text-amber-500 bg-zinc-900/40 hover:bg-zinc-900/80' : 'text-zinc-400 hover:text-white hover:bg-zinc-900/50'}`}
+                        title="Board"
+                    >
+                        <KanbanSquare className={`h-5 w-5 shrink-0 transition-colors ${pathname === '/dashboard/board' ? 'text-amber-500' : 'group-hover:!text-amber-500'}`} />
                         {!isCollapsed && <span className="text-sm font-medium">Board</span>}
                     </Link>
 
-                    <Link href="#" className={`flex items-center ${isCollapsed ? 'justify-center px-0' : 'gap-3 px-3'} py-2.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-900/50 transition-colors group relative`} title="Profile">
-                        <User className="h-5 w-5 shrink-0 group-hover:text-amber-500 transition-colors" />
+                    <Link
+                        href="/dashboard/profile"
+                        className={`flex items-center ${isCollapsed ? 'justify-center px-0' : 'gap-3 px-3'} py-2.5 rounded-lg transition-colors group relative ${pathname === '/dashboard/profile' ? 'text-amber-500 bg-zinc-900/40 hover:bg-zinc-900/80' : 'text-zinc-400 hover:text-white hover:bg-zinc-900/50'}`}
+                        title="Profile"
+                    >
+                        <User className={`h-5 w-5 shrink-0 transition-colors ${pathname === '/dashboard/profile' ? 'text-amber-500' : 'group-hover:!text-amber-500'}`} />
                         {!isCollapsed && <span className="text-sm font-medium">Profile</span>}
                     </Link>
 
-                    <Link href="#" className={`flex items-center ${isCollapsed ? 'justify-center px-0' : 'gap-3 px-3'} py-2.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-900/50 transition-colors group relative`} title="Settings">
-                        <Settings className="h-5 w-5 shrink-0 group-hover:text-amber-500 transition-colors" />
+                    <Link
+                        href="/dashboard/settings"
+                        className={`flex items-center ${isCollapsed ? 'justify-center px-0' : 'gap-3 px-3'} py-2.5 rounded-lg transition-colors group relative ${pathname === '/dashboard/settings' ? 'text-amber-500 bg-zinc-900/40 hover:bg-zinc-900/80' : 'text-zinc-400 hover:text-white hover:bg-zinc-900/50'}`}
+                        title="Settings"
+                    >
+                        <Settings className={`h-5 w-5 shrink-0 transition-colors ${pathname === '/dashboard/settings' ? 'text-amber-500' : 'group-hover:!text-amber-500'}`} />
                         {!isCollapsed && <span className="text-sm font-medium">Settings</span>}
                     </Link>
                 </div>

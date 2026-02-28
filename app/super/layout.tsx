@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
-import { ShieldAlert, LayoutDashboard, Users, Building2, UserCog, ChevronLeft, ChevronRight, Sun, Moon, Database, Settings } from "lucide-react";
+import { ShieldAlert, LayoutDashboard, Users, Building2, UserCog, ChevronLeft, ChevronRight, Sun, Moon, Database, Settings, LogOut } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
@@ -82,6 +82,16 @@ export default function SuperLayout({
                         {!isCollapsed && <span className="text-sm font-medium">All Users DB</span>}
                     </Link>
 
+                    <div className="pt-4 border-t border-zinc-200 dark:border-zinc-800/50 mt-4">
+                        <Link
+                            href="/"
+                            className={`flex items-center w-full ${isCollapsed ? 'justify-center px-0' : 'gap-3 px-3'} py-2.5 rounded-lg transition-colors group relative text-zinc-500 hover:text-violet-700 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-500/10`}
+                            title="Log Out"
+                        >
+                            <LogOut className="h-5 w-5 shrink-0 transition-colors group-hover:text-violet-700 dark:group-hover:text-violet-400" />
+                            {!isCollapsed && <span className="text-sm font-medium">Log out</span>}
+                        </Link>
+                    </div>
                 </div>
 
                 <div className={`p-4 border-t border-zinc-200 dark:border-zinc-800/50 ${isCollapsed ? 'flex justify-center flex-col items-center gap-4' : 'flex items-center justify-between'} transition-all`}>

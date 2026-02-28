@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
-import { Shield, LayoutDashboard, KanbanSquare, Settings, Users, Building2, UsersRound, ChevronLeft, ChevronRight, Sun, Moon, ShieldAlert, MessageCircle } from "lucide-react";
+import { Shield, LayoutDashboard, KanbanSquare, Settings, Users, Building2, UsersRound, ChevronLeft, ChevronRight, Sun, Moon, ShieldAlert, MessageCircle, LogOut } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
@@ -108,6 +108,17 @@ export default function AdminLayout({
                         <Settings className={`h-5 w-5 shrink-0 transition-colors ${pathname === '/admin/settings' ? 'text-rose-600 dark:text-rose-500' : 'group-hover:!text-rose-600 dark:group-hover:!text-rose-500'}`} />
                         {!isCollapsed && <span className="text-sm font-medium">Settings</span>}
                     </Link>
+
+                    <div className="pt-4 border-t border-zinc-200 dark:border-zinc-800/50 mt-4">
+                        <Link
+                            href="/"
+                            className={`flex items-center w-full ${isCollapsed ? 'justify-center px-0' : 'gap-3 px-3'} py-2.5 rounded-lg transition-colors group relative text-zinc-500 hover:text-rose-600 dark:hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10`}
+                            title="Log Out"
+                        >
+                            <LogOut className="h-5 w-5 shrink-0 transition-colors group-hover:text-rose-600 dark:group-hover:text-rose-500" />
+                            {!isCollapsed && <span className="text-sm font-medium">Log out</span>}
+                        </Link>
+                    </div>
                 </div>
 
                 <div className={`p-4 border-t border-zinc-200 dark:border-zinc-800/50 ${isCollapsed ? 'flex justify-center flex-col items-center gap-4' : 'flex items-center justify-between'} transition-all`}>

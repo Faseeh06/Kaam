@@ -30,10 +30,9 @@ export default function LoginPage() {
 
         // Simulate network request
         setTimeout(() => {
-            if (
-                (email === "admin@test.com" && password === "admin123") ||
-                (email === "user@test.com" && password === "user123")
-            ) {
+            if (email === "admin@test.com" && password === "admin123") {
+                router.push("/admin");
+            } else if (email === "user@test.com" && password === "user123") {
                 router.push("/dashboard");
             } else {
                 setError("Invalid email or password");

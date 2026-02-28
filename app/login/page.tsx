@@ -30,7 +30,9 @@ export default function LoginPage() {
 
         // Simulate network request
         setTimeout(() => {
-            if (email === "admin@test.com" && password === "admin123") {
+            if (email === "super@test.com" && password === "super123") {
+                router.push("/super");
+            } else if (email === "admin@test.com" && password === "admin123") {
                 router.push("/admin");
             } else if (email === "user@test.com" && password === "user123") {
                 router.push("/dashboard");

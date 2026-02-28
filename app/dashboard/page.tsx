@@ -1,289 +1,163 @@
 "use client";
 
-import {
-    Bell,
-    CheckCircle2,
-    Clock,
-    LayoutDashboard,
-    LogOut,
-    Settings,
-    Shield,
-    User,
-    Activity,
-    CalendarDays,
-    Users
-} from "lucide-react";
-import Link from "next/link";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+import { Bell, CheckCircle2, Clock, Activity, ArrowUpRight, Plus, Calendar, Shield, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-// Mock Data
-const user = {
-    name: "John Doe",
-    email: "user@test.com",
-    role: "Media Director",
-    society: "Debate Club",
-    attendance: 85,
-};
-
-const tasks = [
-    {
-        id: 1,
-        title: "Design Promo Banners for Annual Meet",
-        society: "Debate Club",
-        team: "Media",
-        status: "In Progress",
-        deadline: "Tomorrow",
-        priority: "High",
-    },
-    {
-        id: 2,
-        title: "Draft Speech Guidelines Document",
-        society: "Debate Club",
-        team: "Content",
-        status: "Review",
-        deadline: "Oct 24",
-        priority: "Medium",
-    },
-    {
-        id: 3,
-        title: "Organize Logistics for Workshop",
-        society: "Tech Society",
-        team: "Operations",
-        status: "To Do",
-        deadline: "Oct 28",
-        priority: "High",
-    },
-];
-
-const activityLog = [
-    { id: 1, action: "Submitted Task 'Design Promo Banners'", time: "2 hours ago" },
-    { id: 2, action: "Marked present at 'Weekly Sync'", time: "Yesterday" },
-    { id: 3, action: "Joined 'Tech Society' as Operations Member", time: "3 days ago" },
-];
 
 export default function DashboardPage() {
     return (
-        <div className="min-h-screen bg-zinc-950 text-white selection:bg-amber-500/30">
-            {/* Navigation */}
-            <nav className="border-b border-zinc-800 bg-zinc-900/50 backdrop-blur-xl sticky top-0 z-50">
-                <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-                    <div className="flex items-center gap-8">
-                        <Link href="/" className="flex items-center gap-2">
-                            <Shield className="h-6 w-6 text-amber-500" />
-                            <span className="font-medium text-xl tracking-tight">Kaam</span>
-                        </Link>
+        <div className="h-full flex flex-col pt-0 md:pt-4 px-4 md:px-8 pb-8 overflow-y-auto custom-scrollbar">
 
-                        <div className="hidden md:flex items-center gap-6 text-sm text-zinc-400">
-                            <Link href="#" className="text-amber-500 font-medium transition-colors">
-                                Overview
-                            </Link>
-                            <Link href="#" className="hover:text-white transition-colors">
-                                My Tasks
-                            </Link>
-                            <Link href="#" className="hover:text-white transition-colors">
-                                Societies
-                            </Link>
-                            <Link href="#" className="hover:text-white transition-colors">
-                                Calendar
-                            </Link>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-4">
-                        <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-white hover:bg-zinc-800">
-                            <Bell className="h-5 w-5" />
-                        </Button>
-                        <div className="h-8 w-px bg-zinc-800 hidden md:block" />
-                        <div className="flex items-center gap-3 relative group cursor-pointer">
-                            <div className="text-right hidden md:block">
-                                <p className="text-sm font-medium leading-none">{user.name}</p>
-                                <p className="text-xs text-zinc-500 mt-1">{user.role}</p>
-                            </div>
-                            <Avatar className="h-9 w-9 border border-zinc-800">
-                                <AvatarImage src="/images/avatar.png" />
-                                <AvatarFallback className="bg-zinc-800 text-zinc-400">JD</AvatarFallback>
-                            </Avatar>
-                        </div>
-                    </div>
+            {/* Transparent Navbar */}
+            <header className="h-16 flex items-center justify-between shrink-0 mb-8 md:mb-12">
+                <div className="flex items-center gap-4 md:hidden">
+                    <Shield className="h-6 w-6 text-amber-500" />
+                    <span className="font-medium text-xl tracking-tight text-white">Kaam</span>
                 </div>
-            </nav>
+                {/* Desktop placeholder for alignment */}
+                <div className="hidden md:block"></div>
 
-            {/* Main Content */}
-            <main className="mx-auto max-w-7xl px-6 py-8">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-8">
-                    <div>
-                        <h1 className="text-3xl font-medium tracking-tight">Welcome back, {user.name.split(' ')[0]}</h1>
-                        <p className="text-zinc-400 mt-1">Here is a summary of your performance and tasks across all your societies.</p>
-                    </div>
-                    <Button className="bg-amber-500 text-zinc-950 hover:bg-amber-400">
-                        View Notifications
+                <div className="flex items-center gap-4">
+                    <Button variant="outline" className="hidden sm:flex items-center gap-2 border-dashed border-zinc-700 text-zinc-400 hover:text-white bg-transparent hover:bg-zinc-900/50">
+                        <Plus className="h-4 w-4" />
+                        Create Task
+                    </Button>
+                    <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-full">
+                        <Bell className="h-5 w-5" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="md:hidden text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-full">
+                        <Menu className="h-5 w-5" />
                     </Button>
                 </div>
+            </header>
 
-                {/* Metrics Grid */}
-                <div className="grid gap-6 md:grid-cols-3 mb-8">
-                    <Card className="bg-zinc-900 border-zinc-800">
-                        <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <CardTitle className="text-sm font-medium text-zinc-400">
-                                Active Tasks
-                            </CardTitle>
-                            <CheckCircle2 className="h-4 w-4 text-amber-500" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-3xl font-medium text-white">12</div>
-                            <p className="text-xs text-emerald-500 mt-1">
-                                +3 completed this week
-                            </p>
-                        </CardContent>
-                    </Card>
+            <div className="max-w-4xl mx-auto w-full space-y-12">
+                {/* Greeting */}
+                <header>
+                    <h1 className="text-3xl sm:text-4xl font-light tracking-tight text-white mb-2">
+                        Good morning, John.
+                    </h1>
+                    <p className="text-zinc-400 text-base sm:text-lg">
+                        You have <span className="text-amber-500 font-medium">12 active tasks</span> and 2 deadlines coming up. Let's get to work.
+                    </p>
+                </header>
 
-                    <Card className="bg-zinc-900 border-zinc-800">
-                        <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <CardTitle className="text-sm font-medium text-zinc-400">
-                                Upcoming Deadlines
-                            </CardTitle>
-                            <Clock className="h-4 w-4 text-amber-500" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-3xl font-medium text-white">4</div>
-                            <p className="text-xs text-rose-500 mt-1">
-                                2 due tomorrow
-                            </p>
-                        </CardContent>
-                    </Card>
-
-                    <Card className="bg-zinc-900 border-zinc-800">
-                        <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <CardTitle className="text-sm font-medium text-zinc-400">
-                                Overall Attendance
-                            </CardTitle>
-                            <Activity className="h-4 w-4 text-amber-500" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-3xl font-medium text-white">{user.attendance}%</div>
-                            <Progress value={user.attendance} className="mt-3 h-1 bg-zinc-800 [&>div]:bg-amber-500" />
-                        </CardContent>
-                    </Card>
-                </div>
-
-                <div className="grid gap-6 md:grid-cols-3">
-                    {/* Main Left Column */}
-                    <div className="md:col-span-2 space-y-6">
-                        <Card className="bg-zinc-900 border-zinc-800">
-                            <CardHeader>
-                                <div className="flex justify-between items-center">
-                                    <CardTitle className="text-lg font-medium text-white">Assigned Tasks</CardTitle>
-                                    <Button variant="outline" size="sm" className="border-zinc-700 text-white bg-transparent hover:bg-zinc-800">View All</Button>
-                                </div>
-                                <CardDescription className="text-zinc-400">
-                                    Your tasks pending review or completion.
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <Tabs defaultValue="all" className="w-full">
-                                    <TabsList className="bg-zinc-950 border border-zinc-800 w-full justify-start rounded-md h-12 p-1 mb-6">
-                                        <TabsTrigger value="all" className="data-[state=active]:bg-zinc-800 text-zinc-400 data-[state=active]:text-white">All Tasks</TabsTrigger>
-                                        <TabsTrigger value="todo" className="data-[state=active]:bg-zinc-800 text-zinc-400 data-[state=active]:text-white">To Do</TabsTrigger>
-                                        <TabsTrigger value="progress" className="data-[state=active]:bg-zinc-800 text-zinc-400 data-[state=active]:text-white">In Progress</TabsTrigger>
-                                        <TabsTrigger value="review" className="data-[state=active]:bg-zinc-800 text-zinc-400 data-[state=active]:text-white">Under Review</TabsTrigger>
-                                    </TabsList>
-
-                                    <TabsContent value="all" className="space-y-4 outline-none">
-                                        {tasks.map((task) => (
-                                            <div key={task.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-lg bg-zinc-950/50 border border-zinc-800/50 transition-colors hover:bg-zinc-800/50">
-                                                <div className="space-y-1 w-full flex-1">
-                                                    <div className="flex items-center gap-2">
-                                                        <h4 className="font-medium text-white">{task.title}</h4>
-                                                        <Badge variant={task.priority === 'High' ? 'destructive' : 'secondary'} className="bg-rose-500/10 text-rose-500 border-rose-500/20">
-                                                            {task.priority}
-                                                        </Badge>
-                                                    </div>
-                                                    <div className="flex flex-wrap items-center gap-3 text-xs text-zinc-400">
-                                                        <span className="flex items-center gap-1.5"><Users className="h-3.5 w-3.5" /> {task.society} ({task.team})</span>
-                                                        <span className="flex items-center gap-1.5"><CalendarDays className="h-3.5 w-3.5" /> Due: {task.deadline}</span>
-                                                    </div>
-                                                </div>
-                                                <div className="mt-4 sm:mt-0 flex items-center gap-3">
-                                                    <Badge variant="outline" className="border-zinc-700 text-zinc-300 bg-zinc-900">
-                                                        {task.status}
-                                                    </Badge>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </TabsContent>
-                                </Tabs>
-                            </CardContent>
-                        </Card>
+                {/* KPI Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
+                    <div className="p-6 rounded-2xl bg-zinc-900/40 border border-zinc-800/60 flex flex-col justify-between h-40 hover:bg-zinc-900/60 transition cursor-pointer group">
+                        <div className="flex justify-between items-start">
+                            <div className="h-10 w-10 rounded-full bg-amber-500/10 flex items-center justify-center">
+                                <CheckCircle2 className="h-5 w-5 text-amber-500" />
+                            </div>
+                            <ArrowUpRight className="h-5 w-5 text-zinc-600 group-hover:text-zinc-400 transition" />
+                        </div>
+                        <div>
+                            <div className="text-3xl font-light text-white mb-1">12</div>
+                            <div className="text-sm text-zinc-400">Tasks in Progress</div>
+                        </div>
                     </div>
 
-                    {/* Right Column */}
-                    <div className="space-y-6">
-                        <Card className="bg-zinc-900 border-zinc-800">
-                            <CardHeader>
-                                <CardTitle className="text-lg font-medium text-white">Teams & Roles</CardTitle>
-                                <CardDescription className="text-zinc-400">
-                                    Organizations you are part of.
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="flex items-start justify-between">
-                                    <div className="space-y-1">
-                                        <p className="font-medium text-white">Debate Club</p>
-                                        <p className="text-sm text-amber-500">Media Director</p>
-                                    </div>
-                                    <Badge variant="secondary" className="bg-zinc-800 text-zinc-300 hover:bg-zinc-700">Media Team</Badge>
-                                </div>
-                                <div className="h-px bg-zinc-800" />
-                                <div className="flex items-start justify-between">
-                                    <div className="space-y-1">
-                                        <p className="font-medium text-white">Tech Society</p>
-                                        <p className="text-sm text-zinc-400">Executive Member</p>
-                                    </div>
-                                    <Badge variant="secondary" className="bg-zinc-800 text-zinc-300 hover:bg-zinc-700">Operations</Badge>
-                                </div>
-                            </CardContent>
-                        </Card>
+                    <div className="p-6 rounded-2xl bg-zinc-900/40 border border-zinc-800/60 flex flex-col justify-between h-40 hover:bg-zinc-900/60 transition cursor-pointer group">
+                        <div className="flex justify-between items-start">
+                            <div className="h-10 w-10 rounded-full bg-rose-500/10 flex items-center justify-center">
+                                <Clock className="h-5 w-5 text-rose-500" />
+                            </div>
+                            <ArrowUpRight className="h-5 w-5 text-zinc-600 group-hover:text-zinc-400 transition" />
+                        </div>
+                        <div>
+                            <div className="text-3xl font-light text-white mb-1">2</div>
+                            <div className="text-sm text-zinc-400">Urgent Deadlines</div>
+                        </div>
+                    </div>
 
-                        <Card className="bg-zinc-900 border-zinc-800">
-                            <CardHeader>
-                                <CardTitle className="text-lg font-medium text-white">Activity Log</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="space-y-4">
-                                    {activityLog.map((log, i) => (
-                                        <div key={log.id} className="flex gap-4 relative">
-                                            {i !== activityLog.length - 1 && (
-                                                <div className="absolute left-1.5 top-6 bottom-[-16px] w-px bg-zinc-800" />
-                                            )}
-                                            <div className="mt-1 flex h-3 w-3 shrink-0 items-center justify-center rounded-full bg-amber-500/20 ring-1 ring-amber-500/50">
-                                                <div className="h-1.5 w-1.5 rounded-full bg-amber-500" />
-                                            </div>
-                                            <div className="space-y-1 pb-1">
-                                                <p className="text-sm font-medium text-white leading-none">{log.action}</p>
-                                                <p className="text-xs text-zinc-500">{log.time}</p>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                                <Button variant="link" className="w-full mt-4 text-zinc-400 text-sm h-auto p-0">
-                                    View full history
-                                </Button>
-                            </CardContent>
-                        </Card>
+                    <div className="p-6 rounded-2xl bg-zinc-900/40 border border-zinc-800/60 flex flex-col justify-between h-40 hover:bg-zinc-900/60 transition cursor-pointer group sm:col-span-2 md:col-span-1">
+                        <div className="flex justify-between items-start">
+                            <div className="h-10 w-10 rounded-full bg-emerald-500/10 flex items-center justify-center">
+                                <Activity className="h-5 w-5 text-emerald-500" />
+                            </div>
+                            <ArrowUpRight className="h-5 w-5 text-zinc-600 group-hover:text-zinc-400 transition" />
+                        </div>
+                        <div>
+                            <div className="text-3xl font-light text-white mb-1">85%</div>
+                            <div className="text-sm text-zinc-400">Average Attendance</div>
+                        </div>
                     </div>
                 </div>
-            </main>
+
+                {/* Today's Focus */}
+                <div>
+                    <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-xl font-medium text-white">Today's Focus</h2>
+                    </div>
+                    <div className="space-y-3">
+                        <div className="p-4 sm:p-5 rounded-xl border border-zinc-800/60 bg-zinc-900/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:border-zinc-700 transition cursor-pointer">
+                            <div className="flex items-start gap-4">
+                                <div className="mt-0.5 min-w-[20px]">
+                                    <div className="h-5 w-5 rounded-full border border-zinc-600 hover:border-amber-500 cursor-pointer transition" />
+                                </div>
+                                <div>
+                                    <h3 className="text-white font-medium mb-1 border-b border-transparent">Design Promo Banners for Annual Meet</h3>
+                                    <div className="flex items-center gap-3 text-xs text-zinc-500">
+                                        <span className="flex items-center gap-1.5"><Calendar className="h-3 w-3" /> Tomorrow</span>
+                                        <div className="w-1 h-1 rounded-full bg-zinc-700" />
+                                        <span>Debate Club</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="pl-9 sm:pl-0">
+                                <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-rose-500/10 text-rose-500 border border-rose-500/20">
+                                    High Priority
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className="p-4 sm:p-5 rounded-xl border border-zinc-800/60 bg-zinc-900/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:border-zinc-700 transition cursor-pointer">
+                            <div className="flex items-start gap-4">
+                                <div className="mt-0.5 min-w-[20px]">
+                                    <div className="h-5 w-5 rounded-full border border-zinc-600 hover:border-amber-500 cursor-pointer transition" />
+                                </div>
+                                <div>
+                                    <h3 className="text-white font-medium mb-1 border-b border-transparent">Organize Logistics for Workshop</h3>
+                                    <div className="flex items-center gap-3 text-xs text-zinc-500">
+                                        <span className="flex items-center gap-1.5"><Calendar className="h-3 w-3" /> Oct 28</span>
+                                        <div className="w-1 h-1 rounded-full bg-zinc-700" />
+                                        <span>Tech Society</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="pl-9 sm:pl-0">
+                                <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-amber-500 border border-amber-500/20">
+                                    Medium Priority
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className="p-4 sm:p-5 rounded-xl border border-zinc-800/60 bg-zinc-900/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:border-zinc-700 transition cursor-pointer">
+                            <div className="flex items-start gap-4">
+                                <div className="mt-0.5 min-w-[20px]">
+                                    <div className="h-5 w-5 rounded-full border border-zinc-600 hover:border-amber-500 cursor-pointer transition flex items-center justify-center">
+                                        <div className="w-3 h-3 bg-zinc-600 rounded-full hover:bg-amber-500 transition-colors" />
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3 className="text-zinc-500 font-medium mb-1 line-through decoration-zinc-700">Draft Speech Guidelines Document</h3>
+                                    <div className="flex items-center gap-3 text-xs text-zinc-600">
+                                        <span className="flex items-center gap-1.5"><Calendar className="h-3 w-3" /> Done</span>
+                                        <div className="w-1 h-1 rounded-full bg-zinc-800" />
+                                        <span>Debate Club</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="pl-9 sm:pl-0">
+                                <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-zinc-800/50 text-zinc-500 border border-zinc-800">
+                                    Completed
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
         </div>
-    );
+    )
 }

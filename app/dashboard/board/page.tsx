@@ -137,34 +137,17 @@ const lists = [
 
 export default function BoardPage() {
     return (
-        <div className="h-screen flex flex-col bg-zinc-950 text-white selection:bg-amber-500/30 overflow-hidden">
+        <div className="h-full flex flex-col overflow-hidden">
 
-            {/* Top Navigation - Kaam Style */}
-            <nav className="border-b border-zinc-800 bg-zinc-900/50 backdrop-blur-xl sticky top-0 z-50 shrink-0">
-                <div className="flex items-center gap-4 px-6 py-4">
-                    <Link href="/dashboard" className="flex items-center gap-2 mr-4 transition-opacity hover:opacity-80">
-                        <Shield className="h-6 w-6 text-amber-500" />
-                        <span className="font-medium text-xl tracking-tight text-white hidden sm:block">Kaam</span>
-                    </Link>
-                    <div className="h-5 w-px bg-zinc-800 hidden sm:block" />
-
-                    <h1 className="font-medium text-white px-2">
-                        Event Management Team
-                    </h1>
-
-                    <div className="ml-auto flex items-center gap-2 sm:gap-4">
-                        <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-white hover:bg-zinc-800">
-                            <Search className="h-5 w-5" />
-                        </Button>
-                        <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-white hover:bg-zinc-800">
-                            <Bell className="h-5 w-5" />
-                        </Button>
-                        <div className="h-8 w-px bg-zinc-800 hidden sm:block mx-1" />
-                        <Avatar className="h-8 w-8 cursor-pointer border border-zinc-800 transition-colors">
-                            <AvatarImage src="/images/avatar.png" />
-                            <AvatarFallback className="bg-zinc-800 text-zinc-400 text-xs">JD</AvatarFallback>
-                        </Avatar>
-                    </div>
+            {/* Top Navigation - Board Specific */}
+            <nav className="flex items-center justify-between px-6 py-4 shrink-0 bg-transparent">
+                <h1 className="font-medium text-lg text-white">
+                    Event Management Team
+                </h1>
+                <div className="flex items-center gap-2 sm:gap-4">
+                    <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-white hover:bg-zinc-800">
+                        <Search className="h-5 w-5" />
+                    </Button>
                 </div>
             </nav>
 

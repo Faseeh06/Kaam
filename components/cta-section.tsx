@@ -2,18 +2,19 @@
 
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 export function CtaSection() {
   return (
     <section className="relative w-full overflow-hidden">
       {/* Background Image with Overlay */}
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{
-          backgroundImage: "url('/images/hero-bg.jpg')",
-        }}
-      >
-        <div className="absolute inset-0 bg-black/40" />
+      <div className="absolute inset-0 bg-zinc-950 overflow-hidden">
+        {/* Animated glowing orbs */}
+        <div className="absolute top-[20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-amber-500/10 blur-[100px] animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute bottom-[20%] right-[-10%] w-[40%] h-[40%] rounded-full bg-orange-600/10 blur-[120px]" />
+
+        {/* Subtle grid pattern overlay */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_70%,transparent_100%)]" />
       </div>
 
       {/* Content */}
@@ -37,12 +38,14 @@ export function CtaSection() {
             Experience effortless administration, seamless communication, and
             transparent task tracking. Start managing your organization today.
           </p>
-          <Button
-            size="lg"
-            className="mt-8 bg-white px-8 text-black hover:bg-white/90"
-          >
-            Get Started with Kaam
-          </Button>
+          <Link href="/signup">
+            <Button
+              size="lg"
+              className="mt-8 bg-white px-8 text-black hover:bg-white/90"
+            >
+              Get Started with Kaam
+            </Button>
+          </Link>
         </div>
       </div>
     </section>

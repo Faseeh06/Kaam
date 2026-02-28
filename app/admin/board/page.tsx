@@ -403,23 +403,23 @@ export default function BoardPage() {
                 </DragDropContext>
             </main>
 
-            {/* Floating Bottom Navigation */}
+            {/* Floating Bottom Navigation - Teams */}
             <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center p-1.5 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl backdrop-blur-xl shrink-0 z-[40] overflow-x-auto max-w-[90vw]">
-                <button className="flex items-center gap-2 px-4 py-2 rounded-full text-zinc-500 dark:text-zinc-400 hover:text-[#172b4d] dark:text-zinc-100 hover:bg-zinc-200/50 dark:hover:bg-zinc-800 dark:bg-zinc-800 transition text-sm font-medium whitespace-nowrap">
-                    <Inbox className="h-4 w-4" />
-                    <span className="hidden sm:inline">Inbox</span>
-                </button>
-                <button className="flex items-center gap-2 px-4 py-2 rounded-full text-zinc-500 dark:text-zinc-400 hover:text-[#172b4d] dark:text-zinc-100 hover:bg-zinc-200/50 dark:hover:bg-zinc-800 dark:bg-zinc-800 transition text-sm font-medium whitespace-nowrap">
-                    <Calendar className="h-4 w-4" />
-                    <span className="hidden sm:inline">Planner</span>
-                </button>
                 <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-500 border border-rose-500/20 transition text-sm font-medium whitespace-nowrap">
-                    <KanbanSquare className="h-4 w-4" />
-                    <span>Board</span>
+                    <span className="h-2 w-2 rounded-full bg-fuchsia-500 shrink-0"></span>
+                    <span>Creative</span>
                 </button>
-                <button className="flex items-center gap-2 px-4 py-2 rounded-full text-zinc-500 dark:text-zinc-400 hover:text-[#172b4d] dark:text-zinc-100 hover:bg-zinc-200/50 dark:hover:bg-zinc-800 dark:bg-zinc-800 transition text-sm font-medium whitespace-nowrap">
-                    <Layers className="h-4 w-4" />
-                    <span className="hidden sm:inline">Switch boards</span>
+                <button className="flex items-center gap-2 px-4 py-2 rounded-full text-zinc-500 dark:text-zinc-400 hover:text-[#172b4d] dark:text-zinc-100 hover:bg-zinc-200/50 dark:hover:bg-zinc-800 transition text-sm font-medium whitespace-nowrap">
+                    <span className="h-2 w-2 rounded-full bg-blue-500 shrink-0 opacity-70"></span>
+                    <span className="hidden sm:inline">Operations</span>
+                </button>
+                <button className="flex items-center gap-2 px-4 py-2 rounded-full text-zinc-500 dark:text-zinc-400 hover:text-[#172b4d] dark:text-zinc-100 hover:bg-zinc-200/50 dark:hover:bg-zinc-800 transition text-sm font-medium whitespace-nowrap">
+                    <span className="h-2 w-2 rounded-full bg-emerald-500 shrink-0 opacity-70"></span>
+                    <span className="hidden sm:inline">Marketing</span>
+                </button>
+                <button className="flex items-center gap-2 px-4 py-2 rounded-full text-zinc-500 dark:text-zinc-400 hover:text-[#172b4d] dark:text-zinc-100 hover:bg-zinc-200/50 dark:hover:bg-zinc-800 transition text-sm font-medium whitespace-nowrap">
+                    <span className="h-2 w-2 rounded-full bg-amber-500 shrink-0 opacity-70"></span>
+                    <span className="hidden sm:inline">Tech</span>
                 </button>
             </div>
 

@@ -5,19 +5,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-const pendingUsers = [
-    { id: 1, name: "Alice Johnson", email: "alice.j@university.edu", society: "Tech Society", applied: "2 hours ago" },
-    { id: 2, name: "Mark Peterson", email: "mark.p@gmail.com", society: "Event Management", applied: "5 hours ago" },
-    { id: 3, name: "Sarah Lee", email: "sarah.lee99@test.com", society: "Debate Club", applied: "1 day ago" },
-];
-
-const activeUsers = [
-    { id: 4, name: "John Doe", email: "user@test.com", role: "Member", team: "Creative", status: "Active" },
-    { id: 5, name: "Emma Smith", email: "emma.smith@test.com", role: "Team Lead", team: "Operations", status: "Active" },
-    { id: 6, name: "Michael Chen", email: "m.chen@test.com", role: "Member", team: "Marketing", status: "Inactive" },
-];
+import { useMockData } from "@/app/context/MockDataContext";
 
 export default function AdminUsersPage() {
+    const { users, pendingUsers, approvePendingUser, rejectPendingUser } = useMockData();
+    const activeUsers = users.filter(u => u.status === 'Active');
+
     return (
         <div className="h-full flex flex-col pt-4 px-4 md:px-8 pb-8 overflow-y-auto custom-scrollbar">
 
@@ -81,14 +74,14 @@ export default function AdminUsersPage() {
                                                 <span className="text-sm text-zinc-600 dark:text-zinc-300">{user.society}</span>
                                             </td>
                                             <td className="px-6 py-4">
-                                                <span className="text-sm text-zinc-500 dark:text-zinc-500">{user.applied}</span>
+                                                <span className="text-sm text-zinc-500 dark:text-zinc-500">{user.time}</span>
                                             </td>
                                             <td className="px-6 py-4 text-right">
                                                 <div className="flex items-center justify-end gap-2">
-                                                    <Button size="sm" variant="outline" className="border-emerald-200 dark:border-emerald-500/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:border-emerald-300 dark:hover:border-emerald-500/50 h-8 px-2.5">
+                                                    <Button onClick={() => approvePendingUser(user.id, "Member", "General")} size="sm" variant="outline" className="border-emerald-200 dark:border-emerald-500/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:border-emerald-300 dark:hover:border-emerald-500/50 h-8 px-2.5">
                                                         <Check className="h-4 w-4 mr-1.5" /> Accept
                                                     </Button>
-                                                    <Button size="sm" variant="outline" className="border-rose-200 dark:border-rose-500/30 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:border-rose-300 dark:hover:border-rose-500/50 h-8 px-2.5">
+                                                    <Button onClick={() => rejectPendingUser(user.id)} size="sm" variant="outline" className="border-rose-200 dark:border-rose-500/30 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:border-rose-300 dark:hover:border-rose-500/50 h-8 px-2.5">
                                                         <X className="h-4 w-4 mr-1.5" /> Reject
                                                     </Button>
                                                 </div>

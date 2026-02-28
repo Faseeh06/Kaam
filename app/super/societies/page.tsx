@@ -5,14 +5,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
-const societiesData = [
-    { id: 1, name: "Computer Science Society", acronym: "CSS", members: 1200, status: "Active" },
-    { id: 2, name: "Entrepreneurs Network", acronym: "EN", members: 450, status: "Active" },
-    { id: 3, name: "Robotics Club", acronym: "RC", members: 320, status: "Active" },
-    { id: 4, name: "Literature & Debating", acronym: "LDS", members: 210, status: "Inactive" },
-];
+import { useMockData } from "@/app/context/MockDataContext";
 
 export default function SuperSocietiesPage() {
+    const { societies, addSociety } = useMockData();
+
+    const handleRegisterSociety = () => {
+        addSociety({
+            id: `soc-${Date.now()}`,
+            name: "New Example Society",
+            acronym: "NES",
+            members: 1,
+            status: "Active"
+        });
+    };
+
     return (
         <div className="h-full flex flex-col pt-4 px-4 md:px-8 pb-8 overflow-y-auto custom-scrollbar">
 
@@ -23,7 +30,7 @@ export default function SuperSocietiesPage() {
                         Manage all registered organizations operating on the Kaam platform.
                     </p>
                 </div>
-                <Button className="bg-violet-600 text-white hover:bg-violet-700 shadow-sm shrink-0">
+                <Button onClick={handleRegisterSociety} className="bg-violet-600 text-white hover:bg-violet-700 shadow-sm shrink-0">
                     <Plus className="h-4 w-4 mr-2" /> Register Organization
                 </Button>
             </header>
@@ -50,7 +57,7 @@ export default function SuperSocietiesPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/50">
-                            {societiesData.map((soc) => (
+                            {societies.map((soc) => (
                                 <tr key={soc.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20 transition-colors">
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">

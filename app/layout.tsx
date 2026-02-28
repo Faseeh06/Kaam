@@ -4,6 +4,7 @@ import { Host_Grotesk, Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 import { ThemeProvider } from "@/components/theme-provider"
+import { MockDataProvider } from "@/app/context/MockDataContext"
 
 const hostGrotesk = Host_Grotesk({ subsets: ["latin"], variable: "--font-host-grotesk" });
 
@@ -44,8 +45,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
-          <Analytics />
+          <MockDataProvider>
+            {children}
+            <Analytics />
+          </MockDataProvider>
         </ThemeProvider>
       </body>
     </html>

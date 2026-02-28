@@ -5,15 +5,22 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-const teams = [
-    { id: 1, name: "Creative & Design", members: 12, leads: ["Sarah J.", "Mike L."], color: "bg-fuchsia-500", type: "Core" },
-    { id: 2, name: "Operations & Logistics", members: 34, leads: ["Alex P."], color: "bg-blue-500", type: "Core" },
-    { id: 3, name: "Marketing & Outreach", members: 21, leads: ["Emma W.", "David K."], color: "bg-emerald-500", type: "Core" },
-    { id: 4, name: "Tech & IT", members: 8, leads: ["John Doe"], color: "bg-amber-500", type: "Support" },
-    { id: 5, name: "Sponsorship", members: 5, leads: ["Rachel G."], color: "bg-violet-500", type: "Support" },
-];
+import { useMockData } from "@/app/context/MockDataContext";
 
 export default function AdminTeamsPage() {
+    const { teams, addTeam } = useMockData();
+
+    const handleCreateTeam = () => {
+        addTeam({
+            id: `team-${Date.now()}`,
+            name: "New Custom Team",
+            members: 1,
+            leads: ["You"],
+            color: "bg-rose-500",
+            type: "Core"
+        });
+    };
+
     return (
         <div className="h-full flex flex-col pt-4 px-4 md:px-8 pb-8 overflow-y-auto custom-scrollbar">
 
@@ -24,7 +31,7 @@ export default function AdminTeamsPage() {
                         Organize your society into functional groups.
                     </p>
                 </div>
-                <Button className="bg-rose-500 text-white hover:bg-rose-600 shadow-sm shrink-0">
+                <Button onClick={handleCreateTeam} className="bg-rose-500 text-white hover:bg-rose-600 shadow-sm shrink-0">
                     <Plus className="h-4 w-4 mr-2" /> Create New Team
                 </Button>
             </header>
@@ -83,7 +90,7 @@ export default function AdminTeamsPage() {
                 ))}
 
                 {/* Create Team Card */}
-                <button className="bg-[#f4f5f7]/50 dark:bg-zinc-900/20 border-2 border-dashed border-zinc-300 dark:border-zinc-800 rounded-2xl p-6 shadow-sm hover:border-rose-400 dark:hover:border-rose-500/50 transition flex flex-col items-center justify-center gap-3 text-zinc-500 dark:text-zinc-400 hover:text-rose-600 dark:hover:text-rose-500 min-h-[250px] group">
+                <button onClick={handleCreateTeam} className="bg-[#f4f5f7]/50 dark:bg-zinc-900/20 border-2 border-dashed border-zinc-300 dark:border-zinc-800 rounded-2xl p-6 shadow-sm hover:border-rose-400 dark:hover:border-rose-500/50 transition flex flex-col items-center justify-center gap-3 text-zinc-500 dark:text-zinc-400 hover:text-rose-600 dark:hover:text-rose-500 min-h-[250px] group">
                     <div className="h-12 w-12 rounded-full bg-white dark:bg-zinc-800 shadow-sm flex items-center justify-center group-hover:bg-rose-50 dark:group-hover:bg-rose-500/10 transition">
                         <Plus className="h-6 w-6" />
                     </div>

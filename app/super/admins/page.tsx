@@ -5,13 +5,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
-const globalAdmins = [
-    { id: 1, name: "Faseeh Ahmad", email: "faseeh@kaam.app", role: "Super Admin", scope: "Global" },
-    { id: 2, name: "Sarah Jenkins", email: "president@css.edu", role: "Society President", scope: "Computer Science Society" },
-    { id: 3, name: "Mike Logistics", email: "head@rc.edu", role: "Society President", scope: "Robotics Club" },
-];
+import { useMockData } from "@/app/context/MockDataContext";
 
 export default function SuperAdminsPage() {
+    const { admins, addAdmin } = useMockData();
+
+    const handleGrantAdmin = () => {
+        addAdmin({
+            id: `admin-${Date.now()}`,
+            name: "New Admin",
+            email: "new.admin@edu.com",
+            role: "Society President",
+            scope: "New Society"
+        });
+    };
+
     return (
         <div className="h-full flex flex-col pt-4 px-4 md:px-8 pb-8 overflow-y-auto custom-scrollbar">
 
@@ -22,13 +30,13 @@ export default function SuperAdminsPage() {
                         Delegate and monitor root access to Society Presidents.
                     </p>
                 </div>
-                <Button className="bg-violet-600 text-white hover:bg-violet-700 shadow-sm shrink-0">
+                <Button onClick={handleGrantAdmin} className="bg-violet-600 text-white hover:bg-violet-700 shadow-sm shrink-0">
                     <Key className="h-4 w-4 mr-2" /> Grant Admin Rights
                 </Button>
             </header>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {globalAdmins.map((admin) => (
+                {admins.map((admin) => (
                     <div key={admin.id} className="bg-white dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800/60 rounded-2xl p-6 shadow-sm hover:shadow-md transition relative overflow-hidden group">
 
                         <div className={`absolute top-0 left-0 w-1.5 h-full ${admin.scope === 'Global' ? 'bg-violet-500' : 'bg-rose-500'}`} />

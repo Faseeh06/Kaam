@@ -4,13 +4,11 @@ import { Users, Search, Download, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-const allUsersDb = [
-    { id: 1, name: "Alice Smith", email: "alice@student.edu", society: "Computer Science", joined: "Oct 12, 2025" },
-    { id: 2, name: "Bob Johnson", email: "bob@student.edu", society: "Robotics Club", joined: "Nov 03, 2025" },
-    { id: 3, name: "Charlie Davis", email: "charlie@student.edu", society: "Entrepreneurs", joined: "Jan 15, 2026" },
-];
+import { useMockData } from "@/app/context/MockDataContext";
 
 export default function SuperUsersPage() {
+    const { users } = useMockData();
+
     return (
         <div className="h-full flex flex-col pt-4 px-4 md:px-8 pb-8 overflow-y-auto custom-scrollbar">
 
@@ -53,7 +51,7 @@ export default function SuperUsersPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/50">
-                            {allUsersDb.map((user) => (
+                            {users.map((user) => (
                                 <tr key={user.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20 transition-colors">
                                     <td className="px-6 py-4 font-medium text-[#172b4d] dark:text-zinc-200">
                                         {user.name}

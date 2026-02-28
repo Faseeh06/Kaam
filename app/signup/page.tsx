@@ -19,7 +19,7 @@ export default function SignupPage() {
         <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-zinc-950">
             {/* Background */}
             <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-amber-500/10 blur-[100px] animate-pulse" />
+                <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-amber-500/10 blur-[100px] animate-slow-pulse" />
                 <div className="absolute top-[40%] -right-[20%] w-[60%] h-[60%] rounded-full bg-orange-600/10 blur-[120px]" />
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_70%,transparent_100%)]" />
             </div>
@@ -94,7 +94,8 @@ export default function SignupPage() {
                             <Input
                                 id="password"
                                 type="password"
-                                className="bg-zinc-800/50 border-zinc-700 text-white focus-visible:ring-amber-500"
+                                placeholder="********"
+                                className="bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-500 focus-visible:ring-amber-500"
                             />
                         </div>
                         <Button className="w-full mt-4 bg-white text-zinc-900 hover:bg-zinc-200">

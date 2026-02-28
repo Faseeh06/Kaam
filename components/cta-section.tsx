@@ -10,7 +10,7 @@ export function CtaSection() {
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 bg-zinc-950 overflow-hidden">
         {/* Animated glowing orbs */}
-        <div className="absolute top-[20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-amber-500/10 blur-[100px] animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-[20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-amber-500/10 blur-[100px] animate-slow-pulse" style={{ animationDelay: '1s' }} />
         <div className="absolute bottom-[20%] right-[-10%] w-[40%] h-[40%] rounded-full bg-orange-600/10 blur-[120px]" />
 
         {/* Subtle grid pattern overlay */}

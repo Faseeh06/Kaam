@@ -15,7 +15,7 @@ export default function AdminSocietyPage() {
                 </p>
             </header>
 
-            <div className="max-w-4xl w-full grid md:grid-cols-3 gap-6 md:gap-8">
+            <div className="w-full grid md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
 
                 {/* Visual Settings */}
                 <div className="md:col-span-1 space-y-6">

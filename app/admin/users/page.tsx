@@ -43,7 +43,7 @@ export default function AdminUsersPage() {
                 </div>
             </header>
 
-            <div className="space-y-8 max-w-6xl">
+            <div className="space-y-8 w-full">
 
                 {/* Pending Approvals */}
                 <div>

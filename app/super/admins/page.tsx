@@ -1,6 +1,6 @@
 "use client";
 
-import { UserCog, Plus, Search, ShieldAlert, Key } from "lucide-react";
+import { UserCog, Plus, Search, ShieldAlert, Key, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";

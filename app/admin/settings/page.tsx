@@ -15,7 +15,7 @@ export default function AdminSettingsPage() {
                 </p>
             </header>
 
-            <div className="max-w-4xl w-full grid md:grid-cols-4 gap-6 md:gap-8">
+            <div className="w-full grid md:grid-cols-4 lg:grid-cols-5 gap-6 md:gap-8">
 
                 {/* Left Column - Navigation */}
                 <div className="md:col-span-1 space-y-2">

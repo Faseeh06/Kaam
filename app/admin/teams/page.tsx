@@ -29,7 +29,7 @@ export default function AdminTeamsPage() {
                 </Button>
             </header>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full">
                 {teams.map((team) => (
                     <div key={team.id} className="bg-white dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800/60 rounded-2xl p-6 shadow-sm hover:shadow-md transition group overflow-hidden relative">
                         {/* Decorative Top Banner */}

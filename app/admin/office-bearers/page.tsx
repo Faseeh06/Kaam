@@ -90,86 +90,87 @@ export default function AdminOfficeBearersPage() {
                         Manage society-level roles. Presidents access all teams; other OBs access only their assigned teams.
                     </p>
                 </div>
-                <div className="flex gap-3">
-                    {/* Add custom position */}
-                    <div className="flex gap-2">
-                        <input
-                            value={newCustomPos}
-                            onChange={e => setNewCustomPos(e.target.value)}
-                            onKeyDown={e => e.key === 'Enter' && addCustomPosition()}
-                            placeholder="Add custom position..."
-                            className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:ring-1 focus:ring-rose-500 w-52"
-                        />
-                        <Button onClick={addCustomPosition} variant="outline" size="sm" className="border-zinc-200 dark:border-zinc-800 shrink-0">
-                            <Plus className="h-4 w-4" />
+                <Dialog open={addOpen} onOpenChange={setAddOpen}>
+                    <DialogTrigger asChild>
+                        <Button className="bg-rose-500 text-white hover:bg-rose-600 shadow-sm shrink-0">
+                            <Plus className="h-4 w-4 mr-2" /> Add Office Bearer
                         </Button>
-                    </div>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-md bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800">
+                        <DialogHeader>
+                            <DialogTitle className="text-[#172b4d] dark:text-white">Add Office Bearer</DialogTitle>
+                            <DialogDescription className="text-zinc-500 dark:text-zinc-400">
+                                Assign a registered user to a society-level position.
+                            </DialogDescription>
+                        </DialogHeader>
 
-                    <Dialog open={addOpen} onOpenChange={setAddOpen}>
-                        <DialogTrigger asChild>
-                            <Button className="bg-rose-500 text-white hover:bg-rose-600 shadow-sm shrink-0">
-                                <Plus className="h-4 w-4 mr-2" /> Add Office Bearer
-                            </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-md bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800">
-                            <DialogHeader>
-                                <DialogTitle className="text-[#172b4d] dark:text-white">Add Office Bearer</DialogTitle>
-                                <DialogDescription className="text-zinc-500 dark:text-zinc-400">
-                                    Assign a registered user to a society-level position.
-                                </DialogDescription>
-                            </DialogHeader>
+                        <div className="space-y-4 mt-2">
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Select User <span className="text-rose-500">*</span></label>
+                                <select value={selUserId} onChange={e => setSelUserId(e.target.value)}
+                                    className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:ring-1 focus:ring-rose-500">
+                                    <option value="">Choose a registered user...</option>
+                                    {users.map(u => <option key={u.id} value={u.id}>{u.name} — {u.email}</option>)}
+                                </select>
+                            </div>
 
-                            <div className="space-y-4 mt-2">
-                                <div className="space-y-1.5">
-                                    <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Select User <span className="text-rose-500">*</span></label>
-                                    <select value={selUserId} onChange={e => setSelUserId(e.target.value)}
-                                        className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:ring-1 focus:ring-rose-500">
-                                        <option value="">Choose a registered user...</option>
-                                        {users.map(u => <option key={u.id} value={u.id}>{u.name} — {u.email}</option>)}
-                                    </select>
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Position <span className="text-rose-500">*</span></label>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {allPositions.map(pos => (
+                                        <button key={pos} onClick={() => setSelPosition(pos)}
+                                            className={`px-3 py-2 rounded-lg text-left text-xs font-medium border transition ${selPosition === pos ? 'bg-rose-50 dark:bg-rose-500/10 border-rose-400 dark:border-rose-500/50 text-rose-700 dark:text-rose-300' : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400'}`}>
+                                            {getStyle(pos).icon} {pos}
+                                        </button>
+                                    ))}
+                                    {/* Inline add-custom-position tile */}
+                                    {newCustomPos.trim() ? (
+                                        <button onClick={addCustomPosition}
+                                            className="px-3 py-2 rounded-lg text-left text-xs font-medium border border-dashed border-rose-300 dark:border-rose-500/40 bg-rose-50/50 dark:bg-rose-500/5 text-rose-600 dark:text-rose-400 flex items-center gap-1.5 hover:border-rose-400 transition">
+                                            <Plus className="h-3.5 w-3.5 shrink-0" /> Add "{newCustomPos.trim()}"
+                                        </button>
+                                    ) : (
+                                        <div className="relative">
+                                            <input
+                                                value={newCustomPos}
+                                                onChange={e => setNewCustomPos(e.target.value)}
+                                                onKeyDown={e => e.key === 'Enter' && addCustomPosition()}
+                                                placeholder="+ Custom position"
+                                                className="w-full px-3 py-2 rounded-lg text-xs font-medium border border-dashed border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 placeholder:text-zinc-400 outline-none focus:border-rose-400 focus:ring-1 focus:ring-rose-400/30 transition"
+                                            />
+                                        </div>
+                                    )}
                                 </div>
+                            </div>
 
-                                <div className="space-y-1.5">
-                                    <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Position <span className="text-rose-500">*</span></label>
-                                    <div className="grid grid-cols-2 gap-2">
-                                        {allPositions.map(pos => (
-                                            <button key={pos} onClick={() => setSelPosition(pos)}
-                                                className={`px-3 py-2 rounded-lg text-left text-xs font-medium border transition ${selPosition === pos ? 'bg-rose-50 dark:bg-rose-500/10 border-rose-400 dark:border-rose-500/50 text-rose-700 dark:text-rose-300' : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400'}`}>
-                                                {getStyle(pos).icon} {pos}
+                            {!isPresident && (
+                                <div className="space-y-2">
+                                    <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Assign Teams</label>
+                                    <p className="text-[11px] text-zinc-400">This OB will only access the selected teams.</p>
+                                    <div className="grid grid-cols-2 gap-2 max-h-36 overflow-y-auto">
+                                        {teams.map(t => (
+                                            <button key={t.id} onClick={() => toggleTeam(t.id, selTeamIds, setSelTeamIds)}
+                                                className={`px-3 py-2 rounded-lg text-left text-xs font-medium border transition flex items-center gap-2 ${selTeamIds.includes(t.id) ? 'bg-blue-50 dark:bg-blue-500/10 border-blue-400 dark:border-blue-500/50 text-blue-700 dark:text-blue-300' : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400'}`}>
+                                                <span className={`h-2 w-2 rounded-full ${t.color} shrink-0`} />
+                                                {t.name}
                                             </button>
                                         ))}
                                     </div>
                                 </div>
-
-                                {!isPresident && (
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Assign Teams</label>
-                                        <p className="text-[11px] text-zinc-400">This OB will only access the selected teams.</p>
-                                        <div className="grid grid-cols-2 gap-2 max-h-36 overflow-y-auto">
-                                            {teams.map(t => (
-                                                <button key={t.id} onClick={() => toggleTeam(t.id, selTeamIds, setSelTeamIds)}
-                                                    className={`px-3 py-2 rounded-lg text-left text-xs font-medium border transition flex items-center gap-2 ${selTeamIds.includes(t.id) ? 'bg-blue-50 dark:bg-blue-500/10 border-blue-400 dark:border-blue-500/50 text-blue-700 dark:text-blue-300' : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400'}`}>
-                                                    <span className={`h-2 w-2 rounded-full ${t.color} shrink-0`} />
-                                                    {t.name}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-                                {isPresident && (
-                                    <div className="bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-lg p-3 text-xs text-amber-700 dark:text-amber-400">
-                                        👑 President role grants access to <strong>all teams</strong> automatically.
-                                    </div>
-                                )}
-
-                                <div className="flex gap-3 pt-2">
-                                    <Button variant="outline" onClick={() => setAddOpen(false)} className="flex-1 border-zinc-200 dark:border-zinc-800">Cancel</Button>
-                                    <Button disabled={!selUserId} onClick={handleAdd} className="flex-1 bg-rose-500 hover:bg-rose-600 text-white disabled:opacity-50">Add OB</Button>
+                            )}
+                            {isPresident && (
+                                <div className="bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-lg p-3 text-xs text-amber-700 dark:text-amber-400">
+                                    👑 President role grants access to <strong>all teams</strong> automatically.
                                 </div>
+                            )}
+
+                            <div className="flex gap-3 pt-2">
+                                <Button variant="outline" onClick={() => setAddOpen(false)} className="flex-1 border-zinc-200 dark:border-zinc-800">Cancel</Button>
+                                <Button disabled={!selUserId} onClick={handleAdd} className="flex-1 bg-rose-500 hover:bg-rose-600 text-white disabled:opacity-50">Add OB</Button>
                             </div>
-                        </DialogContent>
-                    </Dialog>
-                </div>
+                        </div>
+                    </DialogContent>
+                </Dialog>
             </header>
 
             {/* Edit OB dialog */}
@@ -191,6 +192,23 @@ export default function AdminOfficeBearersPage() {
                                         {getStyle(pos).icon} {pos}
                                     </button>
                                 ))}
+                                {/* Inline add-custom-position tile (edit dialog) */}
+                                {newCustomPos.trim() ? (
+                                    <button onClick={addCustomPosition}
+                                        className="px-3 py-2 rounded-lg text-left text-xs font-medium border border-dashed border-rose-300 dark:border-rose-500/40 bg-rose-50/50 dark:bg-rose-500/5 text-rose-600 dark:text-rose-400 flex items-center gap-1.5 hover:border-rose-400 transition">
+                                        <Plus className="h-3.5 w-3.5 shrink-0" /> Add "{newCustomPos.trim()}"
+                                    </button>
+                                ) : (
+                                    <div className="relative">
+                                        <input
+                                            value={newCustomPos}
+                                            onChange={e => setNewCustomPos(e.target.value)}
+                                            onKeyDown={e => e.key === 'Enter' && addCustomPosition()}
+                                            placeholder="+ Custom position"
+                                            className="w-full px-3 py-2 rounded-lg text-xs font-medium border border-dashed border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 placeholder:text-zinc-400 outline-none focus:border-rose-400 focus:ring-1 focus:ring-rose-400/30 transition"
+                                        />
+                                    </div>
+                                )}
                             </div>
                         </div>
                         {!editIsPresident && (

@@ -11,8 +11,15 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { useMockData } from "@/app/context/MockDataContext";
 
 export default function AdminUsersPage() {
-    const { users, pendingUsers, approvePendingUser, rejectPendingUser, removeUser } = useMockData();
-    const activeUsers = users.filter(u => u.status === 'Active');
+    const { users, pendingUsers, approvePendingUser, rejectPendingUser, removeUser, societies } = useMockData();
+
+    // In production this comes from the authenticated session.
+    // Society id "1" = Computer Science Society (the mock admin's society).
+    const ADMIN_SOCIETY_ID = "1";
+    const adminSociety = societies.find(s => s.id === ADMIN_SOCIETY_ID);
+
+    const activeUsers = users
+        .filter(u => u.status === 'Active' && u.societyIds.includes(ADMIN_SOCIETY_ID));
     const [inviteCopied, setInviteCopied] = useState(false);
     const [codeCopied, setCodeCopied] = useState(false);
 

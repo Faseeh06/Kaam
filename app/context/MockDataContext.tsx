@@ -12,7 +12,8 @@ export type Society = {
 export type GlobalAdmin = { id: string; name: string; email: string; role: string; scope: string };
 
 export type AppUser = {
-    id: string; name: string; email: string; society: string;
+    id: string; name: string; email: string;
+    societyIds: string[];   // user can belong to 1+ societies (by society id)
     joined: string; role: string; team: string; status: string;
 };
 
@@ -100,9 +101,12 @@ const initialAdmins: GlobalAdmin[] = [
 ];
 
 const initialUsers: AppUser[] = [
-    { id: "1", name: "Alice Smith", email: "alice@student.edu", society: "Computer Science", joined: "Oct 12, 2025", role: "Executive", team: "Creative & Design", status: "Active" },
-    { id: "2", name: "Bob Johnson", email: "bob@student.edu", society: "Robotics Club", joined: "Nov 03, 2025", role: "Director", team: "Operations & Logistics", status: "Active" },
-    { id: "3", name: "Charlie Davis", email: "charlie@student.edu", society: "CSS", joined: "Jan 15, 2026", role: "HR", team: "Marketing & Outreach", status: "Active" }
+    { id: "1", name: "Alice Smith", email: "alice@student.edu", societyIds: ["1"], joined: "Oct 12, 2025", role: "Executive", team: "Creative & Design", status: "Active" },
+    { id: "2", name: "Bob Johnson", email: "bob@student.edu", societyIds: ["1", "3"], joined: "Nov 03, 2025", role: "Director", team: "Operations & Logistics", status: "Active" },
+    { id: "3", name: "Charlie Davis", email: "charlie@student.edu", societyIds: ["1"], joined: "Jan 15, 2026", role: "HR", team: "Marketing & Outreach", status: "Active" },
+    { id: "4", name: "Emma Wilson", email: "emma@student.edu", societyIds: ["2"], joined: "Dec 01, 2025", role: "Executive", team: "Operations", status: "Active" },
+    { id: "5", name: "David Kim", email: "david@student.edu", societyIds: ["2", "3"], joined: "Dec 10, 2025", role: "Director", team: "Tech", status: "Active" },
+    { id: "6", name: "Priya Khan", email: "priya@student.edu", societyIds: ["3"], joined: "Jan 20, 2026", role: "Executive", team: "Design", status: "Active" },
 ];
 
 const initialPendingUsers: PendingUser[] = [
@@ -178,9 +182,15 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
     const approvePendingUser = (id: string, role: string, team: string) => {
         const u = pendingUsers.find(u => u.id === id);
         if (!u) return;
+        // Find the society id that matches the pending user's society name
+        const matchedSociety = societies.find(s =>
+            s.name.toLowerCase().includes(u.society.toLowerCase()) ||
+            u.society.toLowerCase().includes(s.acronym.toLowerCase())
+        );
         setPendingUsers(pendingUsers.filter(p => p.id !== id));
         setUsers([...users, {
-            id: `u-${Date.now()}`, name: u.name, email: u.email, society: u.society,
+            id: `u-${Date.now()}`, name: u.name, email: u.email,
+            societyIds: matchedSociety ? [matchedSociety.id] : ["1"],
             joined: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
             role, team, status: "Active"
         }]);

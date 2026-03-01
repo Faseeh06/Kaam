@@ -22,7 +22,7 @@ export type AppUser = {
 export type PendingUser = { id: string; name: string; email: string; society: string; societyId: string; time: string; status: string };
 
 
-export type Team = { id: string; name: string; members: number; leads: string[]; color: string; type: string };
+export type Team = { id: string; name: string; members: number; leads: string[]; color: string; type: string; society_id: string };
 
 export type OBPosition = "President" | "General Secretary" | "Press Secretary" | "Treasurer" | string;
 

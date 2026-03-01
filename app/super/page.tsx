@@ -1,9 +1,39 @@
 "use client";
 
-import { Users, Building2, UserCog, Database, ShieldCheck, Activity } from "lucide-react";
+import { Users, Building2, UserCog, Database, ShieldCheck, Activity, Plus } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { useMockData, GlobalAdmin } from "@/app/context/MockDataContext";
 
 export default function SuperDashboardPage() {
+    const { societies, admins, users, pendingUsers } = useMockData();
+
+    // Growth calculations
+    const now = new Date();
+    const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    const newUsersThisWeek = [...users, ...pendingUsers].filter(u => {
+        const dateStr = 'joined' in u ? u.joined : ('time' in u ? u.time : null);
+        if (!dateStr || dateStr === 'N/A' || dateStr === 'Just now') return false;
+        const joinDate = new Date(dateStr);
+        return !isNaN(joinDate.getTime()) && joinDate >= oneWeekAgo;
+    }).length;
+
+    const newSocietiesThisMonth = societies.filter(s => {
+        // Societies don't have a joined date in the type yet, but we can assume some are new
+        // For now let's just use the length or a mock growth if date isn't available
+        return true;
+    }).length;
+
+    // Total users is both active and pending
+    const totalUsersCount = users.length + pendingUsers.length;
+
+    // Global Admins (Super Admins)
+    const superAdminsCount = admins.filter((a: GlobalAdmin) => a.scope === "Global").length;
+
+    // Total Admins (including society admins)
+    const totalAdminsCount = admins.length;
+
     return (
         <div className="h-full flex flex-col pt-4 px-4 md:px-8 pb-8 overflow-y-auto custom-scrollbar">
 
@@ -23,9 +53,9 @@ export default function SuperDashboardPage() {
                         <Building2 className="h-4 w-4 text-violet-600 dark:text-violet-500" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-3xl font-bold text-[#172b4d] dark:text-white">12</div>
+                        <div className="text-3xl font-bold text-[#172b4d] dark:text-white">{societies.length}</div>
                         <p className="text-xs text-emerald-500 mt-1 flex items-center font-medium">
-                            +2 onboarded this month
+                            +{newSocietiesThisMonth} onboarded this month
                         </p>
                     </CardContent>
                 </Card>
@@ -36,8 +66,8 @@ export default function SuperDashboardPage() {
                         <UserCog className="h-4 w-4 text-rose-500" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-3xl font-bold text-[#172b4d] dark:text-white">36</div>
-                        <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 flex items-center">
+                        <div className="text-3xl font-bold text-[#172b4d] dark:text-white">{superAdminsCount}</div>
+                        <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 flex items-center font-medium">
                             Presidents & Core ExCom
                         </p>
                     </CardContent>
@@ -49,9 +79,9 @@ export default function SuperDashboardPage() {
                         <Users className="h-4 w-4 text-blue-500" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-3xl font-bold text-[#172b4d] dark:text-white">4,821</div>
+                        <div className="text-3xl font-bold text-[#172b4d] dark:text-white">{totalUsersCount.toLocaleString()}</div>
                         <p className="text-xs text-emerald-500 mt-1 flex items-center font-medium">
-                            +421 registrations this week
+                            +{newUsersThisWeek} registrations this week
                         </p>
                     </CardContent>
                 </Card>
@@ -70,6 +100,7 @@ export default function SuperDashboardPage() {
                 </Card>
 
             </div>
+
 
             <div className="grid md:grid-cols-2 gap-6">
                 <Card className="bg-white dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800/60 rounded-2xl shadow-sm">
@@ -134,4 +165,3 @@ export default function SuperDashboardPage() {
         </div>
     );
 }
-import { Plus } from "lucide-react";

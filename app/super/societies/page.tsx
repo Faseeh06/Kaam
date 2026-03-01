@@ -100,10 +100,27 @@ function LogoUpload({ value, onChange }: { value: string; onChange: (v: string) 
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function SuperSocietiesPage() {
-    const { societies, addSociety, updateSociety } = useMockData();
+    const { societies, addSociety, updateSociety, teams, boardLists, boardCards } = useMockData();
     const [registerOpen, setRegisterOpen] = useState(false);
     const [editTarget, setEditTarget] = useState<Society | null>(null);
     const [search, setSearch] = useState("");
+
+    // Helper to calculate society metrics
+    const getSocietyMetrics = (societyId: string) => {
+        const societyTeams = teams.filter(t => t.society_id === societyId);
+        const teamIds = societyTeams.map(t => t.id);
+
+        const societyLists = boardLists.filter(l => teamIds.includes(l.team_id));
+        const listIds = societyLists.map(l => l.id);
+
+        const societyCards = boardCards.filter(c => listIds.includes(c.list_id));
+
+        return {
+            boards: societyLists.length,
+            tasks: societyCards.length,
+            activity: societyCards.length > 20 ? "High" : (societyCards.length > 5 ? "Medium" : "Low")
+        };
+    };
 
     // Register form
     const [name, setName] = useState("");
@@ -310,9 +327,9 @@ export default function SuperSocietiesPage() {
 
             {/* ── Cards Grid ── */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {filtered.map((soc) => {
-                    const meta = SOCIETY_META[soc.id] || { boards: 1, tasks: 0, activity: "Low", colorIdx: 1 };
-                    const cm = COLORS[meta.colorIdx];
+                {filtered.map((soc, idx) => {
+                    const metrics = getSocietyMetrics(soc.id);
+                    const cm = COLORS[idx % COLORS.length];
                     return (
                         <div key={soc.id} className="bg-white dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800/60 rounded-2xl shadow-sm hover:shadow-md transition overflow-hidden group relative flex flex-col">
                             <div className={`h-2 w-full ${cm.value} opacity-80`} />
@@ -358,7 +375,7 @@ export default function SuperSocietiesPage() {
                                 )}
 
                                 <div className="grid grid-cols-3 gap-3 mb-5">
-                                    {[{ label: "Members", val: soc.members.toLocaleString() }, { label: "Boards", val: meta.boards }, { label: "Tasks", val: meta.tasks }].map(s => (
+                                    {[{ label: "Members", val: soc.members.toLocaleString() }, { label: "Boards", val: metrics.boards }, { label: "Tasks", val: metrics.tasks }].map(s => (
                                         <div key={s.label} className="bg-[#f4f5f7] dark:bg-zinc-950/50 rounded-xl p-3 text-center">
                                             <p className="text-xl font-bold text-[#172b4d] dark:text-white">{s.val}</p>
                                             <p className="text-[10px] text-zinc-500 uppercase tracking-wider mt-0.5">{s.label}</p>
@@ -370,7 +387,7 @@ export default function SuperSocietiesPage() {
                                     <div className="flex items-center gap-1.5">
                                         <TrendingUp className="h-3.5 w-3.5 text-zinc-400" />
                                         <span className="text-xs text-zinc-500">Activity:</span>
-                                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${getActivityColor(meta.activity)}`}>{meta.activity}</span>
+                                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${getActivityColor(metrics.activity)}`}>{metrics.activity}</span>
                                     </div>
                                     <Button onClick={() => openEdit(soc)} variant="outline" size="sm"
                                         className="h-7 text-xs border-zinc-200 dark:border-zinc-700 hover:border-violet-400 dark:hover:border-violet-500/50 hover:text-violet-600 dark:hover:text-violet-400 transition">
@@ -381,6 +398,7 @@ export default function SuperSocietiesPage() {
                         </div>
                     );
                 })}
+
 
                 {/* Add new tile */}
                 <button onClick={() => setRegisterOpen(true)} className="bg-[#f4f5f7]/50 dark:bg-zinc-900/20 border-2 border-dashed border-zinc-300 dark:border-zinc-800 rounded-2xl p-6 hover:border-violet-400 dark:hover:border-violet-500/50 transition flex flex-col items-center justify-center gap-3 text-zinc-500 dark:text-zinc-400 hover:text-violet-600 dark:hover:text-violet-400 min-h-[220px] group">

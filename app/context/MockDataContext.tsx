@@ -20,6 +20,7 @@ type MockDataContextType = {
     addSociety: (soc: Society) => void;
     addAdmin: (admin: GlobalAdmin) => void;
     addUser: (user: AppUser) => void;
+    removeUser: (id: string) => void;
     approvePendingUser: (id: string, role: string, team: string) => void;
     rejectPendingUser: (id: string) => void;
     addTeam: (team: Team) => void;
@@ -70,6 +71,7 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
     const addSociety = (soc: Society) => setSocieties([...societies, soc]);
     const addAdmin = (admin: GlobalAdmin) => setAdmins([...admins, admin]);
     const addUser = (user: AppUser) => setUsers([...users, user]);
+    const removeUser = (id: string) => setUsers(users.filter(u => u.id !== id));
     const addTeam = (team: Team) => setTeams([...teams, team]);
 
     const approvePendingUser = (id: string, role: string, team: string) => {
@@ -96,7 +98,7 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
     return (
         <MockDataContext.Provider value={{
             societies, admins, users, pendingUsers, teams,
-            addSociety, addAdmin, addUser, approvePendingUser, rejectPendingUser, addTeam
+            addSociety, addAdmin, addUser, removeUser, approvePendingUser, rejectPendingUser, addTeam
         }}>
             {children}
         </MockDataContext.Provider>

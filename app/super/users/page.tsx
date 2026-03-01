@@ -1,13 +1,23 @@
 "use client";
 
-import { Users, Search, Download, Filter } from "lucide-react";
+import { Users, Search, Download, Filter, MoreHorizontal, Trash2, UserCog } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useState } from "react";
+import {
+    DropdownMenu, DropdownMenuContent, DropdownMenuItem,
+    DropdownMenuSeparator, DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
 import { useMockData } from "@/app/context/MockDataContext";
 
 export default function SuperUsersPage() {
-    const { users } = useMockData();
+    const { users, removeUser } = useMockData();
+    const [search, setSearch] = useState("");
+
+    const filtered = users.filter(u =>
+        u.name.toLowerCase().includes(search.toLowerCase()) ||
+        u.email.toLowerCase().includes(search.toLowerCase())
+    );
 
     return (
         <div className="h-full flex flex-col pt-4 px-4 md:px-8 pb-8 overflow-y-auto custom-scrollbar">
@@ -33,9 +43,11 @@ export default function SuperUsersPage() {
                 <div className="p-4 border-b border-zinc-100 dark:border-zinc-800/50 bg-zinc-50/50 dark:bg-zinc-950/20">
                     <div className="relative max-w-sm">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
-                        <Input
-                            placeholder="Query massive database by email or name..."
-                            className="pl-9 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 focus-visible:ring-violet-500"
+                        <input
+                            value={search}
+                            onChange={e => setSearch(e.target.value)}
+                            placeholder="Search by name or email..."
+                            className="w-full pl-9 pr-4 py-2 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500"
                         />
                     </div>
                 </div>
@@ -47,28 +59,57 @@ export default function SuperUsersPage() {
                                 <th className="px-6 py-4 font-medium">User Profile</th>
                                 <th className="px-6 py-4 font-medium">Email Identifier</th>
                                 <th className="px-6 py-4 font-medium">Connected Society</th>
-                                <th className="px-6 py-4 font-medium">Registration Date</th>
+                                <th className="px-6 py-4 font-medium">Joined</th>
+                                <th className="px-6 py-4 font-medium text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/50">
-                            {users.map((user) => (
-                                <tr key={user.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20 transition-colors">
-                                    <td className="px-6 py-4 font-medium text-[#172b4d] dark:text-zinc-200">
-                                        {user.name}
+                            {filtered.map((user) => (
+                                <tr key={user.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20 transition-colors group">
+                                    <td className="px-6 py-4">
+                                        <div className="flex items-center gap-3">
+                                            <Avatar className="h-8 w-8 border border-zinc-200 dark:border-zinc-700">
+                                                <AvatarFallback className="bg-violet-100 dark:bg-violet-500/20 text-violet-700 dark:text-violet-400 text-xs font-bold">
+                                                    {user.name.charAt(0)}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                            <p className="font-medium text-[#172b4d] dark:text-zinc-200">{user.name}</p>
+                                        </div>
                                     </td>
-                                    <td className="px-6 py-4 text-zinc-500 font-mono text-xs">
-                                        {user.email}
-                                    </td>
-                                    <td className="px-6 py-4 text-violet-600 dark:text-violet-400 font-medium">
-                                        {user.society}
-                                    </td>
-                                    <td className="px-6 py-4 text-zinc-500">
-                                        {user.joined}
+                                    <td className="px-6 py-4 text-zinc-500 font-mono text-xs">{user.email}</td>
+                                    <td className="px-6 py-4 text-violet-600 dark:text-violet-400 font-medium">{user.society}</td>
+                                    <td className="px-6 py-4 text-zinc-500">{user.joined}</td>
+                                    <td className="px-6 py-4 text-right">
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-[#172b4d] dark:hover:text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <MoreHorizontal className="h-4 w-4" />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end" className="w-44 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 shadow-xl rounded-xl">
+                                                <DropdownMenuItem className="flex items-center gap-2 text-zinc-700 dark:text-zinc-300 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-900 rounded-lg text-sm">
+                                                    <UserCog className="h-3.5 w-3.5" /> Edit Role
+                                                </DropdownMenuItem>
+                                                <DropdownMenuSeparator className="bg-zinc-100 dark:bg-zinc-800 my-1" />
+                                                <DropdownMenuItem
+                                                    onClick={() => removeUser(user.id)}
+                                                    className="flex items-center gap-2 text-rose-600 dark:text-rose-400 cursor-pointer hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg text-sm"
+                                                >
+                                                    <Trash2 className="h-3.5 w-3.5" /> Delete User
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
                                     </td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
+                    {filtered.length === 0 && (
+                        <div className="text-center py-16 text-zinc-400 dark:text-zinc-600">
+                            <Users className="h-10 w-10 mx-auto mb-3 opacity-40" />
+                            <p className="text-sm font-medium">No users found</p>
+                        </div>
+                    )}
                 </div>
             </div>
 

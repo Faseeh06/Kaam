@@ -1,16 +1,17 @@
 "use client";
 
-import { Check, X, Search, Filter, MoreHorizontal, UserCog, UserPlus, Copy } from "lucide-react";
+import { Check, X, Search, Filter, MoreHorizontal, UserCog, UserPlus, Copy, Trash2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 import { useMockData } from "@/app/context/MockDataContext";
 
 export default function AdminUsersPage() {
-    const { users, pendingUsers, approvePendingUser, rejectPendingUser } = useMockData();
+    const { users, pendingUsers, approvePendingUser, rejectPendingUser, removeUser } = useMockData();
     const activeUsers = users.filter(u => u.status === 'Active');
     const [inviteCopied, setInviteCopied] = useState(false);
     const [codeCopied, setCodeCopied] = useState(false);
@@ -202,12 +203,25 @@ export default function AdminUsersPage() {
                                                 </Badge>
                                             </td>
                                             <td className="px-6 py-4 text-right">
-                                                <Button size="icon" variant="ghost" className="h-8 w-8 text-zinc-400 dark:text-zinc-500 hover:text-[#172b4d] dark:hover:text-white">
-                                                    <UserCog className="h-4 w-4" />
-                                                </Button>
-                                                <Button size="icon" variant="ghost" className="h-8 w-8 text-zinc-400 dark:text-zinc-500 hover:text-[#172b4d] dark:hover:text-white">
-                                                    <MoreHorizontal className="h-4 w-4" />
-                                                </Button>
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button size="icon" variant="ghost" className="h-8 w-8 text-zinc-400 dark:text-zinc-500 hover:text-[#172b4d] dark:hover:text-white">
+                                                            <MoreHorizontal className="h-4 w-4" />
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end" className="w-44 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 shadow-xl rounded-xl">
+                                                        <DropdownMenuItem className="flex items-center gap-2 text-zinc-700 dark:text-zinc-300 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-900 rounded-lg text-sm">
+                                                            <UserCog className="h-3.5 w-3.5" /> Edit Role
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuSeparator className="bg-zinc-100 dark:bg-zinc-800 my-1" />
+                                                        <DropdownMenuItem
+                                                            onClick={() => removeUser(user.id)}
+                                                            className="flex items-center gap-2 text-rose-600 dark:text-rose-400 cursor-pointer hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg text-sm"
+                                                        >
+                                                            <Trash2 className="h-3.5 w-3.5" /> Delete User
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
                                             </td>
                                         </tr>
                                     ))}

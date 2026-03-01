@@ -1,15 +1,24 @@
 "use client";
 
-import { Check, X, Search, Filter, MoreHorizontal, UserCog } from "lucide-react";
+import { Check, X, Search, Filter, MoreHorizontal, UserCog, UserPlus, Copy } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useState } from "react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 import { useMockData } from "@/app/context/MockDataContext";
 
 export default function AdminUsersPage() {
     const { users, pendingUsers, approvePendingUser, rejectPendingUser } = useMockData();
     const activeUsers = users.filter(u => u.status === 'Active');
+    const [inviteCopied, setInviteCopied] = useState(false);
+
+    const handleCopyInvite = () => {
+        navigator.clipboard.writeText("https://kaam.app/invite/ref=emt2026");
+        setInviteCopied(true);
+        setTimeout(() => setInviteCopied(false), 2000);
+    };
 
     return (
         <div className="h-full flex flex-col pt-4 px-4 md:px-8 pb-8 overflow-y-auto custom-scrollbar">
@@ -30,9 +39,36 @@ export default function AdminUsersPage() {
                             className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg pl-9 pr-4 py-2 text-sm text-[#172b4d] dark:text-white outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition w-full md:w-64"
                         />
                     </div>
-                    <Button variant="outline" size="icon" className="border-zinc-200 dark:border-zinc-800 text-zinc-500 hover:text-[#172b4d] dark:hover:text-white">
+                    <Button variant="outline" size="icon" className="border-zinc-200 dark:border-zinc-800 text-zinc-500 hover:text-[#172b4d] dark:hover:text-white shrink-0">
                         <Filter className="h-4 w-4" />
                     </Button>
+                    <Dialog>
+                        <DialogTrigger asChild>
+                            <Button className="bg-rose-500 text-white hover:bg-rose-600 shadow-sm shrink-0">
+                                <UserPlus className="h-4 w-4 mr-2 hidden sm:flex" /> Invite
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-md border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
+                            <DialogHeader>
+                                <DialogTitle className="text-[#172b4d] dark:text-white">Invite New Member</DialogTitle>
+                                <DialogDescription className="text-zinc-500 dark:text-zinc-400">
+                                    Share this unique sign-up link. Once they register, they will appear in your pending approvals.
+                                </DialogDescription>
+                            </DialogHeader>
+                            <div className="flex items-center space-x-2 mt-4">
+                                <div className="grid flex-1 gap-2">
+                                    <input
+                                        readOnly
+                                        value="https://kaam.app/invite/ref=emt2026"
+                                        className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-zinc-500 dark:text-zinc-400 outline-none"
+                                    />
+                                </div>
+                                <Button size="sm" onClick={handleCopyInvite} className="px-3 bg-[#172b4d] dark:bg-white text-white dark:text-black">
+                                    {inviteCopied ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
+                                </Button>
+                            </div>
+                        </DialogContent>
+                    </Dialog>
                 </div>
             </header>
 

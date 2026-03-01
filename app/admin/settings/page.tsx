@@ -31,7 +31,7 @@ export default function AdminSettingsPage() {
                 </div>
 
                 {/* Right Column - Content */}
-                <div className="md:col-span-3 space-y-6">
+                <div className="md:col-span-3 lg:col-span-4 space-y-6">
 
                     {/* Security & Approvals Component */}
                     <Card className="bg-white dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800/60 shadow-sm overflow-hidden rounded-2xl">

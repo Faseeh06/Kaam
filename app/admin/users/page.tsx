@@ -13,11 +13,18 @@ export default function AdminUsersPage() {
     const { users, pendingUsers, approvePendingUser, rejectPendingUser } = useMockData();
     const activeUsers = users.filter(u => u.status === 'Active');
     const [inviteCopied, setInviteCopied] = useState(false);
+    const [codeCopied, setCodeCopied] = useState(false);
 
     const handleCopyInvite = () => {
         navigator.clipboard.writeText("https://kaam.app/invite/ref=emt2026");
         setInviteCopied(true);
         setTimeout(() => setInviteCopied(false), 2000);
+    };
+
+    const handleCopyCode = () => {
+        navigator.clipboard.writeText("emt2026");
+        setCodeCopied(true);
+        setTimeout(() => setCodeCopied(false), 2000);
     };
 
     return (
@@ -55,17 +62,38 @@ export default function AdminUsersPage() {
                                     Share this unique sign-up link. Once they register, they will appear in your pending approvals.
                                 </DialogDescription>
                             </DialogHeader>
-                            <div className="flex items-center space-x-2 mt-4">
-                                <div className="grid flex-1 gap-2">
-                                    <input
-                                        readOnly
-                                        value="https://kaam.app/invite/ref=emt2026"
-                                        className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-zinc-500 dark:text-zinc-400 outline-none"
-                                    />
+                            <div className="flex flex-col space-y-4 mt-4">
+                                <div>
+                                    <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2 block">Invite Link</label>
+                                    <div className="flex items-center space-x-2">
+                                        <div className="grid flex-1 gap-2">
+                                            <input
+                                                readOnly
+                                                value="https://kaam.app/invite/ref=emt2026"
+                                                className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-zinc-500 dark:text-zinc-400 outline-none"
+                                            />
+                                        </div>
+                                        <Button size="sm" onClick={handleCopyInvite} className="px-3 bg-[#172b4d] dark:bg-white text-white dark:text-black">
+                                            {inviteCopied ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
+                                        </Button>
+                                    </div>
                                 </div>
-                                <Button size="sm" onClick={handleCopyInvite} className="px-3 bg-[#172b4d] dark:bg-white text-white dark:text-black">
-                                    {inviteCopied ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
-                                </Button>
+
+                                <div>
+                                    <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2 block">Referral Code Only</label>
+                                    <div className="flex items-center space-x-2">
+                                        <div className="grid flex-1 gap-2">
+                                            <input
+                                                readOnly
+                                                value="emt2026"
+                                                className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm font-mono text-zinc-800 dark:text-zinc-300 outline-none"
+                                            />
+                                        </div>
+                                        <Button size="sm" variant="outline" onClick={handleCopyCode} className="px-3 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-700 dark:text-zinc-300">
+                                            {codeCopied ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
+                                        </Button>
+                                    </div>
+                                </div>
                             </div>
                         </DialogContent>
                     </Dialog>

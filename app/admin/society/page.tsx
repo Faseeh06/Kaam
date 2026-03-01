@@ -40,7 +40,7 @@ export default function AdminSocietyPage() {
                 </div>
 
                 {/* Form Elements */}
-                <div className="md:col-span-2 space-y-6">
+                <div className="md:col-span-2 lg:col-span-3 space-y-6">
 
                     {/* General Settings */}
                     <Card className="bg-white dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800/60 rounded-2xl shadow-sm">

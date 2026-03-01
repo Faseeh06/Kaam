@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Shield, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 import {
     Card,
     CardContent,
@@ -23,24 +24,35 @@ export default function LoginPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
 
-    const handleLogin = (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
         setIsLoading(true);
 
-        // Simulate network request
-        setTimeout(() => {
-            if (email === "super@test.com" && password === "super123") {
-                router.push("/super");
-            } else if (email === "admin@test.com" && password === "admin123") {
-                router.push("/admin");
-            } else if (email === "user@test.com" && password === "user123") {
-                router.push("/dashboard");
+        const supabase = createClient();
+        const { error: authError } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+        });
+
+        if (authError) {
+            setError(authError.message);
+            setIsLoading(false);
+        } else {
+            // Fetch profile to check role
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('is_global_admin')
+                .single();
+
+            router.refresh();
+
+            if (profile?.is_global_admin) {
+                router.push("/super/societies");
             } else {
-                setError("Invalid email or password");
-                setIsLoading(false);
+                router.push("/dashboard");
             }
-        }, 1000);
+        }
     };
 
     return (

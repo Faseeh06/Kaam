@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Shield } from "lucide-react";
+import { Shield, Loader2 } from "lucide-react";
 import {
     Card,
     CardContent,
@@ -13,8 +13,49 @@ import {
     CardTitle,
     CardFooter,
 } from "@/components/ui/card";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { useState } from "react";
 
 export default function SignupPage() {
+    const router = useRouter();
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [fullName, setFullName] = useState("");
+    const [phone, setPhone] = useState("");
+    const [department, setDepartment] = useState("");
+    const [team, setTeam] = useState("");
+
+    const handleSignup = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError("");
+        setIsLoading(true);
+
+        const supabase = createClient();
+        const { error: authError } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+                data: {
+                    full_name: fullName,
+                    phone: phone,
+                    department: department,
+                    primary_team: team,
+                }
+            }
+        });
+
+        if (authError) {
+            setError(authError.message);
+            setIsLoading(false);
+        } else {
+            // Redirect to a confirmation page or login
+            router.push("/login?signup=success");
+        }
+    };
+
     return (
         <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-white dark:bg-zinc-950">
             {/* Background */}
@@ -41,67 +82,96 @@ export default function SignupPage() {
                             Enter your email below to create your account
                         </CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="name" className="text-zinc-800 dark:text-zinc-300">Full Name</Label>
-                            <Input
-                                id="name"
-                                type="text"
-                                placeholder="John Doe"
-                                className="bg-zinc-100 dark:bg-zinc-800/50 border-zinc-300 dark:border-zinc-700 text-[#172b4d] dark:text-white placeholder:text-zinc-500 focus-visible:ring-amber-500"
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="phone" className="text-zinc-800 dark:text-zinc-300">Phone Number</Label>
-                            <Input
-                                id="phone"
-                                type="tel"
-                                placeholder="+1 (555) 000-0000"
-                                className="bg-zinc-100 dark:bg-zinc-800/50 border-zinc-300 dark:border-zinc-700 text-[#172b4d] dark:text-white placeholder:text-zinc-500 focus-visible:ring-amber-500"
-                            />
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
+                    <form onSubmit={handleSignup}>
+                        <CardContent className="space-y-4">
+                            {error && (
+                                <div className="p-3 text-sm text-rose-500 bg-rose-500/10 border border-rose-500/20 rounded-md">
+                                    {error}
+                                </div>
+                            )}
                             <div className="space-y-2">
-                                <Label htmlFor="department" className="text-zinc-800 dark:text-zinc-300">Department</Label>
+                                <Label htmlFor="name" className="text-zinc-800 dark:text-zinc-300">Full Name</Label>
                                 <Input
-                                    id="department"
+                                    id="name"
                                     type="text"
-                                    placeholder="e.g. Media"
+                                    value={fullName}
+                                    onChange={(e) => setFullName(e.target.value)}
+                                    placeholder="John Doe"
                                     className="bg-zinc-100 dark:bg-zinc-800/50 border-zinc-300 dark:border-zinc-700 text-[#172b4d] dark:text-white placeholder:text-zinc-500 focus-visible:ring-amber-500"
+                                    required
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="team" className="text-zinc-800 dark:text-zinc-300">Society / Team</Label>
+                                <Label htmlFor="phone" className="text-zinc-800 dark:text-zinc-300">Phone Number</Label>
                                 <Input
-                                    id="team"
-                                    type="text"
-                                    placeholder="e.g. Debate Club"
+                                    id="phone"
+                                    type="tel"
+                                    value={phone}
+                                    onChange={(e) => setPhone(e.target.value)}
+                                    placeholder="+1 (555) 000-0000"
                                     className="bg-zinc-100 dark:bg-zinc-800/50 border-zinc-300 dark:border-zinc-700 text-[#172b4d] dark:text-white placeholder:text-zinc-500 focus-visible:ring-amber-500"
                                 />
                             </div>
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="email" className="text-zinc-800 dark:text-zinc-300">Email Address</Label>
-                            <Input
-                                id="email"
-                                type="email"
-                                placeholder="m@example.com"
-                                className="bg-zinc-100 dark:bg-zinc-800/50 border-zinc-300 dark:border-zinc-700 text-[#172b4d] dark:text-white placeholder:text-zinc-500 focus-visible:ring-amber-500"
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="password" className="text-zinc-800 dark:text-zinc-300">Password</Label>
-                            <Input
-                                id="password"
-                                type="password"
-                                placeholder="********"
-                                className="bg-zinc-100 dark:bg-zinc-800/50 border-zinc-300 dark:border-zinc-700 text-[#172b4d] dark:text-white placeholder:text-zinc-500 focus-visible:ring-amber-500"
-                            />
-                        </div>
-                        <Button className="w-full mt-4 bg-white text-zinc-900 hover:bg-zinc-200">
-                            Create account
-                        </Button>
-                    </CardContent>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="department" className="text-zinc-800 dark:text-zinc-300">Department</Label>
+                                    <Input
+                                        id="department"
+                                        type="text"
+                                        value={department}
+                                        onChange={(e) => setDepartment(e.target.value)}
+                                        placeholder="e.g. Media"
+                                        className="bg-zinc-100 dark:bg-zinc-800/50 border-zinc-300 dark:border-zinc-700 text-[#172b4d] dark:text-white placeholder:text-zinc-500 focus-visible:ring-amber-500"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="team" className="text-zinc-800 dark:text-zinc-300">Society / Team</Label>
+                                    <Input
+                                        id="team"
+                                        type="text"
+                                        value={team}
+                                        onChange={(e) => setTeam(e.target.value)}
+                                        placeholder="e.g. Debate Club"
+                                        className="bg-zinc-100 dark:bg-zinc-800/50 border-zinc-300 dark:border-zinc-700 text-[#172b4d] dark:text-white placeholder:text-zinc-500 focus-visible:ring-amber-500"
+                                    />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="email" className="text-zinc-800 dark:text-zinc-300">Email Address</Label>
+                                <Input
+                                    id="email"
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder="m@example.com"
+                                    className="bg-zinc-100 dark:bg-zinc-800/50 border-zinc-300 dark:border-zinc-700 text-[#172b4d] dark:text-white placeholder:text-zinc-500 focus-visible:ring-amber-500"
+                                    required
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="password" className="text-zinc-800 dark:text-zinc-300">Password</Label>
+                                <Input
+                                    id="password"
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    placeholder="********"
+                                    className="bg-zinc-100 dark:bg-zinc-800/50 border-zinc-300 dark:border-zinc-700 text-[#172b4d] dark:text-white placeholder:text-zinc-500 focus-visible:ring-amber-500"
+                                    required
+                                />
+                            </div>
+                            <Button type="submit" disabled={isLoading} className="w-full mt-4 bg-white text-zinc-900 hover:bg-zinc-200">
+                                {isLoading ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Creating Account...
+                                    </>
+                                ) : (
+                                    "Create Account"
+                                )}
+                            </Button>
+                        </CardContent>
+                    </form>
                     <CardFooter>
                         <p className="text-center text-sm text-zinc-500 dark:text-zinc-400 w-full mt-2">
                             Already have an account?{" "}

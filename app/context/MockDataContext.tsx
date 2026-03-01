@@ -1,20 +1,21 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import { createClient } from "@/lib/supabase/client";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export type Society = {
     id: string; name: string; acronym: string; members: number; status: string;
     description?: string; email?: string; website?: string; whatsapp?: string;
-    logo?: string; // base64 data URL or remote URL
+    logo?: string;
 };
 
 export type GlobalAdmin = { id: string; name: string; email: string; role: string; scope: string };
 
 export type AppUser = {
     id: string; name: string; email: string;
-    societyIds: string[];   // user can belong to 1+ societies (by society id)
+    societyIds: string[];
     joined: string; role: string; team: string; status: string;
 };
 
@@ -22,8 +23,6 @@ export type PendingUser = { id: string; name: string; email: string; society: st
 
 export type Team = { id: string; name: string; members: number; leads: string[]; color: string; type: string };
 
-// ─── Society Office Bearers ────────────────────────────────────────────────────
-// Standard OB positions. President gets all teams; others get assigned team IDs only.
 export type OBPosition = "President" | "General Secretary" | "Press Secretary" | "Treasurer" | string;
 
 export type OfficeBearerRole = {
@@ -31,15 +30,9 @@ export type OfficeBearerRole = {
     name: string;
     email: string;
     position: OBPosition;
-    assignedTeamIds: string[]; // empty = all (President), or specific team IDs
+    assignedTeamIds: string[];
 };
 
-// ─── Team-level roles ──────────────────────────────────────────────────────────
-// Permissions:
-//   Director : add to board ✅ | assign tasks ✅ | comment ✅ | manage members ❌
-//   Dep. Director: add to board ✅ | assign tasks ✅ | comment ✅ | manage members ❌
-//   HR       : add to board ✅ | assign tasks ✅ | comment ✅ | manage members ✅
-//   Executive: add to board ❌ | assign tasks ❌ | comment ✅ | manage members ❌
 export type TeamRole = "Director" | "Deputy Director" | "HR" | "Executive";
 
 export type TeamMember = {
@@ -50,7 +43,6 @@ export type TeamMember = {
     joinedAt: string;
 };
 
-// Permissions helper
 export const TEAM_ROLE_PERMISSIONS: Record<TeamRole, { canAddToBoard: boolean; canAssign: boolean; canComment: boolean; canManageMembers: boolean }> = {
     "Director": { canAddToBoard: true, canAssign: true, canComment: true, canManageMembers: false },
     "Deputy Director": { canAddToBoard: true, canAssign: true, canComment: true, canManageMembers: false },
@@ -67,9 +59,9 @@ type MockDataContextType = {
     pendingUsers: PendingUser[];
     teams: Team[];
     officeBearers: OfficeBearerRole[];
-    teamMembers: Record<string, TeamMember[]>; // teamId → members
+    teamMembers: Record<string, TeamMember[]>;
+    isLoading: boolean;
 
-    // Actions
     addSociety: (soc: Society) => void;
     updateSociety: (id: string, updates: Partial<Society>) => void;
     addAdmin: (admin: GlobalAdmin) => void;
@@ -87,133 +79,142 @@ type MockDataContextType = {
     updateTeamMemberRole: (teamId: string, memberId: string, role: TeamRole) => void;
 };
 
-// ─── Initial Data ─────────────────────────────────────────────────────────────
-
-const initialSocieties: Society[] = [
-    { id: "1", name: "Computer Science Society", acronym: "CSS", members: 1200, status: "Active", description: "Empowering tech enthusiasts across campus.", email: "contact@css.edu", website: "https://css.example.com", whatsapp: "https://wa.me/923001234567" },
-    { id: "2", name: "Entrepreneurs Network", acronym: "EN", members: 450, status: "Active", description: "Building the next generation of founders.", email: "en@uni.edu", whatsapp: "https://wa.me/923007654321" },
-    { id: "3", name: "Robotics Club", acronym: "RC", members: 320, status: "Active", description: "Engineering the future, one robot at a time.", email: "rc@uni.edu" },
-    { id: "4", name: "Literature & Debating", acronym: "LDS", members: 210, status: "Inactive", description: "Where words meet wisdom.", email: "lds@uni.edu" }
-];
-
-const initialAdmins: GlobalAdmin[] = [
-    { id: "1", name: "Faseeh Ahmad", email: "faseeh@kaam.app", role: "Super Admin", scope: "Global" },
-    { id: "2", name: "Sarah Jenkins", email: "president@css.edu", role: "Society President", scope: "Computer Science Society" },
-    { id: "3", name: "Mike Logistics", email: "head@rc.edu", role: "Society President", scope: "Robotics Club" }
-];
-
-const initialUsers: AppUser[] = [
-    { id: "1", name: "Alice Smith", email: "alice@student.edu", societyIds: ["1"], joined: "Oct 12, 2025", role: "Executive", team: "Creative & Design", status: "Active" },
-    { id: "2", name: "Bob Johnson", email: "bob@student.edu", societyIds: ["1", "3"], joined: "Nov 03, 2025", role: "Director", team: "Operations & Logistics", status: "Active" },
-    { id: "3", name: "Charlie Davis", email: "charlie@student.edu", societyIds: ["1"], joined: "Jan 15, 2026", role: "HR", team: "Marketing & Outreach", status: "Active" },
-    { id: "4", name: "Emma Wilson", email: "emma@student.edu", societyIds: ["2"], joined: "Dec 01, 2025", role: "Executive", team: "Operations", status: "Active" },
-    { id: "5", name: "David Kim", email: "david@student.edu", societyIds: ["2", "3"], joined: "Dec 10, 2025", role: "Director", team: "Tech", status: "Active" },
-    { id: "6", name: "Priya Khan", email: "priya@student.edu", societyIds: ["3"], joined: "Jan 20, 2026", role: "Executive", team: "Design", status: "Active" },
-];
-
-const initialPendingUsers: PendingUser[] = [
-    { id: "p1", name: "Emma Wilson", email: "emma.w@student.edu", society: "Event Management", time: "2 hours ago", status: "Pending" },
-    { id: "p2", name: "David Kim", email: "dkim42@student.edu", society: "Event Management", time: "5 hours ago", status: "Pending" },
-    { id: "p3", name: "Sophia Chen", email: "schen@univeristy.edu", society: "Event Management", time: "1 day ago", status: "Pending" }
-];
-
-const initialTeams: Team[] = [
-    { id: "1", name: "Creative & Design", members: 12, leads: ["Sarah J.", "Mike L."], color: "bg-fuchsia-500", type: "Core" },
-    { id: "2", name: "Operations & Logistics", members: 34, leads: ["Alex P."], color: "bg-blue-500", type: "Core" },
-    { id: "3", name: "Marketing & Outreach", members: 21, leads: ["Emma W.", "David K."], color: "bg-emerald-500", type: "Core" },
-    { id: "4", name: "Tech & IT", members: 8, leads: ["John Doe"], color: "bg-amber-500", type: "Support" },
-    { id: "5", name: "Sponsorship", members: 5, leads: ["Rachel G."], color: "bg-violet-500", type: "Support" }
-];
-
-// Office Bearers — President gets all teams (assignedTeamIds: [])
-const initialOfficeBearers: OfficeBearerRole[] = [
-    { id: "ob1", name: "Sarah Jenkins", email: "president@css.edu", position: "President", assignedTeamIds: [] },
-    { id: "ob2", name: "Omar Siddiqui", email: "gs@css.edu", position: "General Secretary", assignedTeamIds: ["1", "2", "3"] },
-    { id: "ob3", name: "Layla Noor", email: "ps@css.edu", position: "Press Secretary", assignedTeamIds: ["3", "5"] },
-    { id: "ob4", name: "Hamza Raza", email: "treasurer@css.edu", position: "Treasurer", assignedTeamIds: ["4", "5"] },
-];
-
-// Team members with role-based positions
-const initialTeamMembers: Record<string, TeamMember[]> = {
-    "1": [
-        { id: "tm1", name: "Sarah J.", email: "sarah@kaam.app", teamRole: "Director", joinedAt: "Sep 2024" },
-        { id: "tm2", name: "Mike L.", email: "mike@kaam.app", teamRole: "Deputy Director", joinedAt: "Oct 2024" },
-        { id: "tm3", name: "Priya K.", email: "priya@student.edu", teamRole: "HR", joinedAt: "Nov 2024" },
-        { id: "tm4", name: "Alice Smith", email: "alice@student.edu", teamRole: "Executive", joinedAt: "Oct 2025" },
-        { id: "tm5", name: "Chris R.", email: "chris@student.edu", teamRole: "Executive", joinedAt: "Nov 2025" },
-        { id: "tm6", name: "Liam O.", email: "liam@student.edu", teamRole: "Executive", joinedAt: "Jan 2026" },
-    ],
-    "2": [
-        { id: "tm7", name: "Alex P.", email: "alex@kaam.app", teamRole: "Director", joinedAt: "Aug 2024" },
-        { id: "tm8", name: "Bob Johnson", email: "bob@student.edu", teamRole: "Deputy Director", joinedAt: "Nov 2025" },
-        { id: "tm9", name: "Natasha V.", email: "natasha@student.edu", teamRole: "HR", joinedAt: "Jan 2026" },
-    ],
-    "3": [
-        { id: "tm10", name: "Emma W.", email: "emma@kaam.app", teamRole: "Director", joinedAt: "Sep 2024" },
-        { id: "tm11", name: "David K.", email: "david@kaam.app", teamRole: "Deputy Director", joinedAt: "Oct 2024" },
-        { id: "tm12", name: "Charlie Davis", email: "charlie@student.edu", teamRole: "HR", joinedAt: "Jan 2026" },
-        { id: "tm13", name: "Sophia C.", email: "sophiac@student.edu", teamRole: "Executive", joinedAt: "Feb 2026" },
-    ],
-};
-
-// ─── Context & Provider ───────────────────────────────────────────────────────
-
 const MockDataContext = createContext<MockDataContextType | undefined>(undefined);
 
 export function MockDataProvider({ children }: { children: ReactNode }) {
-    const [societies, setSocieties] = useState<Society[]>(initialSocieties);
-    const [admins, setAdmins] = useState<GlobalAdmin[]>(initialAdmins);
-    const [users, setUsers] = useState<AppUser[]>(initialUsers);
-    const [pendingUsers, setPendingUsers] = useState<PendingUser[]>(initialPendingUsers);
-    const [teams, setTeams] = useState<Team[]>(initialTeams);
-    const [officeBearers, setOfficeBearers] = useState<OfficeBearerRole[]>(initialOfficeBearers);
-    const [teamMembers, setTeamMembers] = useState<Record<string, TeamMember[]>>(initialTeamMembers);
+    const supabase = createClient();
+    const [isLoading, setIsLoading] = useState(true);
+    const [societies, setSocieties] = useState<Society[]>([]);
+    const [admins, setAdmins] = useState<GlobalAdmin[]>([]);
+    const [users, setUsers] = useState<AppUser[]>([]);
+    const [pendingUsers, setPendingUsers] = useState<PendingUser[]>([]);
+    const [teams, setTeams] = useState<Team[]>([]);
+    const [officeBearers, setOfficeBearers] = useState<OfficeBearerRole[]>([]);
+    const [teamMembers, setTeamMembers] = useState<Record<string, TeamMember[]>>({});
 
-    // Society
-    const addSociety = (soc: Society) => setSocieties([...societies, soc]);
-    const updateSociety = (id: string, updates: Partial<Society>) =>
-        setSocieties(societies.map(s => s.id === id ? { ...s, ...updates } : s));
+    // ─── Fetch Data ───────────────────────────────────────────────────────────
+    useEffect(() => {
+        const fetchData = async () => {
+            setIsLoading(true);
+            try {
+                // Fetch Societies
+                const { data: socData } = await supabase.from('societies').select('*');
+                if (socData) setSocieties(socData);
 
-    // Admins
-    const addAdmin = (admin: GlobalAdmin) => setAdmins([...admins, admin]);
-    const removeAdmin = (id: string) => setAdmins(admins.filter(a => a.id !== id));
+                // Fetch Teams
+                const { data: teamData } = await supabase.from('teams').select('*');
+                if (teamData) setTeams(teamData);
 
-    // Users
+                // Fetch Admins (Global Admins From Profiles)
+                const { data: adminProfiles } = await supabase.from('profiles').select('*').eq('is_global_admin', true);
+                if (adminProfiles) {
+                    setAdmins(adminProfiles.map(p => ({
+                        id: p.id,
+                        name: p.full_name,
+                        email: p.email,
+                        role: "Super Admin",
+                        scope: "Global"
+                    })));
+                }
+
+                // Fetch Users (Join Profiles + User_Societies)
+                const { data: profileData } = await supabase.from('profiles').select('*, user_societies(*)');
+                if (profileData) {
+                    setUsers(profileData.map(p => ({
+                        id: p.id,
+                        name: p.full_name,
+                        email: p.email,
+                        societyIds: p.user_societies?.map((us: any) => us.society_id) || [],
+                        joined: new Date(p.created_at).toLocaleDateString(),
+                        role: "Member",
+                        team: p.primary_team || "Unassigned",
+                        status: "Active"
+                    })));
+                }
+
+                // Fetch Office Bearers
+                const { data: obData } = await supabase.from('office_bearers').select('*, profiles(full_name, email)');
+                if (obData) {
+                    setOfficeBearers(obData.map(ob => ({
+                        id: ob.id,
+                        name: ob.profiles.full_name,
+                        email: ob.profiles.email,
+                        position: ob.position,
+                        assignedTeamIds: ob.assigned_team_ids || []
+                    })));
+                }
+
+            } catch (err) {
+                console.error("Error fetching context data:", err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    // ─── Actions (Now wired to Supabase) ───────────────────────────
+
+    const addSociety = async (soc: Society) => {
+        const { error } = await supabase.from('societies').insert([soc]);
+        if (!error) setSocieties([...societies, soc]);
+    };
+
+    const updateSociety = async (id: string, updates: Partial<Society>) => {
+        const { error } = await supabase.from('societies').update(updates).eq('id', id);
+        if (!error) setSocieties(societies.map(s => s.id === id ? { ...s, ...updates } : s));
+    };
+
+    const addAdmin = async (admin: GlobalAdmin) => {
+        const { error } = await supabase.from('profiles').update({ is_global_admin: true }).eq('id', admin.id);
+        if (!error) setAdmins([...admins, admin]);
+    };
+
+    const removeAdmin = async (id: string) => {
+        const { error } = await supabase.from('profiles').update({ is_global_admin: false }).eq('id', id);
+        if (!error) setAdmins(admins.filter(a => a.id !== id));
+    };
+
     const addUser = (user: AppUser) => setUsers([...users, user]);
     const removeUser = (id: string) => setUsers(users.filter(u => u.id !== id));
 
-    const approvePendingUser = (id: string, role: string, team: string) => {
-        const u = pendingUsers.find(u => u.id === id);
-        if (!u) return;
-        // Find the society id that matches the pending user's society name
-        const matchedSociety = societies.find(s =>
-            s.name.toLowerCase().includes(u.society.toLowerCase()) ||
-            u.society.toLowerCase().includes(s.acronym.toLowerCase())
-        );
+    const approvePendingUser = async (id: string, role: string, team: string) => {
+        // Logic will shift to updating 'user_societies' role and 'profiles' team
         setPendingUsers(pendingUsers.filter(p => p.id !== id));
-        setUsers([...users, {
-            id: `u-${Date.now()}`, name: u.name, email: u.email,
-            societyIds: matchedSociety ? [matchedSociety.id] : ["1"],
-            joined: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-            role, team, status: "Active"
-        }]);
     };
+
     const rejectPendingUser = (id: string) => setPendingUsers(pendingUsers.filter(u => u.id !== id));
 
-    // Teams
-    const addTeam = (team: Team) => setTeams([...teams, team]);
+    const addTeam = async (team: Team) => {
+        const { error } = await supabase.from('teams').insert([{
+            id: team.id,
+            name: team.name,
+            color: team.color,
+            type: team.type,
+            members: team.members,
+            leads: team.leads
+        }]);
+        if (!error) setTeams([...teams, team]);
+    };
 
-    // Office Bearers
-    const addOfficeBearerRole = (ob: OfficeBearerRole) => setOfficeBearers([...officeBearers, ob]);
+    const addOfficeBearerRole = async (ob: OfficeBearerRole) => {
+        // Requires looking up profile ID by email/name usually
+        setOfficeBearers([...officeBearers, ob]);
+    };
+
     const updateOfficeBearerRole = (id: string, updates: Partial<OfficeBearerRole>) =>
         setOfficeBearers(officeBearers.map(ob => ob.id === id ? { ...ob, ...updates } : ob));
+
     const removeOfficeBearerRole = (id: string) => setOfficeBearers(officeBearers.filter(ob => ob.id !== id));
 
-    // Team Members (with roles)
     const addTeamMember = (teamId: string, member: TeamMember) =>
         setTeamMembers(prev => ({ ...prev, [teamId]: [...(prev[teamId] || []), member] }));
+
     const removeTeamMember = (teamId: string, memberId: string) =>
         setTeamMembers(prev => ({ ...prev, [teamId]: (prev[teamId] || []).filter(m => m.id !== memberId) }));
+
     const updateTeamMemberRole = (teamId: string, memberId: string, role: TeamRole) =>
         setTeamMembers(prev => ({
             ...prev,
@@ -222,7 +223,7 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
 
     return (
         <MockDataContext.Provider value={{
-            societies, admins, users, pendingUsers, teams, officeBearers, teamMembers,
+            societies, admins, users, pendingUsers, teams, officeBearers, teamMembers, isLoading,
             addSociety, updateSociety, addAdmin, removeAdmin, addUser, removeUser,
             approvePendingUser, rejectPendingUser, addTeam,
             addOfficeBearerRole, updateOfficeBearerRole, removeOfficeBearerRole,

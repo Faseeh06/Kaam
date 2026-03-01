@@ -72,6 +72,7 @@ type MockDataContextType = {
     addSociety: (soc: Society) => void;
     updateSociety: (id: string, updates: Partial<Society>) => void;
     addAdmin: (admin: GlobalAdmin) => void;
+    removeAdmin: (id: string) => void;
     addUser: (user: AppUser) => void;
     removeUser: (id: string) => void;
     approvePendingUser: (id: string, role: string, team: string) => void;
@@ -174,6 +175,7 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
 
     // Admins
     const addAdmin = (admin: GlobalAdmin) => setAdmins([...admins, admin]);
+    const removeAdmin = (id: string) => setAdmins(admins.filter(a => a.id !== id));
 
     // Users
     const addUser = (user: AppUser) => setUsers([...users, user]);
@@ -220,7 +222,7 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
     return (
         <MockDataContext.Provider value={{
             societies, admins, users, pendingUsers, teams, officeBearers, teamMembers,
-            addSociety, updateSociety, addAdmin, addUser, removeUser,
+            addSociety, updateSociety, addAdmin, removeAdmin, addUser, removeUser,
             approvePendingUser, rejectPendingUser, addTeam,
             addOfficeBearerRole, updateOfficeBearerRole, removeOfficeBearerRole,
             addTeamMember, removeTeamMember, updateTeamMemberRole,

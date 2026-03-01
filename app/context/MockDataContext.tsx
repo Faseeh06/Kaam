@@ -7,6 +7,7 @@ import React, { createContext, useContext, useState, ReactNode } from "react";
 export type Society = {
     id: string; name: string; acronym: string; members: number; status: string;
     description?: string; email?: string; website?: string; whatsapp?: string;
+    logo?: string; // base64 data URL or remote URL
 };
 
 export type GlobalAdmin = { id: string; name: string; email: string; role: string; scope: string };

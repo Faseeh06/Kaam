@@ -1,20 +1,20 @@
 "use client";
 
-import { Building2, Plus, Search, Users, LayoutGrid, TrendingUp, MoreVertical, Settings, X, MessageSquare, Mail, Globe, Link } from "lucide-react";
+import { Building2, Plus, Search, TrendingUp, MoreVertical, Settings, MessageSquare, Mail, Globe, Upload, X, ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useState, useRef, useCallback } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useMockData, Society } from "@/app/context/MockDataContext";
 
 const COLORS = [
-    { label: "Violet", value: "bg-violet-500", text: "text-violet-500", bg: "bg-violet-100 dark:bg-violet-500/20", textDark: "text-violet-700 dark:text-violet-300" },
-    { label: "Rose", value: "bg-rose-500", text: "text-rose-500", bg: "bg-rose-100 dark:bg-rose-500/20", textDark: "text-rose-700 dark:text-rose-300" },
-    { label: "Blue", value: "bg-blue-500", text: "text-blue-500", bg: "bg-blue-100 dark:bg-blue-500/20", textDark: "text-blue-700 dark:text-blue-300" },
-    { label: "Emerald", value: "bg-emerald-500", text: "text-emerald-500", bg: "bg-emerald-100 dark:bg-emerald-500/20", textDark: "text-emerald-700 dark:text-emerald-300" },
-    { label: "Amber", value: "bg-amber-500", text: "text-amber-500", bg: "bg-amber-100 dark:bg-amber-500/20", textDark: "text-amber-700 dark:text-amber-300" },
-    { label: "Fuchsia", value: "bg-fuchsia-500", text: "text-fuchsia-500", bg: "bg-fuchsia-100 dark:bg-fuchsia-500/20", textDark: "text-fuchsia-700 dark:text-fuchsia-300" },
+    { label: "Violet", value: "bg-violet-500", bg: "bg-violet-100 dark:bg-violet-500/20", textDark: "text-violet-700 dark:text-violet-300" },
+    { label: "Rose", value: "bg-rose-500", bg: "bg-rose-100 dark:bg-rose-500/20", textDark: "text-rose-700 dark:text-rose-300" },
+    { label: "Blue", value: "bg-blue-500", bg: "bg-blue-100 dark:bg-blue-500/20", textDark: "text-blue-700 dark:text-blue-300" },
+    { label: "Emerald", value: "bg-emerald-500", bg: "bg-emerald-100 dark:bg-emerald-500/20", textDark: "text-emerald-700 dark:text-emerald-300" },
+    { label: "Amber", value: "bg-amber-500", bg: "bg-amber-100 dark:bg-amber-500/20", textDark: "text-amber-700 dark:text-amber-300" },
+    { label: "Fuchsia", value: "bg-fuchsia-500", bg: "bg-fuchsia-100 dark:bg-fuchsia-500/20", textDark: "text-fuchsia-700 dark:text-fuchsia-300" },
 ];
 
 const SOCIETY_META: Record<string, { boards: number; tasks: number; activity: string; colorIdx: number }> = {
@@ -30,27 +30,98 @@ const getActivityColor = (level: string) => {
     return "text-zinc-600 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-800/50 border-zinc-200 dark:border-zinc-700";
 };
 
+// ─── Reusable Logo Upload Zone ─────────────────────────────────────────────────
+function LogoUpload({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+    const inputRef = useRef<HTMLInputElement>(null);
+    const [dragging, setDragging] = useState(false);
+
+    const processFile = (file: File) => {
+        if (!file.type.startsWith("image/")) return;
+        const reader = new FileReader();
+        reader.onload = e => onChange(e.target?.result as string);
+        reader.readAsDataURL(file);
+    };
+
+    const onDrop = useCallback((e: React.DragEvent) => {
+        e.preventDefault(); setDragging(false);
+        const file = e.dataTransfer.files[0];
+        if (file) processFile(file);
+    }, []);
+
+    return (
+        <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider flex items-center gap-1.5">
+                <ImageIcon className="h-3.5 w-3.5" /> Society Logo
+            </label>
+
+            {value ? (
+                <div className="flex items-center gap-4">
+                    <div className="h-16 w-16 rounded-xl border-2 border-zinc-200 dark:border-zinc-700 overflow-hidden bg-zinc-50 dark:bg-zinc-900 shrink-0">
+                        <img src={value} alt="Logo" className="h-full w-full object-contain p-1" />
+                    </div>
+                    <div className="flex-1 flex flex-col gap-2">
+                        <p className="text-xs text-zinc-500">Logo uploaded ✓</p>
+                        <div className="flex gap-2">
+                            <Button type="button" variant="outline" size="sm" onClick={() => inputRef.current?.click()}
+                                className="text-xs h-7 border-zinc-200 dark:border-zinc-800">
+                                <Upload className="h-3 w-3 mr-1" /> Replace
+                            </Button>
+                            <Button type="button" variant="outline" size="sm" onClick={() => onChange("")}
+                                className="text-xs h-7 border-rose-200 dark:border-rose-500/20 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10">
+                                <X className="h-3 w-3 mr-1" /> Remove
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            ) : (
+                <div
+                    onClick={() => inputRef.current?.click()}
+                    onDragOver={e => { e.preventDefault(); setDragging(true); }}
+                    onDragLeave={() => setDragging(false)}
+                    onDrop={onDrop}
+                    className={`relative flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-xl p-5 cursor-pointer transition
+                        ${dragging
+                            ? "border-violet-400 bg-violet-50 dark:bg-violet-500/10"
+                            : "border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-900/30 hover:border-violet-400 dark:hover:border-violet-500/50 hover:bg-violet-50/40 dark:hover:bg-violet-500/5"}`}>
+                    <div className="h-10 w-10 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center shadow-sm">
+                        <Upload className="h-5 w-5 text-zinc-400" />
+                    </div>
+                    <div className="text-center">
+                        <p className="text-xs font-medium text-zinc-600 dark:text-zinc-400">Drop logo here or <span className="text-violet-600 dark:text-violet-400 underline">browse</span></p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5">PNG, JPG, SVG — max 2 MB</p>
+                    </div>
+                </div>
+            )}
+            <input ref={inputRef} type="file" accept="image/*" className="hidden"
+                onChange={e => { const f = e.target.files?.[0]; if (f) processFile(f); }} />
+        </div>
+    );
+}
+
+// ─── Main Page ────────────────────────────────────────────────────────────────
 export default function SuperSocietiesPage() {
     const { societies, addSociety, updateSociety } = useMockData();
     const [registerOpen, setRegisterOpen] = useState(false);
     const [editTarget, setEditTarget] = useState<Society | null>(null);
     const [search, setSearch] = useState("");
 
-    // Register form state
+    // Register form
     const [name, setName] = useState("");
     const [acronym, setAcronym] = useState("");
     const [president, setPresident] = useState("");
     const [email, setEmail] = useState("");
     const [color, setColor] = useState("bg-violet-500");
     const [type, setType] = useState("Academic");
+    const [logo, setLogo] = useState("");
 
-    // Edit form state (populated on open)
+    // Edit form
     const [editName, setEditName] = useState("");
     const [editDesc, setEditDesc] = useState("");
     const [editEmail, setEditEmail] = useState("");
     const [editWebsite, setEditWebsite] = useState("");
     const [editWhatsapp, setEditWhatsapp] = useState("");
     const [editStatus, setEditStatus] = useState("Active");
+    const [editLogo, setEditLogo] = useState("");
 
     const filtered = societies.filter(s =>
         s.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -59,8 +130,13 @@ export default function SuperSocietiesPage() {
 
     const handleSubmit = () => {
         if (!name.trim() || !acronym.trim()) return;
-        addSociety({ id: `soc-${Date.now()}`, name: name.trim(), acronym: acronym.trim().toUpperCase(), members: 1, status: "Active", email, description: "" });
-        setName(""); setAcronym(""); setPresident(""); setEmail(""); setColor("bg-violet-500"); setType("Academic");
+        addSociety({
+            id: `soc-${Date.now()}`, name: name.trim(),
+            acronym: acronym.trim().toUpperCase(), members: 1,
+            status: "Active", email, description: "", logo: logo || undefined,
+        });
+        setName(""); setAcronym(""); setPresident(""); setEmail("");
+        setColor("bg-violet-500"); setType("Academic"); setLogo("");
         setRegisterOpen(false);
     };
 
@@ -72,17 +148,15 @@ export default function SuperSocietiesPage() {
         setEditWebsite(soc.website || "");
         setEditWhatsapp(soc.whatsapp || "");
         setEditStatus(soc.status);
+        setEditLogo(soc.logo || "");
     };
 
     const handleSaveEdit = () => {
         if (!editTarget) return;
         updateSociety(editTarget.id, {
-            name: editName,
-            description: editDesc,
-            email: editEmail,
-            website: editWebsite,
-            whatsapp: editWhatsapp,
-            status: editStatus,
+            name: editName, description: editDesc, email: editEmail,
+            website: editWebsite, whatsapp: editWhatsapp,
+            status: editStatus, logo: editLogo || undefined,
         });
         setEditTarget(null);
     };
@@ -101,20 +175,25 @@ export default function SuperSocietiesPage() {
                         <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search societies..."
                             className="pl-9 pr-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500 w-48" />
                     </div>
+
+                    {/* ── Register Dialog ── */}
                     <Dialog open={registerOpen} onOpenChange={setRegisterOpen}>
                         <DialogTrigger asChild>
                             <Button className="bg-violet-600 text-white hover:bg-violet-700 shadow-sm shrink-0">
                                 <Plus className="h-4 w-4 mr-2" /> Register Organization
                             </Button>
                         </DialogTrigger>
-                        <DialogContent className="sm:max-w-lg bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800">
+                        <DialogContent className="sm:max-w-lg bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 max-h-[90vh] overflow-y-auto">
                             <DialogHeader>
                                 <DialogTitle className="text-[#172b4d] dark:text-white flex items-center gap-2">
                                     <Building2 className="h-5 w-5 text-violet-500" /> Register New Organization
                                 </DialogTitle>
-                                <DialogDescription className="text-zinc-500 dark:text-zinc-400">Fill in the details below to register a new society.</DialogDescription>
+                                <DialogDescription className="text-zinc-500 dark:text-zinc-400">Fill in the details to register a new society.</DialogDescription>
                             </DialogHeader>
                             <div className="space-y-4 mt-2">
+                                {/* Logo uploader */}
+                                <LogoUpload value={logo} onChange={setLogo} />
+
                                 <div className="grid grid-cols-2 gap-3">
                                     <div className="space-y-1.5 col-span-2">
                                         <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Full Name <span className="text-rose-500">*</span></label>
@@ -165,9 +244,9 @@ export default function SuperSocietiesPage() {
                 </div>
             </header>
 
-            {/* Edit Society Modal */}
+            {/* ── Edit Dialog ── */}
             <Dialog open={!!editTarget} onOpenChange={open => !open && setEditTarget(null)}>
-                <DialogContent className="sm:max-w-lg bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800">
+                <DialogContent className="sm:max-w-lg bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle className="text-[#172b4d] dark:text-white flex items-center gap-2">
                             <Settings className="h-5 w-5 text-violet-500" /> Edit Society Profile
@@ -176,8 +255,10 @@ export default function SuperSocietiesPage() {
                             Update the details for <strong className="text-[#172b4d] dark:text-white">{editTarget?.name}</strong>
                         </DialogDescription>
                     </DialogHeader>
-
                     <div className="space-y-4 mt-2">
+                        {/* Logo uploader */}
+                        <LogoUpload value={editLogo} onChange={setEditLogo} />
+
                         <div className="space-y-1.5">
                             <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Society Name</label>
                             <input value={editName} onChange={e => setEditName(e.target.value)}
@@ -190,7 +271,7 @@ export default function SuperSocietiesPage() {
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                             <div className="space-y-1.5">
-                                <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider flex items-center gap-1"><Mail className="h-3 w-3" /> Contact Email</label>
+                                <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider flex items-center gap-1"><Mail className="h-3 w-3" /> Email</label>
                                 <input type="email" value={editEmail} onChange={e => setEditEmail(e.target.value)} placeholder="contact@society.edu"
                                     className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500" />
                             </div>
@@ -200,10 +281,12 @@ export default function SuperSocietiesPage() {
                                     className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500" />
                             </div>
                             <div className="space-y-1.5 col-span-2">
-                                <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider flex items-center gap-1"><MessageSquare className="h-3 w-3 text-[#25D366]" /> WhatsApp Group Link</label>
+                                <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider flex items-center gap-1">
+                                    <MessageSquare className="h-3 w-3 text-[#25D366]" /> WhatsApp Group Link
+                                </label>
                                 <input value={editWhatsapp} onChange={e => setEditWhatsapp(e.target.value)} placeholder="https://chat.whatsapp.com/..."
                                     className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500" />
-                                <p className="text-[11px] text-zinc-400">This link will be used in the Chat page for members to join via WhatsApp.</p>
+                                <p className="text-[11px] text-zinc-400">Used on the Chat page for members to join via WhatsApp.</p>
                             </div>
                             <div className="space-y-1.5 col-span-2">
                                 <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Status</label>
@@ -225,7 +308,7 @@ export default function SuperSocietiesPage() {
                 </DialogContent>
             </Dialog>
 
-            {/* Rich Society Cards Grid */}
+            {/* ── Cards Grid ── */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {filtered.map((soc) => {
                     const meta = SOCIETY_META[soc.id] || { boards: 1, tasks: 0, activity: "Low", colorIdx: 1 };
@@ -237,7 +320,9 @@ export default function SuperSocietiesPage() {
                             <div className="p-6 flex flex-col flex-1">
                                 <div className="flex items-start justify-between mb-5">
                                     <div className="flex items-center gap-3">
-                                        <Avatar className={`h-12 w-12 border-2 border-white dark:border-zinc-950 shadow-sm`}>
+                                        {/* Logo or acronym fallback */}
+                                        <Avatar className="h-12 w-12 border-2 border-white dark:border-zinc-950 shadow-sm">
+                                            {soc.logo && <AvatarImage src={soc.logo} alt={soc.name} className="object-contain p-0.5" />}
                                             <AvatarFallback className={`${cm.bg} ${cm.textDark} font-bold text-sm`}>{soc.acronym}</AvatarFallback>
                                         </Avatar>
                                         <div>
@@ -273,18 +358,12 @@ export default function SuperSocietiesPage() {
                                 )}
 
                                 <div className="grid grid-cols-3 gap-3 mb-5">
-                                    <div className="bg-[#f4f5f7] dark:bg-zinc-950/50 rounded-xl p-3 text-center">
-                                        <p className="text-xl font-bold text-[#172b4d] dark:text-white">{soc.members.toLocaleString()}</p>
-                                        <p className="text-[10px] text-zinc-500 uppercase tracking-wider mt-0.5">Members</p>
-                                    </div>
-                                    <div className="bg-[#f4f5f7] dark:bg-zinc-950/50 rounded-xl p-3 text-center">
-                                        <p className="text-xl font-bold text-[#172b4d] dark:text-white">{meta.boards}</p>
-                                        <p className="text-[10px] text-zinc-500 uppercase tracking-wider mt-0.5">Boards</p>
-                                    </div>
-                                    <div className="bg-[#f4f5f7] dark:bg-zinc-950/50 rounded-xl p-3 text-center">
-                                        <p className="text-xl font-bold text-[#172b4d] dark:text-white">{meta.tasks}</p>
-                                        <p className="text-[10px] text-zinc-500 uppercase tracking-wider mt-0.5">Tasks</p>
-                                    </div>
+                                    {[{ label: "Members", val: soc.members.toLocaleString() }, { label: "Boards", val: meta.boards }, { label: "Tasks", val: meta.tasks }].map(s => (
+                                        <div key={s.label} className="bg-[#f4f5f7] dark:bg-zinc-950/50 rounded-xl p-3 text-center">
+                                            <p className="text-xl font-bold text-[#172b4d] dark:text-white">{s.val}</p>
+                                            <p className="text-[10px] text-zinc-500 uppercase tracking-wider mt-0.5">{s.label}</p>
+                                        </div>
+                                    ))}
                                 </div>
 
                                 <div className="flex items-center justify-between mt-auto pt-4 border-t border-zinc-100 dark:border-zinc-800/50">
@@ -303,6 +382,7 @@ export default function SuperSocietiesPage() {
                     );
                 })}
 
+                {/* Add new tile */}
                 <button onClick={() => setRegisterOpen(true)} className="bg-[#f4f5f7]/50 dark:bg-zinc-900/20 border-2 border-dashed border-zinc-300 dark:border-zinc-800 rounded-2xl p-6 hover:border-violet-400 dark:hover:border-violet-500/50 transition flex flex-col items-center justify-center gap-3 text-zinc-500 dark:text-zinc-400 hover:text-violet-600 dark:hover:text-violet-400 min-h-[220px] group">
                     <div className="h-12 w-12 rounded-full bg-white dark:bg-zinc-800 shadow-sm flex items-center justify-center group-hover:bg-violet-50 dark:group-hover:bg-violet-500/10 transition">
                         <Plus className="h-6 w-6" />

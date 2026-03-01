@@ -44,7 +44,8 @@ export default function JoinSocietyPage() {
                 .insert([{
                     user_id: user.id,
                     society_id: society.id,
-                    role: 'Member'
+                    role: 'Member',
+                    status: 'Pending'
                 }]);
 
             if (linkError) {

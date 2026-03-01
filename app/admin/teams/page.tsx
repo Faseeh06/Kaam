@@ -4,11 +4,12 @@ import { Users, Plus, Star, MoreVertical, LayoutGrid, Settings, ShieldAlert } fr
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
 import { useMockData } from "@/app/context/MockDataContext";
+import { createClient } from "@/lib/supabase/client";
+import { Loader2 } from "lucide-react";
 
 const COLORS = [
     { label: "Rose", value: "bg-rose-500" },
@@ -21,9 +22,35 @@ const COLORS = [
 
 export default function AdminTeamsPage() {
     const { teams, addTeam } = useMockData();
+    const [managedSocietyId, setManagedSocietyId] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
     const [selectedTeam, setSelectedTeam] = useState<any>(null);
     const [isManageModalOpen, setIsManageModalOpen] = useState(false);
     const [isCreateOpen, setIsCreateOpen] = useState(false);
+
+    useEffect(() => {
+        const getManagedSociety = async () => {
+            const supabase = createClient();
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('user_societies(society_id, role)')
+                    .eq('id', user.id)
+                    .single();
+
+                if (profile) {
+                    const managementRoles = ['Admin', 'Director', 'Deputy Director', 'HR'];
+                    const managed = (profile.user_societies as any[])?.find(us => managementRoles.includes(us.role));
+                    setManagedSocietyId(managed?.society_id);
+                }
+            }
+            setIsLoading(false);
+        };
+        getManagedSociety();
+    }, []);
+
+    const societyTeams = teams.filter(t => managedSocietyId && (t as any).society_id === managedSocietyId);
 
     // Create team form state
     const [newName, setNewName] = useState("");
@@ -46,20 +73,37 @@ export default function AdminTeamsPage() {
 
     const removeLead = (lead: string) => setNewLeads(newLeads.filter(l => l !== lead));
 
-    const handleCreateTeam = () => {
-        if (!newName.trim()) return;
-        addTeam({
+    const handleCreateTeam = async () => {
+        if (!newName.trim() || !managedSocietyId) return;
+        await addTeam({
             id: `team-${Date.now()}`,
             name: newName.trim(),
             members: newLeads.length || 1,
             leads: newLeads.length > 0 ? newLeads : ["Unassigned"],
             color: newColor,
             type: newType,
+            society_id: managedSocietyId
         });
         // reset
         setNewName(""); setNewType("Core"); setNewColor("bg-rose-500"); setNewLeads([]); setNewLeadInput("");
         setIsCreateOpen(false);
     };
+
+    if (isLoading) {
+        return (
+            <div className="h-full flex items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-rose-500" />
+            </div>
+        );
+    }
+
+    if (!managedSocietyId) {
+        return (
+            <div className="h-full flex items-center justify-center text-zinc-500">
+                Managed society not found.
+            </div>
+        );
+    }
 
     return (
         <div className="h-full flex flex-col pt-4 px-4 md:px-8 pb-8 overflow-y-auto custom-scrollbar">
@@ -164,7 +208,7 @@ export default function AdminTeamsPage() {
             </header>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full">
-                {teams.map((team) => (
+                {societyTeams.map((team) => (
                     <div key={team.id} className="bg-white dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800/60 rounded-2xl p-6 shadow-sm hover:shadow-md transition group overflow-hidden relative">
                         {/* Decorative Top Banner */}
                         <div className={`absolute top-0 left-0 right-0 h-1.5 ${team.color} opacity-80`} />

@@ -19,12 +19,17 @@ import {
     Users,
     Circle,
     Activity,
-    CreditCard
+    CreditCard,
+    LayoutGrid
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useState, useRef, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
+import { useMockData } from "@/app/context/MockDataContext";
+import { createClient } from "@/lib/supabase/client";
+import { Loader2 } from "lucide-react";
+import Link from "next/link";
 
 type CardProps = {
     id: string;
@@ -45,70 +50,69 @@ type ListProps = {
     cards: CardProps[];
 };
 
-const initialLists: ListProps[] = [
-    {
-        id: "list-1",
-        title: "To Do",
-        cards: [
-            {
-                id: "c-1",
-                title: "V2 (milestone 2) - feedback from client 2/22/2026",
-                description: "1. Exhibitor needs to see and download data scanned from QR badges\n2. Please add addresses to the web and rego forms.\n\nAustralia – May / June\n• Tuesday 19 May — Hordern Pavilion, Gate C/3 Driver Ave, Moore Park NSW\n• Thursday 21 May — Brisbane Showgrounds Exhibition Building\n• Tuesday 26 May — Melbourne Showgrounds Victoria Pavilion",
-                hasDescription: true,
-                activity: [
-                    { user: "HawkgeekDev", action: "added this card to To Do", time: "Feb 22, 2026, 10:57 PM", avatar: "HD" }
-                ]
-            }
-        ]
-    },
-    {
-        id: "list-2",
-        title: "In Progress - Dev",
-        cards: []
-    },
-    {
-        id: "list-3",
-        title: "Review",
-        cards: [
-            {
-                id: "c-2",
-                title: "client feedback for signup",
-                hasDescription: false,
-            },
-            {
-                id: "c-3",
-                title: "Add QR code on registration detail modal",
-                hasDescription: true,
-                attachments: 1,
-                imageCover: "/images/solution-detect.png"
-            }
-        ]
-    },
-    {
-        id: "list-4",
-        title: "Done",
-        cards: [
-            {
-                id: "c-5",
-                title: "Login: Replace Welcome Back with: Meetings Website",
-                isCompleted: true,
-            },
-            {
-                id: "c-6",
-                title: "Admin Panel Modifications for Exhibitors",
-                isCompleted: true,
-            }
-        ]
-    }
-];
+
 
 export default function BoardPage() {
-    const [lists, setLists] = useState<ListProps[]>(initialLists);
+    const {
+        teams, boardLists, boardCards,
+        addBoardList, addBoardCard, updateCardStatus, moveCard
+    } = useMockData();
+
+    const [managedSocietyId, setManagedSocietyId] = useState<string | null>(null);
+    const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
         setMounted(true);
+        const getManagedSociety = async () => {
+            const supabase = createClient();
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('user_societies(society_id, role)')
+                    .eq('id', user.id)
+                    .single();
+
+                if (profile) {
+                    const managementRoles = ['Admin', 'Director', 'Deputy Director', 'HR'];
+                    const managed = (profile.user_societies as any[])?.find(us => managementRoles.includes(us.role));
+                    setManagedSocietyId(managed?.society_id);
+                }
+            }
+            setIsLoading(false);
+        };
+        getManagedSociety();
     }, []);
+
+    const societyTeams = teams.filter(t => managedSocietyId && (t as any).society_id === managedSocietyId);
+
+    // Default to first team if none selected
+    useEffect(() => {
+        if (societyTeams.length > 0 && !selectedTeamId) {
+            setSelectedTeamId(societyTeams[0].id);
+        }
+    }, [societyTeams, selectedTeamId]);
+
+    const activeTeam = societyTeams.find(t => t.id === selectedTeamId);
+
+    // Map DB lists/cards to the UI format
+    const displayLists: ListProps[] = boardLists
+        .filter(l => l.team_id === selectedTeamId)
+        .map(l => ({
+            id: l.id,
+            title: l.title,
+            cards: boardCards
+                .filter(c => c.list_id === l.id)
+                .map(c => ({
+                    id: c.id,
+                    title: c.title,
+                    description: c.description,
+                    isCompleted: c.is_completed,
+                    hasDescription: !!c.description,
+                }))
+        }));
 
     // List addition state
     const [isAddingList, setIsAddingList] = useState(false);
@@ -126,90 +130,78 @@ export default function BoardPage() {
     const [selectedCard, setSelectedCard] = useState<{ card: CardProps; listTitle: string } | null>(null);
 
     // Handlers
-    const handleAddList = () => {
-        if (!newListTitle.trim()) {
+    const handleAddList = async () => {
+        if (!newListTitle.trim() || !selectedTeamId) {
             setIsAddingList(false);
             return;
         }
-        setLists([...lists, { id: `list-${Date.now()}`, title: newListTitle, cards: [] }]);
+        await addBoardList(selectedTeamId, newListTitle);
         setNewListTitle("");
         setIsAddingList(false);
     };
 
-    const handleAddCard = (listId: string) => {
+    const handleAddCard = async (listId: string) => {
         if (!newCardTitle.trim()) {
             setAddingCardToList(null);
             return;
         }
-        setLists(lists.map(list => {
-            if (list.id === listId) {
-                return {
-                    ...list,
-                    cards: [...list.cards, {
-                        id: `c-${Date.now()}`,
-                        title: newCardTitle,
-                        activity: [{ user: "John Doe", action: `added this card to ${list.title}`, time: "Just now", avatar: "JD" }]
-                    }]
-                };
-            }
-            return list;
-        }));
+        await addBoardCard(listId, newCardTitle);
         setNewCardTitle("");
         setAddingCardToList(null);
     };
 
     const handleRenameList = (listId: string) => {
-        if (!editListTitle.trim()) {
-            setEditingListId(null);
-            return;
-        }
-        setLists(lists.map(list => {
-            if (list.id === listId) return { ...list, title: editListTitle };
-            return list;
-        }));
+        // Option to implement server-side rename
         setEditingListId(null);
     };
 
-    const onDragEnd = (result: DropResult) => {
-        const { destination, source } = result;
+    const onDragEnd = async (result: DropResult) => {
+        const { destination, source, draggableId } = result;
 
         if (!destination) return;
         if (destination.droppableId === source.droppableId && destination.index === source.index) return;
 
-        const sourceListIdx = lists.findIndex(l => l.id === source.droppableId);
-        const destListIdx = lists.findIndex(l => l.id === destination.droppableId);
-
-        if (sourceListIdx === -1 || destListIdx === -1) return;
-
-        const sourceList = lists[sourceListIdx];
-        const destList = lists[destListIdx];
-
-        const sourceCards = Array.from(sourceList.cards);
-        const destCards = source.droppableId === destination.droppableId ? sourceCards : Array.from(destList.cards);
-
-        // Remove from source
-        const [movedCard] = sourceCards.splice(source.index, 1);
-
-        // Insert into destination
-        destCards.splice(destination.index, 0, movedCard);
-
-        const newLists = [...lists];
-        newLists[sourceListIdx] = { ...sourceList, cards: sourceCards };
+        // In a real DnD, we update the DB. Position handling is complex, but for now we'll just move it to the new list.
         if (source.droppableId !== destination.droppableId) {
-            newLists[destListIdx] = { ...destList, cards: destCards };
+            await moveCard(draggableId, destination.droppableId);
         }
-
-        setLists(newLists);
     };
 
-    if (!mounted) return null; // Avoid Hydration Mismatch for DnD
+    if (isLoading || !mounted) {
+        return (
+            <div className="h-full flex items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-rose-500" />
+            </div>
+        );
+    }
+
+    if (societyTeams.length === 0) {
+        return (
+            <div className="h-full flex flex-col items-center justify-center p-6 text-center">
+                <div className="w-20 h-20 bg-rose-50 dark:bg-rose-500/10 rounded-3xl flex items-center justify-center mb-6 shadow-sm border border-rose-100 dark:border-rose-500/20">
+                    <LayoutGrid className="h-10 w-10 text-rose-500" />
+                </div>
+                <h2 className="text-2xl font-semibold text-[#172b4d] dark:text-white mb-2">No Teams Found</h2>
+                <p className="text-zinc-500 dark:text-zinc-400 max-w-sm mb-8 leading-relaxed">
+                    You need to create at least one team for your society before you can access the Kanban board.
+                </p>
+                <Link href="/admin/teams">
+                    <Button className="bg-rose-500 text-white hover:bg-rose-600 px-8 h-11 rounded-xl shadow-lg shadow-rose-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]">
+                        <Plus className="h-4 w-4 mr-2" /> Make a Team
+                    </Button>
+                </Link>
+            </div>
+        );
+    }
 
     return (
         <div className="h-full flex flex-col overflow-hidden relative selection:bg-rose-500/30">
 
             {/* Top Navigation - Board Specific */}
             <nav className="flex items-center justify-between px-6 py-4 shrink-0 bg-transparent">
-                <h1 className="font-medium text-lg text-[#172b4d] dark:text-white">Global Admin Overview Board</h1>
+                <h1 className="font-medium text-lg text-[#172b4d] dark:text-white">
+                    {activeTeam ? `${activeTeam.name} Department Board` : "Select a Team"}
+                </h1>
                 <div className="flex items-center gap-2 sm:gap-4">
                     <Button variant="ghost" size="icon" className="text-zinc-500 dark:text-zinc-400 hover:text-[#172b4d] dark:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-800 dark:bg-zinc-800">
                         <Search className="h-5 w-5" />
@@ -222,7 +214,7 @@ export default function BoardPage() {
                 <DragDropContext onDragEnd={onDragEnd}>
                     <div className="flex h-full items-start gap-4 p-6 w-max">
 
-                        {lists.map((list) => (
+                        {displayLists.map((list) => (
                             <div key={list.id} className="w-[300px] sm:w-[320px] shrink-0 flex flex-col max-h-full bg-[#ebecf0] dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800/80 rounded-xl">
                                 {/* List Header */}
                                 <div className="px-4 py-3 pb-2 flex justify-between items-center text-[#172b4d] dark:text-zinc-100 shrink-0 group">
@@ -403,24 +395,20 @@ export default function BoardPage() {
                 </DragDropContext>
             </main>
 
-            {/* Floating Bottom Navigation - Teams */}
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center p-1.5 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl backdrop-blur-xl shrink-0 z-[40] overflow-x-auto max-w-[90vw]">
-                <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-500 border border-rose-500/20 transition text-sm font-medium whitespace-nowrap">
-                    <span className="h-2 w-2 rounded-full bg-fuchsia-500 shrink-0"></span>
-                    <span>Creative</span>
-                </button>
-                <button className="flex items-center gap-2 px-4 py-2 rounded-full text-zinc-500 dark:text-zinc-400 hover:text-[#172b4d] dark:text-zinc-100 hover:bg-zinc-200/50 dark:hover:bg-zinc-800 transition text-sm font-medium whitespace-nowrap">
-                    <span className="h-2 w-2 rounded-full bg-blue-500 shrink-0 opacity-70"></span>
-                    <span className="hidden sm:inline">Operations</span>
-                </button>
-                <button className="flex items-center gap-2 px-4 py-2 rounded-full text-zinc-500 dark:text-zinc-400 hover:text-[#172b4d] dark:text-zinc-100 hover:bg-zinc-200/50 dark:hover:bg-zinc-800 transition text-sm font-medium whitespace-nowrap">
-                    <span className="h-2 w-2 rounded-full bg-emerald-500 shrink-0 opacity-70"></span>
-                    <span className="hidden sm:inline">Marketing</span>
-                </button>
-                <button className="flex items-center gap-2 px-4 py-2 rounded-full text-zinc-500 dark:text-zinc-400 hover:text-[#172b4d] dark:text-zinc-100 hover:bg-zinc-200/50 dark:hover:bg-zinc-800 transition text-sm font-medium whitespace-nowrap">
-                    <span className="h-2 w-2 rounded-full bg-amber-500 shrink-0 opacity-70"></span>
-                    <span className="hidden sm:inline">Tech</span>
-                </button>
+            {/* Floating Bottom Navigation - Real Teams */}
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center p-1.5 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl backdrop-blur-xl shrink-0 z-[40] overflow-x-auto max-w-[90vw] gap-1">
+                {societyTeams.map((team) => (
+                    <button
+                        key={team.id}
+                        onClick={() => setSelectedTeamId(team.id)}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-full transition text-sm font-medium whitespace-nowrap ${selectedTeamId === team.id
+                            ? "bg-rose-500/10 text-rose-600 dark:text-rose-500 border border-rose-500/20"
+                            : "text-zinc-500 dark:text-zinc-400 hover:text-[#172b4d] dark:text-zinc-100 hover:bg-zinc-200/50 dark:hover:bg-zinc-800 border border-transparent"}`}
+                    >
+                        <span className={`h-2 w-2 rounded-full shrink-0 ${team.color || 'bg-rose-500'}`}></span>
+                        <span>{team.name}</span>
+                    </button>
+                ))}
             </div>
 
             {/* Detailed Card Modal */}

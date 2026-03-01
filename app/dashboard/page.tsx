@@ -1,9 +1,57 @@
 "use client";
 
-import { Bell, CheckCircle2, Clock, Activity, ArrowUpRight, Plus, Calendar, Shield, Menu, Flag } from "lucide-react";
+import { Bell, CheckCircle2, Clock, Activity, ArrowUpRight, Plus, Calendar, Shield, Users2, Flag, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { useMockData } from "@/app/context/MockDataContext";
+import Link from "next/link";
 
 export default function DashboardPage() {
+    const { boardCards, boardLists, teams } = useMockData();
+    const [userData, setUserData] = useState<{ id: string; name: string } | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            const supabase = createClient();
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('id, full_name')
+                    .eq('id', user.id)
+                    .single();
+
+                if (profile) {
+                    setUserData({ id: profile.id, name: profile.full_name });
+                }
+            }
+            setIsLoading(false);
+        };
+        fetchUser();
+    }, []);
+
+    // Filter tasks assigned to this user
+    const myTasks = boardCards.filter(c => c.assigned_to === userData?.id);
+
+    // KPIs calculations
+    const inProgressCount = myTasks.filter(t => !t.is_completed).length;
+
+    const urgentTasks = myTasks.filter(t => {
+        if (!t.deadline || t.is_completed) return false;
+        const diff = Math.ceil((new Date(t.deadline).getTime() - Date.now()) / 86400000);
+        return diff >= 0 && diff <= 3;
+    });
+
+    if (isLoading) {
+        return (
+            <div className="h-full flex items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-amber-500" />
+            </div>
+        );
+    }
+
     return (
         <div className="h-full flex flex-col pt-0 md:pt-4 px-4 md:px-8 pb-8 overflow-y-auto custom-scrollbar">
 
@@ -15,83 +63,144 @@ export default function DashboardPage() {
                 </div>
                 <div className="hidden md:block"></div>
                 <div className="flex items-center gap-4">
-                    <Button variant="outline" className="hidden sm:flex items-center gap-2 border-dashed border-zinc-300 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 hover:text-[#172b4d] dark:text-white bg-transparent hover:bg-[#ebecf0] dark:bg-zinc-900/50">
-                        <Plus className="h-4 w-4" /> Create Task
-                    </Button>
+                    <Link href="/dashboard/board">
+                        <Button variant="outline" className="hidden sm:flex items-center gap-2 border-dashed border-zinc-300 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 hover:text-[#172b4d] dark:text-white bg-transparent hover:bg-[#ebecf0] dark:bg-zinc-900/50">
+                            <Plus className="h-4 w-4" /> View Board
+                        </Button>
+                    </Link>
                     <Button variant="ghost" size="icon" className="text-zinc-500 dark:text-zinc-400 hover:text-[#172b4d] dark:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-800 dark:bg-zinc-800 rounded-full">
                         <Bell className="h-5 w-5" />
-                    </Button>
-                    <Button variant="ghost" size="icon" className="md:hidden text-zinc-500 dark:text-zinc-400 hover:text-[#172b4d] dark:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-800 dark:bg-zinc-800 rounded-full">
-                        <Menu className="h-5 w-5" />
                     </Button>
                 </div>
             </header>
 
             <div className="max-w-4xl mx-auto w-full space-y-12">
                 <header>
-                    <h1 className="text-3xl sm:text-4xl font-light tracking-tight text-[#172b4d] dark:text-white mb-2">Good morning, Alice.</h1>
+                    <h1 className="text-3xl sm:text-4xl font-light tracking-tight text-[#172b4d] dark:text-white mb-2">Welcome back, {userData?.name?.split(' ')[0] || "Member"}.</h1>
                     <p className="text-zinc-500 dark:text-zinc-400 text-base sm:text-lg">
-                        You have <span className="text-amber-600 dark:text-amber-500 font-medium">2 tasks assigned</span> to you and 2 approaching deadlines.
+                        You have <span className="text-amber-600 dark:text-amber-500 font-medium">{inProgressCount} tasks assigned</span> to you {urgentTasks.length > 0 && <>and <span className="text-rose-500 font-medium">{urgentTasks.length} approaching deadlines</span></>}.
                     </p>
                 </header>
 
                 {/* KPIs */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
-                    {[
-                        { icon: <CheckCircle2 className="h-5 w-5 text-amber-600 dark:text-amber-500" />, bg: "bg-amber-500/10", val: "12", label: "Tasks in Progress" },
-                        { icon: <Clock className="h-5 w-5 text-rose-500" />, bg: "bg-rose-500/10", val: "2", label: "Urgent Deadlines" },
-                        { icon: <Activity className="h-5 w-5 text-emerald-500" />, bg: "bg-emerald-500/10", val: "85%", label: "Average Attendance" },
-                    ].map(k => (
-                        <div key={k.label} className="p-6 rounded-2xl bg-white dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800/60 flex flex-col justify-between h-40 hover:bg-white dark:bg-zinc-900/60 transition cursor-pointer group sm:last:col-span-2 md:last:col-span-1">
-                            <div className="flex justify-between items-start">
-                                <div className={`h-10 w-10 rounded-full ${k.bg} flex items-center justify-center`}>{k.icon}</div>
-                                <ArrowUpRight className="h-5 w-5 text-zinc-400 group-hover:text-zinc-500 transition" />
+                    <div className="p-6 rounded-2xl bg-white dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800/60 flex flex-col justify-between h-40 hover:bg-white dark:hover:bg-zinc-900/60 transition cursor-pointer group">
+                        <div className="flex justify-between items-start">
+                            <div className="h-10 w-10 rounded-full bg-amber-500/10 flex items-center justify-center">
+                                <CheckCircle2 className="h-5 w-5 text-amber-600 dark:text-amber-500" />
                             </div>
-                            <div>
-                                <div className="text-3xl font-light text-[#172b4d] dark:text-white mb-1">{k.val}</div>
-                                <div className="text-sm text-zinc-500 dark:text-zinc-400">{k.label}</div>
-                            </div>
+                            <ArrowUpRight className="h-5 w-5 text-zinc-400 group-hover:text-zinc-500 transition" />
                         </div>
-                    ))}
+                        <div>
+                            <div className="text-3xl font-light text-[#172b4d] dark:text-white mb-1">{inProgressCount}</div>
+                            <div className="text-sm text-zinc-500 dark:text-zinc-400">Tasks in Progress</div>
+                        </div>
+                    </div>
+
+                    <div className="p-6 rounded-2xl bg-white dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800/60 flex flex-col justify-between h-40 hover:bg-white dark:hover:bg-zinc-900/60 transition cursor-pointer group">
+                        <div className="flex justify-between items-start">
+                            <div className="h-10 w-10 rounded-full bg-rose-500/10 flex items-center justify-center">
+                                <Clock className="h-5 w-5 text-rose-500" />
+                            </div>
+                            <ArrowUpRight className="h-5 w-5 text-zinc-400 group-hover:text-zinc-500 transition" />
+                        </div>
+                        <div>
+                            <div className="text-3xl font-light text-[#172b4d] dark:text-white mb-1">{urgentTasks.length}</div>
+                            <div className="text-sm text-zinc-500 dark:text-zinc-400">Urgent Deadlines</div>
+                        </div>
+                    </div>
+
+                    <div className="p-6 rounded-2xl bg-white dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800/60 flex flex-col justify-between h-40 hover:bg-white dark:hover:bg-zinc-900/60 transition cursor-pointer group">
+                        <div className="flex justify-between items-start">
+                            <div className="h-10 w-10 rounded-full bg-emerald-500/10 flex items-center justify-center">
+                                <Activity className="h-5 w-5 text-emerald-500" />
+                            </div>
+                            <ArrowUpRight className="h-5 w-5 text-zinc-400 group-hover:text-zinc-500 transition" />
+                        </div>
+                        <div>
+                            <div className="text-3xl font-light text-[#172b4d] dark:text-white mb-1">92%</div>
+                            <div className="text-sm text-zinc-500 dark:text-zinc-400">Platform Activity</div>
+                        </div>
+                    </div>
                 </div>
 
-                {/* Assigned to Me */}
-                <AssignedToMe />
-
-                {/* Today's Focus */}
+                {/* Assigned to Me Section */}
                 <div>
                     <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-xl font-medium text-[#172b4d] dark:text-white">Today's Focus</h2>
+                        <h2 className="text-xl font-medium text-[#172b4d] dark:text-white">Assigned to Me</h2>
+                        <Link href="/dashboard/board" className="text-xs text-amber-600 dark:text-amber-500 hover:underline flex items-center gap-1 font-medium">
+                            Open full board <ArrowUpRight className="h-3.5 w-3.5" />
+                        </Link>
                     </div>
-                    <div className="space-y-3">
-                        {[
-                            { title: "Design Promo Banners for Annual Meet", date: "Tomorrow", team: "Debate Club", sev: "High" as const, done: false },
-                            { title: "Organize Logistics for Workshop", date: "Oct 28", team: "Tech Society", sev: "Medium" as const, done: false },
-                            { title: "Draft Speech Guidelines Document", date: "Done", team: "Debate Club", sev: null, done: true },
-                        ].map(t => (
-                            <div key={t.title} className="p-4 sm:p-5 rounded-xl border border-zinc-200 dark:border-zinc-800/60 bg-white dark:bg-zinc-900/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:border-zinc-300 dark:border-zinc-700 transition cursor-pointer">
-                                <div className="flex items-start gap-4">
-                                    <div className="mt-0.5 min-w-[20px]">
-                                        <div className={`h-5 w-5 rounded-full border transition flex items-center justify-center ${t.done ? "border-emerald-400 bg-emerald-50 dark:bg-emerald-500/10" : "border-zinc-400 dark:border-zinc-600 hover:border-amber-500"}`}>
-                                            {t.done && <div className="w-3 h-3 bg-emerald-500 rounded-full" />}
+
+                    {myTasks.length > 0 ? (
+                        <div className="space-y-3">
+                            {myTasks.slice(0, 5).map(task => {
+                                const listName = boardLists.find(l => l.id === task.list_id)?.title || "Unknown List";
+                                const dl = formatDl(task.deadline);
+                                const sev = task.severity as Severity;
+
+                                return (
+                                    <Link key={task.id} href="/dashboard/board"
+                                        className="flex gap-0 rounded-xl border border-zinc-200 dark:border-zinc-800/60 bg-white dark:bg-zinc-900/20 hover:border-zinc-300 dark:hover:border-zinc-700 transition overflow-hidden group cursor-pointer shadow-sm">
+                                        {sev && <div className={`w-1.5 shrink-0 ${SEV_STRIPE[sev] || 'bg-zinc-300'}`} />}
+                                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 sm:p-5 flex-1 min-w-0">
+                                            <div className="flex flex-col gap-1.5 min-w-0">
+                                                <h3 className={`text-[#172b4d] dark:text-white font-medium text-sm leading-snug ${task.is_completed ? 'line-through text-zinc-400' : ''}`}>{task.title}</h3>
+                                                <div className="flex flex-wrap items-center gap-2 text-xs">
+                                                    <span className="bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded text-[10px] font-medium text-zinc-500">{listName}</span>
+                                                    {dl && <span className={`flex items-center gap-1 font-medium ${dl.color}`}><Calendar className="h-3 w-3" /> {dl.label}</span>}
+                                                </div>
+                                            </div>
+                                            {sev && (
+                                                <span className={`shrink-0 flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md border ${SEV_BADGE[sev]}`}>
+                                                    {sev}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </Link>
+                                );
+                            })}
+                        </div>
+                    ) : (
+                        <div className="p-10 text-center rounded-2xl border-2 border-dashed border-zinc-200 dark:border-zinc-800/60">
+                            <p className="text-zinc-500 dark:text-zinc-400">No tasks assigned to you yet.</p>
+                        </div>
+                    )}
+                </div>
+
+                {/* Today's Focus / My Team section */}
+                <div className="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-xl font-medium text-[#172b4d] dark:text-white">Upcoming Deadlines</h2>
+                        </div>
+                        {urgentTasks.length > 0 ? (
+                            <div className="space-y-3">
+                                {urgentTasks.slice(0, 3).map(task => (
+                                    <div key={task.id} className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 flex items-center gap-4">
+                                        <div className="h-8 w-8 rounded-full bg-rose-500/10 flex items-center justify-center shrink-0 text-rose-500">
+                                            <Clock className="h-4 w-4" />
+                                        </div>
+                                        <div className="min-w-0">
+                                            <p className="text-sm font-medium text-[#172b4d] dark:text-white truncate">{task.title}</p>
+                                            <p className="text-xs text-rose-500 font-medium">Due {new Date(task.deadline!).toLocaleDateString()}</p>
                                         </div>
                                     </div>
-                                    <div>
-                                        <h3 className={`font-medium mb-1 ${t.done ? "text-zinc-500 line-through decoration-zinc-600" : "text-[#172b4d] dark:text-white"}`}>{t.title}</h3>
-                                        <div className="flex items-center gap-3 text-xs text-zinc-500">
-                                            <span className="flex items-center gap-1.5"><Calendar className="h-3 w-3" /> {t.date}</span>
-                                            <div className="w-1 h-1 rounded-full bg-zinc-400" />
-                                            <span>{t.team}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                {t.sev && (
-                                    <div className="pl-9 sm:pl-0">
-                                        <span className={`px-2.5 py-1 rounded-full text-xs font-medium border ${SEV_BADGE[t.sev]}`}>{t.sev} Priority</span>
-                                    </div>
-                                )}
+                                ))}
                             </div>
-                        ))}
+                        ) : (
+                            <div className="p-8 text-center bg-zinc-50 dark:bg-zinc-900/40 rounded-xl border border-zinc-100 dark:border-zinc-800">
+                                <p className="text-sm text-zinc-500 italic">No urgent deadlines.</p>
+                            </div>
+                        )}
+                    </div>
+
+                    <div>
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-xl font-medium text-[#172b4d] dark:text-white">My Team</h2>
+                        </div>
+                        <UserTeamCard userId={userData?.id} />
                     </div>
                 </div>
             </div>
@@ -99,9 +208,56 @@ export default function DashboardPage() {
     );
 }
 
+function UserTeamCard({ userId }: { userId?: string }) {
+    const { teams, users } = useMockData();
+    const user = users.find(u => u.id === userId);
+
+    // Find the team assigned to user in their profile
+    const myTeam = teams.find(t => t.name === user?.team);
+
+    if (!myTeam) {
+        return (
+            <div className="p-6 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 flex flex-col items-center justify-center text-center">
+                <div className="h-12 w-12 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center mb-3 text-zinc-400">
+                    <Users2 className="h-6 w-6" />
+                </div>
+                <p className="text-sm font-medium text-[#172b4d] dark:text-white uppercase tracking-wider">Not Assigned</p>
+                <p className="text-xs text-zinc-500 mt-1">You haven't been assigned to a team yet.</p>
+            </div>
+        );
+    }
+
+    return (
+        <Link href="/dashboard/team" className="block p-6 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 hover:border-amber-500/50 transition shadow-sm">
+            <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                    <div className={`h-10 w-10 rounded-xl ${myTeam.color || 'bg-amber-500'} flex items-center justify-center text-white`}>
+                        <Users2 className="h-5 w-5" />
+                    </div>
+                    <div>
+                        <h3 className="font-semibold text-[#172b4d] dark:text-white">{myTeam.name}</h3>
+                        <p className="text-xs text-zinc-500">{myTeam.type} Team</p>
+                    </div>
+                </div>
+                <ArrowUpRight className="h-4 w-4 text-zinc-400" />
+            </div>
+            <div className="flex items-center justify-between">
+                <div className="flex -space-x-2">
+                    {[1, 2, 3].map(i => (
+                        <div key={i} className="h-6 w-6 rounded-full border-2 border-white dark:border-zinc-900 bg-zinc-200 dark:bg-zinc-800" />
+                    ))}
+                    <div className="h-6 w-6 rounded-full border-2 border-white dark:border-zinc-900 bg-amber-100 dark:bg-amber-500/20 flex items-center justify-center text-[8px] font-bold text-amber-600">
+                        +{Math.max(0, (myTeam as any).members - 3)}
+                    </div>
+                </div>
+                <span className="text-xs font-medium text-zinc-500">{(myTeam as any).members} members</span>
+            </div>
+        </Link>
+    );
+}
+
 // ─── Severity helpers ──────────────────────────────────────────────────────────
 type Severity = "High" | "Medium" | "Low";
-type BoardTask = { id: string; title: string; severity?: Severity; deadline?: string; list: string; assignedTo?: string };
 
 const SEV_BADGE: Record<Severity, string> = {
     High: "bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 border-red-200 dark:border-red-500/20",
@@ -118,53 +274,4 @@ function formatDl(d?: string) {
     if (diff < 0) return { label: `Overdue (${label})`, color: "text-red-600 dark:text-red-400" };
     if (diff <= 2) return { label: `Due ${label}`, color: "text-orange-500 dark:text-orange-400" };
     return { label: `Due ${label}`, color: "text-zinc-500 dark:text-zinc-400" };
-}
-
-// Simulated tasks assigned to current user (in production: fetched from context/API by user ID)
-const MY_NAME = "Alice Smith";
-const ASSIGNED_TASKS: BoardTask[] = [
-    { id: "c-1", title: "Design new onboarding flow", severity: "High", deadline: "2026-03-05", list: "To Do", assignedTo: "Alice Smith" },
-    { id: "c-4", title: "Sponsorship deck — first draft", severity: "Medium", deadline: "2026-03-07", list: "Review", assignedTo: "Alice Smith" },
-];
-
-function AssignedToMe() {
-    const myTasks = ASSIGNED_TASKS.filter(t => t.assignedTo === MY_NAME);
-    if (myTasks.length === 0) return null;
-
-    return (
-        <div>
-            <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-medium text-[#172b4d] dark:text-white">Assigned to Me</h2>
-                <a href="/dashboard/board" className="text-xs text-amber-600 dark:text-amber-500 hover:underline flex items-center gap-1">
-                    Open board <ArrowUpRight className="h-3.5 w-3.5" />
-                </a>
-            </div>
-            <div className="space-y-3">
-                {myTasks.map(task => {
-                    const dl = formatDl(task.deadline);
-                    const sev = task.severity;
-                    return (
-                        <a key={task.id} href="/dashboard/board"
-                            className="flex gap-0 rounded-xl border border-zinc-200 dark:border-zinc-800/60 bg-white dark:bg-zinc-900/20 hover:border-zinc-300 dark:hover:border-zinc-700 transition overflow-hidden group cursor-pointer">
-                            {sev && <div className={`w-1.5 shrink-0 ${SEV_STRIPE[sev]}`} />}
-                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 sm:p-5 flex-1 min-w-0">
-                                <div className="flex flex-col gap-1.5 min-w-0">
-                                    <h3 className="text-[#172b4d] dark:text-white font-medium text-sm leading-snug">{task.title}</h3>
-                                    <div className="flex flex-wrap items-center gap-2 text-xs">
-                                        <span className="bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded text-[10px] font-medium text-zinc-500">{task.list}</span>
-                                        {dl && <span className={`flex items-center gap-1 font-medium ${dl.color}`}><Calendar className="h-3 w-3" /> {dl.label}</span>}
-                                    </div>
-                                </div>
-                                {sev && (
-                                    <span className={`shrink-0 flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full border ${SEV_BADGE[sev]}`}>
-                                        <Flag className="h-3 w-3" /> {sev}
-                                    </span>
-                                )}
-                            </div>
-                        </a>
-                    );
-                })}
-            </div>
-        </div>
-    );
 }

@@ -4,33 +4,77 @@ import { Check, X, Search, Filter, MoreHorizontal, UserCog, UserPlus, Copy, Tras
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-
 import { useMockData } from "@/app/context/MockDataContext";
+import { createClient } from "@/lib/supabase/client";
+import { Loader2 } from "lucide-react";
 
 export default function AdminUsersPage() {
     const { users, pendingUsers, approvePendingUser, rejectPendingUser, removeUser, societies } = useMockData();
+    const [managedSocietyId, setManagedSocietyId] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
-    // In production this comes from the authenticated session.
-    // Society id "1" = Computer Science Society (the mock admin's society).
-    const ADMIN_SOCIETY_ID = "1";
-    const adminSociety = societies.find(s => s.id === ADMIN_SOCIETY_ID);
+    useEffect(() => {
+        const getManagedSociety = async () => {
+            const supabase = createClient();
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('user_societies(society_id, role)')
+                    .eq('id', user.id)
+                    .single();
+
+                if (profile) {
+                    const managementRoles = ['Admin', 'Director', 'Deputy Director', 'HR'];
+                    const managed = (profile.user_societies as any[])?.find(us => managementRoles.includes(us.role));
+                    setManagedSocietyId(managed?.society_id);
+                }
+            }
+            setIsLoading(false);
+        };
+        getManagedSociety();
+    }, []);
+
+    const adminSociety = societies.find(s => s.id === managedSocietyId);
 
     const activeUsers = users
-        .filter(u => u.status === 'Active' && u.societyIds.includes(ADMIN_SOCIETY_ID));
+        .filter(u => u.status === 'Active' && managedSocietyId && u.societyIds.includes(managedSocietyId));
+
+    const filteredPending = pendingUsers.filter(u => managedSocietyId && u.society === adminSociety?.name);
+
     const [inviteCopied, setInviteCopied] = useState(false);
     const [codeCopied, setCodeCopied] = useState(false);
 
+    if (isLoading) {
+        return (
+            <div className="h-full flex items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-rose-500" />
+            </div>
+        );
+    }
+
+    if (!adminSociety) {
+        return (
+            <div className="h-full flex items-center justify-center text-zinc-500">
+                Managed society not found.
+            </div>
+        );
+    }
+
+    const invitationCode = (adminSociety as any).join_code || "N/A";
+    const invitationLink = `${window.location.origin}/join?code=${invitationCode}`;
+
     const handleCopyInvite = () => {
-        navigator.clipboard.writeText("https://kaam.app/invite/ref=emt2026");
+        navigator.clipboard.writeText(invitationLink);
         setInviteCopied(true);
         setTimeout(() => setInviteCopied(false), 2000);
     };
 
     const handleCopyCode = () => {
-        navigator.clipboard.writeText("emt2026");
+        navigator.clipboard.writeText(invitationCode);
         setCodeCopied(true);
         setTimeout(() => setCodeCopied(false), 2000);
     };
@@ -77,7 +121,7 @@ export default function AdminUsersPage() {
                                         <div className="grid flex-1 gap-2">
                                             <input
                                                 readOnly
-                                                value="https://kaam.app/invite/ref=emt2026"
+                                                value={invitationLink}
                                                 className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-zinc-500 dark:text-zinc-400 outline-none"
                                             />
                                         </div>
@@ -93,7 +137,7 @@ export default function AdminUsersPage() {
                                         <div className="grid flex-1 gap-2">
                                             <input
                                                 readOnly
-                                                value="emt2026"
+                                                value={invitationCode}
                                                 className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm font-mono text-zinc-800 dark:text-zinc-300 outline-none"
                                             />
                                         </div>
@@ -114,7 +158,7 @@ export default function AdminUsersPage() {
                 <div>
                     <h2 className="text-lg font-semibold text-[#172b4d] dark:text-zinc-100 mb-4 flex items-center gap-2">
                         Pending Approvals
-                        <Badge variant="secondary" className="bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-500">{pendingUsers.length}</Badge>
+                        <Badge variant="secondary" className="bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-500">{filteredPending.length}</Badge>
                     </h2>
 
                     <div className="bg-white dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800/60 rounded-xl overflow-hidden shadow-sm">
@@ -129,7 +173,7 @@ export default function AdminUsersPage() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {pendingUsers.map((user) => (
+                                    {filteredPending.map((user) => (
                                         <tr key={user.id} className="border-b border-zinc-100 dark:border-zinc-800/50 hover:bg-zinc-50/80 dark:hover:bg-zinc-900/30 transition">
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-3">

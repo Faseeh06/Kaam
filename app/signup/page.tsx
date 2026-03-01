@@ -50,7 +50,7 @@ export default function SignupPage() {
             setIsLoading(false);
         } else {
             router.refresh();
-            router.push("/join");
+            router.push("/dashboard");
         }
     };
 

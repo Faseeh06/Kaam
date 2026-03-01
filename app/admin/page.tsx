@@ -1,10 +1,62 @@
 "use client";
 
-import { Users, Building2, Target, TrendingUp, UserCheck, ShieldAlert } from "lucide-react";
+import { Users, Building2, Target, TrendingUp, UserCheck, ShieldAlert, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { useMockData } from "@/app/context/MockDataContext";
 
 export default function AdminDashboardPage() {
+    const { users, teams, boardCards, boardLists, pendingUsers, societies } = useMockData();
+    const [managedSocietyId, setManagedSocietyId] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const getManagedSociety = async () => {
+            const supabase = createClient();
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('user_societies(society_id, role)')
+                    .eq('id', user.id)
+                    .single();
+
+                if (profile) {
+                    const managementRoles = ['Admin', 'Director', 'Deputy Director', 'HR'];
+                    const managed = (profile.user_societies as any[])?.find(us => managementRoles.includes(us.role));
+                    setManagedSocietyId(managed?.society_id);
+                }
+            }
+            setIsLoading(false);
+        };
+        getManagedSociety();
+    }, []);
+
+    const adminSociety = societies.find(s => s.id === managedSocietyId);
+
+    // Filter data for the managed society
+    const societyUsers = users.filter(u => managedSocietyId && u.societyIds.includes(managedSocietyId));
+    const societyTeams = teams.filter(t => managedSocietyId && (t as any).society_id === managedSocietyId);
+
+    // For tasks, we need to filter cards belonging to this society's teams
+    const teamIds = societyTeams.map(t => t.id);
+    const societyLists = boardLists.filter(l => teamIds.includes(l.team_id));
+    const societyListIds = societyLists.map(l => l.id);
+    const societyTasks = boardCards.filter(c => societyListIds.includes(c.list_id));
+    const totalTasksCount = societyTasks.length;
+
+    // Pending approvals for this society
+    const filteredPending = pendingUsers.filter(u => managedSocietyId && u.society === adminSociety?.name);
+
+    if (isLoading) {
+        return (
+            <div className="h-full flex items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-rose-500" />
+            </div>
+        );
+    }
     return (
         <div className="h-full flex flex-col pt-4 px-4 md:px-8 pb-8 overflow-y-auto custom-scrollbar">
 
@@ -24,9 +76,9 @@ export default function AdminDashboardPage() {
                         <Users className="h-4 w-4 text-rose-500" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-3xl font-bold text-[#172b4d] dark:text-white">1,248</div>
-                        <p className="text-xs text-emerald-500 mt-1 flex items-center font-medium">
-                            <TrendingUp className="h-3 w-3 mr-1" /> +12% from last month
+                        <div className="text-3xl font-bold text-[#172b4d] dark:text-white">{societyUsers.length}</div>
+                        <p className="text-xs text-zinc-500 mt-1 flex items-center font-medium">
+                            Registered members
                         </p>
                     </CardContent>
                 </Card>
@@ -37,9 +89,9 @@ export default function AdminDashboardPage() {
                         <Building2 className="h-4 w-4 text-indigo-500" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-3xl font-bold text-[#172b4d] dark:text-white">24</div>
+                        <div className="text-3xl font-bold text-[#172b4d] dark:text-white">{societyTeams.length}</div>
                         <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 flex items-center">
-                            Across 4 active societies
+                            Active departments
                         </p>
                     </CardContent>
                 </Card>
@@ -50,9 +102,9 @@ export default function AdminDashboardPage() {
                         <UserCheck className="h-4 w-4 text-amber-500" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-3xl font-bold text-[#172b4d] dark:text-white">14</div>
-                        <p className="text-xs text-amber-500 dark:text-amber-400 mt-1 flex items-center font-medium">
-                            Requires immediate attention
+                        <div className="text-3xl font-bold text-[#172b4d] dark:text-white">{filteredPending.length}</div>
+                        <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 flex items-center font-medium">
+                            {filteredPending.length > 0 ? "Awaiting your review" : "All up to date"}
                         </p>
                     </CardContent>
                 </Card>
@@ -63,9 +115,9 @@ export default function AdminDashboardPage() {
                         <Target className="h-4 w-4 text-emerald-500" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-3xl font-bold text-[#172b4d] dark:text-white">342</div>
+                        <div className="text-3xl font-bold text-[#172b4d] dark:text-white">{societyTasks.length}</div>
                         <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 flex items-center">
-                            120 completed this week
+                            Total across all departments
                         </p>
                     </CardContent>
                 </Card>
@@ -119,10 +171,10 @@ export default function AdminDashboardPage() {
                         <button className="w-full flex items-center justify-between p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:border-rose-300 dark:hover:border-rose-500/50 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition group text-left">
                             <div>
                                 <p className="text-sm font-medium text-[#172b4d] dark:text-zinc-200 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition">Review Pending Users</p>
-                                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">14 users awaiting approval</p>
+                                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">{filteredPending.length} users awaiting approval</p>
                             </div>
                             <div className="h-6 w-6 rounded-full bg-rose-100 dark:bg-rose-500/20 text-rose-600 dark:text-rose-500 flex items-center justify-center text-xs font-bold shrink-0">
-                                14
+                                {filteredPending.length}
                             </div>
                         </button>
                         <button className="w-full flex items-center justify-between p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition group text-left">

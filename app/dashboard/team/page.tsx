@@ -1,13 +1,11 @@
 "use client";
 
-import { Users2, Star, Mail, LayoutGrid, Sparkles, ChevronRight, Shield, Crown, Briefcase } from "lucide-react";
+import { Users2, Star, Mail, LayoutGrid, Sparkles, ChevronRight, Shield, Crown, Briefcase, Loader2 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useMockData, TeamRole, TEAM_ROLE_PERMISSIONS } from "@/app/context/MockDataContext";
-
-// Simulate: logged-in user is in team "1" as an Executive
-const MY_TEAM_ID = "1";
-const MY_EMAIL = "alice@student.edu";
+import { useState, useEffect } from "react";
+import { createClient } from "@/lib/supabase/client";
 
 const ROLE_CONFIG: Record<TeamRole, { label: string; color: string; textColor: string; borderColor: string; bgColor: string; icon: string; rank: number }> = {
     "Director": { label: "Director", color: "bg-amber-500", textColor: "text-amber-700 dark:text-amber-400", borderColor: "border-amber-200 dark:border-amber-500/30", bgColor: "bg-amber-50 dark:bg-amber-500/10", icon: "🎯", rank: 1 },
@@ -17,29 +15,79 @@ const ROLE_CONFIG: Record<TeamRole, { label: string; color: string; textColor: s
 };
 
 const RECENT_ACTIVITY = [
-    { text: "Director updated task: 'Brand Refresh'", time: "2h ago" },
-    { text: "New task assigned to you: Social Banners", time: "5h ago" },
-    { text: "DD moved 'Logo Redesign' to Done", time: "1d ago" },
-    { text: "HR added 2 new members to the team", time: "2d ago" },
+    { text: "System sync completed successfully.", time: "Just now" },
+    { text: "Board tasks updated from recent changes.", time: "2h ago" },
 ];
 
 export default function DashboardTeamPage() {
     const { teams, teamMembers } = useMockData();
-    const myTeam = teams.find(t => t.id === MY_TEAM_ID) || teams[0];
-    const members = teamMembers[myTeam?.id] || [];
+    const [userData, setUserData] = useState<{ id: string; email: string; primary_team: string; role: TeamRole } | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const myProfile = members.find(m => m.email === MY_EMAIL);
-    const myRole: TeamRole = myProfile?.teamRole || "Executive";
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const supabase = createClient();
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('id, email, primary_team')
+                    .eq('id', user.id)
+                    .single();
+
+                const { data: userSoc } = await supabase
+                    .from('user_societies')
+                    .select('role')
+                    .eq('id', user.id)
+                    .single();
+
+                if (profile) {
+                    setUserData({
+                        id: profile.id,
+                        email: profile.email || "",
+                        primary_team: profile.primary_team || "",
+                        role: (userSoc?.role as TeamRole) || "Executive"
+                    });
+                }
+            }
+            setIsLoading(false);
+        };
+        fetchUserData();
+    }, []);
+
+    const myTeam = teams.find(t => t.name === userData?.primary_team);
+    const members = myTeam ? (teamMembers[myTeam.id] || []) : [];
+    const myRole = userData?.role || "Executive";
     const myPerms = TEAM_ROLE_PERMISSIONS[myRole];
 
-    // Sort members by role rank
-    const sorted = [...members].sort((a, b) => ROLE_CONFIG[a.teamRole].rank - ROLE_CONFIG[b.teamRole].rank);
     const directors = members.filter(m => m.teamRole === "Director");
     const dds = members.filter(m => m.teamRole === "Deputy Director");
     const hrs = members.filter(m => m.teamRole === "HR");
     const execs = members.filter(m => m.teamRole === "Executive");
 
-    const accentText = myTeam?.color?.replace("bg-", "text-") || "text-fuchsia-500";
+    const accentText = myTeam?.color?.replace("bg-", "text-") || "text-amber-500";
+
+    if (isLoading) {
+        return (
+            <div className="h-full flex items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-amber-500" />
+            </div>
+        );
+    }
+
+    if (!myTeam) {
+        return (
+            <div className="h-full flex flex-col items-center justify-center p-6 text-center">
+                <div className="w-20 h-20 bg-amber-50 dark:bg-amber-500/10 rounded-3xl flex items-center justify-center mb-6 shadow-sm border border-amber-100 dark:border-amber-500/20">
+                    <Users2 className="h-10 w-10 text-amber-500" />
+                </div>
+                <h2 className="text-2xl font-semibold text-[#172b4d] dark:text-white mb-2">No Team Found</h2>
+                <p className="text-zinc-500 dark:text-zinc-400 max-w-sm mb-8 leading-relaxed">
+                    You haven't been assigned to a team yet. Please contact your administrator for team assignment.
+                </p>
+            </div>
+        );
+    }
 
     return (
         <div className="h-full flex flex-col pt-4 px-4 md:px-8 pb-8 overflow-y-auto custom-scrollbar">
@@ -54,7 +102,7 @@ export default function DashboardTeamPage() {
                         <h1 className="text-3xl font-medium tracking-tight text-[#172b4d] dark:text-white mb-1">My Team</h1>
                         <p className="text-zinc-500 dark:text-zinc-400 text-sm">Your team details, members, and your role permissions.</p>
                     </div>
-                    {myProfile && (
+                    {userData && (
                         <div className={`inline-flex items-center gap-2.5 px-4 py-2.5 rounded-xl border shadow-sm text-sm ${ROLE_CONFIG[myRole].bgColor} ${ROLE_CONFIG[myRole].textColor} ${ROLE_CONFIG[myRole].borderColor}`}>
                             <span className="text-base">{ROLE_CONFIG[myRole].icon}</span>
                             <div>
@@ -73,10 +121,10 @@ export default function DashboardTeamPage() {
 
                     {/* Team Identity */}
                     <div className="bg-white dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800/60 rounded-2xl overflow-hidden shadow-sm">
-                        <div className={`h-2 w-full ${myTeam?.color || "bg-fuchsia-500"} opacity-80`} />
+                        <div className={`h-2 w-full ${myTeam?.color || "bg-amber-500"} opacity-80`} />
                         <div className="p-6">
                             <div className="flex items-center gap-4 mb-5">
-                                <div className={`h-14 w-14 rounded-2xl border border-zinc-100 dark:border-zinc-800 flex items-center justify-center ${myTeam?.color}/10`}>
+                                <div className={`h-14 w-14 rounded-2xl border border-zinc-100 dark:border-zinc-800 flex items-center justify-center bg-zinc-50 dark:bg-zinc-800/50`}>
                                     <LayoutGrid className={`h-7 w-7 ${accentText}`} />
                                 </div>
                                 <div>
@@ -122,8 +170,8 @@ export default function DashboardTeamPage() {
                     </div>
 
                     {/* Recent activity */}
-                    <div className="bg-white dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800/60 rounded-2xl p-5 shadow-sm">
-                        <h3 className="font-semibold text-[#172b4d] dark:text-zinc-100 mb-4 text-sm">Recent Activity</h3>
+                    <div className="bg-white dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800/60 rounded-2xl p-5 shadow-sm overflow-hidden">
+                        <h3 className="font-semibold text-[#172b4d] dark:text-zinc-100 mb-4 text-sm">Team Activity</h3>
                         <div className="space-y-3">
                             {RECENT_ACTIVITY.map((a, i) => (
                                 <div key={i} className="flex gap-3 text-sm">
@@ -140,7 +188,6 @@ export default function DashboardTeamPage() {
 
                 {/* Right column — Members by role */}
                 <div className="lg:col-span-2 space-y-5">
-
                     {/* Role hierarchy legend */}
                     <div className="bg-white dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800/60 rounded-xl px-5 py-4 shadow-sm flex flex-wrap gap-3">
                         {(Object.keys(ROLE_CONFIG) as TeamRole[]).map(role => {
@@ -175,7 +222,7 @@ export default function DashboardTeamPage() {
                                 </div>
                                 <div className="divide-y divide-zinc-100 dark:divide-zinc-800/50">
                                     {list.map(member => {
-                                        const isMe = member.email === MY_EMAIL;
+                                        const isMe = member.email === userData?.email;
                                         return (
                                             <div key={member.id} className={`flex items-center gap-4 px-6 py-4 hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20 transition-colors ${isMe ? "bg-amber-50/30 dark:bg-amber-500/5" : ""}`}>
                                                 <Avatar className={`h-10 w-10 border shadow-sm ${isMe ? "border-amber-300 dark:border-amber-500/40" : `${cfg.borderColor}`}`}>
@@ -192,7 +239,7 @@ export default function DashboardTeamPage() {
                                                     </div>
                                                     <p className="text-xs text-zinc-500 font-mono mt-0.5">{member.email}</p>
                                                 </div>
-                                                <span className="text-[11px] text-zinc-400 shrink-0">Since {member.joinedAt}</span>
+                                                <span className="text-[11px] text-zinc-400 shrink-0">Member</span>
                                             </div>
                                         );
                                     })}

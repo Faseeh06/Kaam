@@ -19,9 +19,11 @@ export default function DashboardLayout({
 }) {
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [userData, setUserData] = useState<{ name: string; email: string } | null>(null);
+    const [isPending, setIsPending] = useState(false);
     const pathname = usePathname();
     const router = useRouter();
     const { theme, setTheme } = useTheme();
+
 
     useEffect(() => {
         const getUser = async () => {
@@ -30,18 +32,42 @@ export default function DashboardLayout({
             if (user) {
                 const { data: profile } = await supabase
                     .from('profiles')
-                    .select('full_name, email')
+                    .select('full_name, email, is_global_admin, user_societies(*)')
                     .eq('id', user.id)
                     .single();
+
+
+                // If not a global admin, check memberships
+                if (!profile?.is_global_admin) {
+                    const memberships = (profile?.user_societies as any[]) || [];
+
+                    // If absolutely NO record exists, go to join page
+                    if (memberships.length === 0) {
+                        router.push("/join");
+                        return;
+                    }
+
+                    // If a record exists but none are Active, show the Pending screen
+                    const hasActive = memberships.some(m => m.status === 'Active');
+                    if (!hasActive) {
+                        setIsPending(true);
+                    } else {
+                        setIsPending(false);
+                    }
+                }
+
 
                 setUserData({
                     name: profile?.full_name || "User",
                     email: user.email || ""
                 });
+            } else {
+                router.push("/login");
             }
         };
         getUser();
-    }, []);
+    }, [router]);
+
 
     const handleLogout = async () => {
         const supabase = createClient();
@@ -50,8 +76,31 @@ export default function DashboardLayout({
         router.refresh();
     };
 
+    if (isPending) {
+        return (
+            <div className="flex flex-col items-center justify-center h-screen bg-[#f4f5f7] dark:bg-zinc-950 p-6 text-center">
+                <div className="w-24 h-24 bg-amber-50 dark:bg-amber-500/10 rounded-3xl flex items-center justify-center mb-8 shadow-sm border border-amber-100 dark:border-amber-500/20 animate-pulse">
+                    <Shield className="h-12 w-12 text-amber-500" />
+                </div>
+                <h1 className="text-3xl font-bold text-[#172b4d] dark:text-white mb-3 tracking-tight">Approval Pending</h1>
+                <p className="text-zinc-500 dark:text-zinc-400 max-w-md leading-relaxed mb-8">
+                    Your request to join the society has been received. Please wait for an administrator to review and approve your membership.
+                </p>
+                <div className="flex flex-col gap-3 w-full max-w-xs">
+                    <Button onClick={() => window.location.reload()} className="bg-amber-500 hover:bg-amber-600 text-white font-semibold h-11 rounded-xl shadow-lg shadow-amber-500/20 transition-all hover:scale-[1.02]">
+                        Check Status
+                    </Button>
+                    <Button variant="ghost" onClick={handleLogout} className="text-zinc-500 hover:text-rose-500">
+                        Log Out
+                    </Button>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="flex h-screen bg-[#f4f5f7] dark:bg-zinc-950 text-[#172b4d] dark:text-white overflow-hidden selection:bg-amber-500/30 transition-colors">
+
 
             {/* Sidebar */}
             <aside

@@ -24,7 +24,8 @@ const getRoleStyle = (role: string) =>
     ROLE_OPTIONS.find(r => r.label === role) ?? { icon: "🔖", color: "text-zinc-600 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-800/50 border-zinc-200 dark:border-zinc-700" };
 
 export default function SuperAdminsPage() {
-    const { admins, users, societies, addAdmin, removeAdmin } = useMockData();
+    const { admins, users, societies, addAdmin, removeAdmin, makeSocietyAdmin, revokeSocietyAdmin } = useMockData();
+
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState("");
     const [isLoadingAdmin, setIsLoadingAdmin] = useState(false);
@@ -40,39 +41,21 @@ export default function SuperAdminsPage() {
     );
 
     const handleMakeAdmin = async () => {
-        const user = users.find(u => u.id === selectedUserId);
-        const society = societies.find(s => s.id === selectedSociety);
-        if (!user || !society) return;
+        if (!selectedUserId || !selectedSociety) return;
 
         setIsLoadingAdmin(true);
-
-        // 1. Add/Update Society membership with Admin role
-        const { error: joinError } = await createClient().from('user_societies').upsert({
-            user_id: user.id,
-            society_id: society.id,
-            role: 'Admin'
-        });
-
-        if (joinError) {
-            console.error("Error creating admin:", joinError);
+        try {
+            await makeSocietyAdmin(selectedUserId, selectedSociety, selectedRole);
+            setSelectedUserId("");
+            setSelectedSociety("");
+            setSelectedRole("Society President");
+            setOpen(false);
+        } catch (error) {
+            console.error("Failed to make admin:", error);
+            alert("Failed to grant admin privileges. Please try again.");
+        } finally {
             setIsLoadingAdmin(false);
-            return;
         }
-
-        // 2. Update local state via context
-        addAdmin({
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            role: selectedRole,
-            scope: society.name
-        });
-
-        setIsLoadingAdmin(false);
-        setSelectedUserId("");
-        setSelectedSociety("");
-        setSelectedRole("Society President");
-        setOpen(false);
     };
 
     return (
@@ -251,12 +234,18 @@ export default function SuperAdminsPage() {
                                                     </DropdownMenuItem>
                                                     <DropdownMenuSeparator className="bg-zinc-100 dark:bg-zinc-800 my-1" />
                                                     <DropdownMenuItem
-                                                        onClick={() => removeAdmin(admin.id)}
+                                                        onClick={() => {
+                                                            // Find the society ID from the scope name
+                                                            const soc = societies.find(s => s.name === admin.scope);
+                                                            if (soc) revokeSocietyAdmin(admin.id, soc.id);
+                                                            else removeAdmin(admin.id);
+                                                        }}
                                                         disabled={isGlobal}
                                                         className={`flex items-center gap-2 cursor-pointer rounded-lg text-sm ${isGlobal ? "text-zinc-300 dark:text-zinc-600 cursor-not-allowed" : "text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10"}`}>
                                                         <Trash2 className="h-3.5 w-3.5" />
                                                         {isGlobal ? "Can't delete Super" : "Revoke Access"}
                                                     </DropdownMenuItem>
+
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
                                         </td>

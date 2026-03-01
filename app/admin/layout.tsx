@@ -18,7 +18,7 @@ export default function AdminLayout({
     children: React.ReactNode;
 }) {
     const [isCollapsed, setIsCollapsed] = useState(false);
-    const [userData, setUserData] = useState<{ name: string; email: string } | null>(null);
+    const [userData, setUserData] = useState<{ name: string; email: string; managedSocietyId?: string } | null>(null);
     const pathname = usePathname();
     const router = useRouter();
     const { theme, setTheme } = useTheme();
@@ -28,16 +28,23 @@ export default function AdminLayout({
             const supabase = createClient();
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
+                // Fetch profile and managed society
                 const { data: profile } = await supabase
                     .from('profiles')
-                    .select('full_name, email')
+                    .select('full_name, email, user_societies(society_id, role)')
                     .eq('id', user.id)
                     .single();
 
-                setUserData({
-                    name: profile?.full_name || "Admin",
-                    email: user.email || ""
-                });
+                if (profile) {
+                    const managementRoles = ['Admin', 'Director', 'Deputy Director', 'HR'];
+                    const managedSociety = (profile.user_societies as any[])?.find(us => managementRoles.includes(us.role));
+
+                    setUserData({
+                        name: profile.full_name || "Admin",
+                        email: user.email || "",
+                        managedSocietyId: managedSociety?.society_id
+                    });
+                }
             }
         };
         getUser();

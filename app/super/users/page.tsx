@@ -11,9 +11,11 @@ import {
 import { useMockData } from "@/app/context/MockDataContext";
 
 export default function SuperUsersPage() {
-    const { users, societies, removeUser } = useMockData();
+    const { users, societies, removeUser, pendingUsers, approvePendingUser, rejectPendingUser } = useMockData();
     const [search, setSearch] = useState("");
     const [filterSocietyId, setFilterSocietyId] = useState<string>("all");
+    const [activeTab, setActiveTab] = useState<"Active" | "Pending">("Active");
+
 
     // Filter: search + optional society
     const filtered = users.filter(u => {
@@ -39,12 +41,25 @@ export default function SuperUsersPage() {
                         Every registered user across all societies. Filter by society to scope the view.
                     </p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-4 items-center">
+                    <div className="flex bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-1 rounded-xl shrink-0">
+                        <button
+                            onClick={() => setActiveTab("Active")}
+                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === "Active" ? "bg-violet-600 text-white shadow-lg shadow-violet-500/20" : "text-zinc-500 hover:text-[#172b4d] dark:hover:text-white"}`}>
+                            Active ({users.length})
+                        </button>
+                        <button
+                            onClick={() => setActiveTab("Pending")}
+                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === "Pending" ? "bg-amber-500 text-white shadow-lg shadow-amber-500/20" : "text-zinc-500 hover:text-[#172b4d] dark:hover:text-white"}`}>
+                            Pending ({pendingUsers.length})
+                        </button>
+                    </div>
                     <Button className="bg-zinc-800 text-white hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white shadow-sm shrink-0">
                         <Download className="h-4 w-4 mr-2" /> Export CSV
                     </Button>
                 </div>
             </header>
+
 
             <div className="bg-white dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800/60 rounded-2xl shadow-sm overflow-hidden flex flex-col">
 
@@ -103,62 +118,105 @@ export default function SuperUsersPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/50">
-                            {filtered.map((user) => {
-                                const userSocieties = getSocietyNames(user.societyIds);
-                                return (
-                                    <tr key={user.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20 transition-colors group">
-                                        <td className="px-6 py-4">
-                                            <div className="flex items-center gap-3">
-                                                <Avatar className="h-8 w-8 border border-zinc-200 dark:border-zinc-700 shrink-0">
-                                                    <AvatarFallback className="bg-violet-100 dark:bg-violet-500/20 text-violet-700 dark:text-violet-400 text-xs font-bold">
-                                                        {user.name.charAt(0)}
-                                                    </AvatarFallback>
-                                                </Avatar>
-                                                <p className="font-medium text-[#172b4d] dark:text-zinc-200 whitespace-nowrap">{user.name}</p>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 text-zinc-500 font-mono text-xs whitespace-nowrap">{user.email}</td>
-                                        <td className="px-6 py-4">
-                                            <div className="flex flex-wrap gap-1.5">
-                                                {userSocieties.map(soc => soc && (
-                                                    <span key={soc.id}
-                                                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-violet-50 dark:bg-violet-500/10 text-violet-700 dark:text-violet-300 border border-violet-200 dark:border-violet-500/20 whitespace-nowrap">
-                                                        {soc.acronym}
-                                                    </span>
-                                                ))}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <div className="flex flex-col gap-0.5">
-                                                <span className="text-xs font-semibold text-[#172b4d] dark:text-zinc-300">{user.role}</span>
-                                                <span className="text-[11px] text-zinc-400">{user.team}</span>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 text-zinc-500 whitespace-nowrap text-xs">{user.joined}</td>
-                                        <td className="px-6 py-4 text-right">
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-[#172b4d] dark:hover:text-white opacity-0 group-hover:opacity-100 transition-opacity">
-                                                        <MoreHorizontal className="h-4 w-4" />
+                            {activeTab === "Active" ? (
+                                filtered.map((user) => {
+                                    const userSocieties = getSocietyNames(user.societyIds);
+                                    return (
+                                        <tr key={user.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20 transition-colors group">
+                                            <td className="px-6 py-4">
+                                                <div className="flex items-center gap-3">
+                                                    <Avatar className="h-8 w-8 border border-zinc-200 dark:border-zinc-700 shrink-0">
+                                                        <AvatarFallback className="bg-violet-100 dark:bg-violet-500/20 text-violet-700 dark:text-violet-400 text-xs font-bold">
+                                                            {user.name.charAt(0)}
+                                                        </AvatarFallback>
+                                                    </Avatar>
+                                                    <p className="font-medium text-[#172b4d] dark:text-zinc-200 whitespace-nowrap">{user.name}</p>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 text-zinc-500 font-mono text-xs whitespace-nowrap">{user.email}</td>
+                                            <td className="px-6 py-4">
+                                                <div className="flex flex-wrap gap-1.5">
+                                                    {userSocieties.map(soc => soc && (
+                                                        <span key={soc.id}
+                                                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-violet-50 dark:bg-violet-500/10 text-violet-700 dark:text-violet-300 border border-violet-200 dark:border-violet-500/20 whitespace-nowrap">
+                                                            {soc.acronym}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="flex flex-col gap-0.5">
+                                                    <span className="text-xs font-semibold text-[#172b4d] dark:text-zinc-300">{user.role}</span>
+                                                    <span className="text-[11px] text-zinc-400">{user.team}</span>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 text-zinc-500 whitespace-nowrap text-xs">{user.joined}</td>
+                                            <td className="px-6 py-4 text-right">
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-[#172b4d] dark:hover:text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                                                            <MoreHorizontal className="h-4 w-4" />
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end" className="w-44 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 shadow-xl rounded-xl">
+                                                        <DropdownMenuItem className="flex items-center gap-2 text-zinc-700 dark:text-zinc-300 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-900 rounded-lg text-sm">
+                                                            <UserCog className="h-3.5 w-3.5" /> Edit Role
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuSeparator className="bg-zinc-100 dark:bg-zinc-800 my-1" />
+                                                        <DropdownMenuItem
+                                                            onClick={() => removeUser(user.id)}
+                                                            className="flex items-center gap-2 text-rose-600 dark:text-rose-400 cursor-pointer hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg text-sm">
+                                                            <Trash2 className="h-3.5 w-3.5" /> Delete User
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </td>
+                                        </tr>
+                                    );
+                                })
+                            ) : (
+                                pendingUsers
+                                    .filter(u => filterSocietyId === "all" || u.societyId === filterSocietyId)
+                                    .map((user) => (
+                                        <tr key={user.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20 transition-colors group">
+                                            <td className="px-6 py-4">
+                                                <div className="flex items-center gap-3">
+                                                    <Avatar className="h-8 w-8 border border-zinc-200 dark:border-zinc-700 shrink-0">
+                                                        <AvatarFallback className="bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 text-xs font-bold">
+                                                            {user.name.charAt(0)}
+                                                        </AvatarFallback>
+                                                    </Avatar>
+                                                    <p className="font-medium text-[#172b4d] dark:text-zinc-200 whitespace-nowrap">{user.name}</p>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 text-zinc-500 font-mono text-xs whitespace-nowrap">{user.email}</td>
+                                            <td className="px-6 py-4 text-zinc-500 text-xs">{user.society}</td>
+                                            <td className="px-6 py-4">
+                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-500 border border-amber-200 dark:border-amber-500/20 uppercase tracking-tighter">
+                                                    Awaiting
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4 text-zinc-400 text-xs">{user.time}</td>
+                                            <td className="px-6 py-4 text-right">
+                                                <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <Button
+                                                        onClick={() => approvePendingUser(user.id, "Admin", "Unassigned")}
+                                                        className="h-8 px-3 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold rounded-lg shadow-sm">
+                                                        Approve as Admin
                                                     </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end" className="w-44 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 shadow-xl rounded-xl">
-                                                    <DropdownMenuItem className="flex items-center gap-2 text-zinc-700 dark:text-zinc-300 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-900 rounded-lg text-sm">
-                                                        <UserCog className="h-3.5 w-3.5" /> Edit Role
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuSeparator className="bg-zinc-100 dark:bg-zinc-800 my-1" />
-                                                    <DropdownMenuItem
-                                                        onClick={() => removeUser(user.id)}
-                                                        className="flex items-center gap-2 text-rose-600 dark:text-rose-400 cursor-pointer hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg text-sm">
-                                                        <Trash2 className="h-3.5 w-3.5" /> Delete User
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
-                                        </td>
-                                    </tr>
-                                );
-                            })}
+                                                    <Button
+                                                        variant="secondary"
+                                                        onClick={() => rejectPendingUser(user.id)}
+                                                        className="h-8 px-3 text-xs font-medium rounded-lg">
+                                                        Reject
+                                                    </Button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                            )}
                         </tbody>
+
                     </table>
                     {filtered.length === 0 && (
                         <div className="text-center py-16 text-zinc-400 dark:text-zinc-600">

@@ -1,10 +1,56 @@
 "use client";
 
-import { Building2, Save, Mail, LinkIcon, MapPin, Search } from "lucide-react";
+import { Building2, Save, Mail, LinkIcon, MapPin, Search, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { useEffect, useState } from "react";
+import { useMockData } from "@/app/context/MockDataContext";
+import { createClient } from "@/lib/supabase/client";
 
 export default function AdminSocietyPage() {
+    const { societies, updateSociety } = useMockData();
+    const [managedSocietyId, setManagedSocietyId] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const getManagedSociety = async () => {
+            const supabase = createClient();
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('user_societies(society_id, role)')
+                    .eq('id', user.id)
+                    .single();
+
+                if (profile) {
+                    const managementRoles = ['Admin', 'Director', 'Deputy Director', 'HR'];
+                    const managed = (profile.user_societies as any[])?.find(us => managementRoles.includes(us.role));
+                    setManagedSocietyId(managed?.society_id);
+                }
+            }
+            setIsLoading(false);
+        };
+        getManagedSociety();
+    }, []);
+
+    const society = societies.find(s => s.id === managedSocietyId);
+
+    if (isLoading) {
+        return (
+            <div className="h-full flex items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-rose-500" />
+            </div>
+        );
+    }
+
+    if (!society) {
+        return (
+            <div className="h-full flex items-center justify-center text-zinc-500">
+                Managed society not found.
+            </div>
+        );
+    }
     return (
         <div className="h-full flex flex-col pt-4 px-4 md:px-8 pb-8 overflow-y-auto custom-scrollbar">
 
@@ -33,8 +79,8 @@ export default function AdminSocietyPage() {
                                 </div>
                             </div>
 
-                            <h2 className="text-xl font-semibold text-[#172b4d] dark:text-white mb-1">Event Management</h2>
-                            <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-4">Established 2024</p>
+                            <h2 className="text-xl font-semibold text-[#172b4d] dark:text-white mb-1">{society.name}</h2>
+                            <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-4">{society.acronym}</p>
                         </CardContent>
                     </Card>
                 </div>
@@ -53,7 +99,7 @@ export default function AdminSocietyPage() {
                                 <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Society Name</label>
                                 <input
                                     type="text"
-                                    defaultValue="Event Management Team"
+                                    defaultValue={society.name}
                                     className="w-full bg-[#f4f5f7] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
                                 />
                             </div>
@@ -61,7 +107,7 @@ export default function AdminSocietyPage() {
                             <div className="space-y-2">
                                 <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Description</label>
                                 <textarea
-                                    defaultValue="The core functional team dedicated to organizing, planning, and executing all massive tech and cultural occurrences across the university campus."
+                                    defaultValue={society.description || ""}
                                     rows={4}
                                     className="w-full bg-[#f4f5f7] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-3 text-sm text-[#172b4d] dark:text-zinc-100 outline-none resize-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
                                 />
@@ -74,7 +120,7 @@ export default function AdminSocietyPage() {
                                     </label>
                                     <input
                                         type="email"
-                                        defaultValue="contact@eventmgr.com"
+                                        defaultValue={society.email || ""}
                                         className="w-full bg-[#f4f5f7] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
                                     />
                                 </div>
@@ -84,7 +130,7 @@ export default function AdminSocietyPage() {
                                     </label>
                                     <input
                                         type="url"
-                                        defaultValue="https://events.example.com"
+                                        defaultValue={society.website || ""}
                                         className="w-full bg-[#f4f5f7] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
                                     />
                                 </div>

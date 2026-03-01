@@ -161,6 +161,18 @@ BEGIN
         );
     END IF;
 
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Society admins can manage their memberships') THEN
+        CREATE POLICY "Society admins can manage their memberships" ON user_societies 
+        FOR ALL USING (
+            EXISTS (
+                SELECT 1 FROM user_societies AS admins
+                WHERE admins.user_id = auth.uid() 
+                AND admins.society_id = user_societies.society_id
+                AND admins.role NOT IN ('Member', 'User', 'Pending', 'Guest')
+            )
+        );
+    END IF;
+
     IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users can join a society') THEN
         CREATE POLICY "Users can join a society" ON user_societies FOR INSERT WITH CHECK (user_id = auth.uid());
     END IF;

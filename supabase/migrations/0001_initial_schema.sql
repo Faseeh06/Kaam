@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS societies (
 
 -- Ensure missing columns exist in societies
 ALTER TABLE societies ADD COLUMN IF NOT EXISTS members INTEGER DEFAULT 0;
+ALTER TABLE societies ADD COLUMN IF NOT EXISTS join_code TEXT UNIQUE;
 
 -- 2. PROFILES (Extends Auth.Users)
 CREATE TABLE IF NOT EXISTS profiles (
@@ -114,6 +115,17 @@ ALTER TABLE office_bearers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE board_lists ENABLE ROW LEVEL SECURITY;
 ALTER TABLE board_cards ENABLE ROW LEVEL SECURITY;
 
+-- Additional Office Bearers Policy
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Global admins can manage office bearers') THEN
+        CREATE POLICY "Global admins can manage office bearers" ON office_bearers 
+        FOR ALL USING (
+            EXISTS (SELECT 1 FROM profiles WHERE profiles.id = auth.uid() AND profiles.is_global_admin = true)
+        );
+    END IF;
+END $$;
+
 -- 9. BASE POLICIES (Using DO blocks to avoid "already exists" errors)
 DO $$ 
 BEGIN
@@ -136,5 +148,19 @@ BEGIN
             WHERE team_members.user_id = auth.uid() 
             AND team_members.team_id = (SELECT team_id FROM board_lists WHERE id = list_id)
         ));
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Authenticated users can view memberships') THEN
+        CREATE POLICY "Authenticated users can view memberships" ON user_societies FOR SELECT USING (auth.role() = 'authenticated');
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Global admins can manage all memberships') THEN
+        CREATE POLICY "Global admins can manage all memberships" ON user_societies 
+        FOR ALL USING (
+            EXISTS (SELECT 1 FROM profiles WHERE profiles.id = auth.uid() AND profiles.is_global_admin = true)
+        );
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users can join a society') THEN
+        CREATE POLICY "Users can join a society" ON user_societies FOR INSERT WITH CHECK (user_id = auth.uid());
     END IF;
 END $$;

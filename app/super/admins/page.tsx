@@ -1,6 +1,6 @@
 "use client";
 
-import { Shield, Plus, ShieldAlert, Building2, MoreHorizontal, Trash2, Pencil, Search, Crown } from "lucide-react";
+import { Shield, Plus, ShieldAlert, Building2, MoreHorizontal, Trash2, Pencil, Search, Crown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +8,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useMockData } from "@/app/context/MockDataContext";
+import { createClient } from "@/lib/supabase/client";
 
 type AdminRole = "Society President" | "Vice President" | "Secretary" | "Treasurer" | "General Admin";
 
@@ -26,6 +27,7 @@ export default function SuperAdminsPage() {
     const { admins, users, societies, addAdmin, removeAdmin } = useMockData();
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState("");
+    const [isLoadingAdmin, setIsLoadingAdmin] = useState(false);
 
     const [selectedUserId, setSelectedUserId] = useState("");
     const [selectedSociety, setSelectedSociety] = useState("");
@@ -37,12 +39,39 @@ export default function SuperAdminsPage() {
         a.scope.toLowerCase().includes(search.toLowerCase())
     );
 
-    const handleMakeAdmin = () => {
+    const handleMakeAdmin = async () => {
         const user = users.find(u => u.id === selectedUserId);
         const society = societies.find(s => s.id === selectedSociety);
         if (!user || !society) return;
-        addAdmin({ id: `admin-${Date.now()}`, name: user.name, email: user.email, role: selectedRole, scope: society.name });
-        setSelectedUserId(""); setSelectedSociety(""); setSelectedRole("Society President");
+
+        setIsLoadingAdmin(true);
+
+        // 1. Add/Update Society membership with Admin role
+        const { error: joinError } = await createClient().from('user_societies').upsert({
+            user_id: user.id,
+            society_id: society.id,
+            role: 'Admin'
+        });
+
+        if (joinError) {
+            console.error("Error creating admin:", joinError);
+            setIsLoadingAdmin(false);
+            return;
+        }
+
+        // 2. Update local state via context
+        addAdmin({
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: selectedRole,
+            scope: society.name
+        });
+
+        setIsLoadingAdmin(false);
+        setSelectedUserId("");
+        setSelectedSociety("");
+        setSelectedRole("Society President");
         setOpen(false);
     };
 
@@ -109,9 +138,16 @@ export default function SuperAdminsPage() {
 
                             <div className="flex gap-3 pt-2">
                                 <Button variant="outline" onClick={() => setOpen(false)} className="flex-1 border-zinc-200 dark:border-zinc-800">Cancel</Button>
-                                <Button disabled={!selectedUserId || !selectedSociety} onClick={handleMakeAdmin}
+                                <Button disabled={!selectedUserId || !selectedSociety || isLoadingAdmin} onClick={handleMakeAdmin}
                                     className="flex-1 bg-violet-600 hover:bg-violet-700 text-white disabled:opacity-50">
-                                    Confirm & Grant Access
+                                    {isLoadingAdmin ? (
+                                        <>
+                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                            Confirming...
+                                        </>
+                                    ) : (
+                                        "Confirm & Grant Access"
+                                    )}
                                 </Button>
                             </div>
                         </div>

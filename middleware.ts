@@ -38,18 +38,51 @@ export async function middleware(request: NextRequest) {
     // Protective Routing
     const url = request.nextUrl.clone();
     const isAuthPage = url.pathname === '/login' || url.pathname === '/signup';
+    const isJoinPage = url.pathname === '/join';
     const isProtectedPage = url.pathname.startsWith('/dashboard') ||
         url.pathname.startsWith('/admin') ||
         url.pathname.startsWith('/super');
 
-    if (!user && isProtectedPage) {
+    if (!user && (isProtectedPage || isJoinPage)) {
         url.pathname = '/login';
         return NextResponse.redirect(url);
     }
 
-    if (user && isAuthPage) {
-        url.pathname = '/dashboard';
-        return NextResponse.redirect(url);
+    if (user) {
+        // Fetch profile to check role
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('is_global_admin, user_societies(role)')
+            .eq('id', user.id)
+            .single();
+
+        const isSuperAdmin = profile?.is_global_admin;
+        const memberships = profile?.user_societies || [];
+
+        // Define management roles
+        const managementRoles = ['Admin', 'Director', 'Deputy Director', 'HR'];
+        const isSocietyAdmin = memberships.some((m: any) => managementRoles.includes(m.role));
+
+        // 1. If hitting /join and already a Super Admin, push to /super
+        if (isSuperAdmin && isJoinPage) {
+            url.pathname = '/super';
+            return NextResponse.redirect(url);
+        }
+
+        // 2. Redirect away from auth pages
+        if (isAuthPage) {
+            if (isSuperAdmin) {
+                url.pathname = '/super';
+            } else if (isSocietyAdmin) {
+                url.pathname = '/admin';
+            } else {
+                url.pathname = '/dashboard';
+            }
+            return NextResponse.redirect(url);
+        }
+
+        // 3. If a Society Admin tries to go to standard dashboard, let them (or you can force /admin)
+        // 4. If a standard user has no society, they go to /dashboard (no more forced /join)
     }
 
     return response;

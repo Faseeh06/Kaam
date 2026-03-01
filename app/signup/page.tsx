@@ -26,7 +26,6 @@ export default function SignupPage() {
     const [fullName, setFullName] = useState("");
     const [phone, setPhone] = useState("");
     const [department, setDepartment] = useState("");
-    const [team, setTeam] = useState("");
 
     const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -42,7 +41,6 @@ export default function SignupPage() {
                     full_name: fullName,
                     phone: phone,
                     department: department,
-                    primary_team: team,
                 }
             }
         });
@@ -51,8 +49,8 @@ export default function SignupPage() {
             setError(authError.message);
             setIsLoading(false);
         } else {
-            // Redirect to a confirmation page or login
-            router.push("/login?signup=success");
+            router.refresh();
+            router.push("/join");
         }
     };
 
@@ -112,29 +110,16 @@ export default function SignupPage() {
                                     className="bg-zinc-100 dark:bg-zinc-800/50 border-zinc-300 dark:border-zinc-700 text-[#172b4d] dark:text-white placeholder:text-zinc-500 focus-visible:ring-amber-500"
                                 />
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="department" className="text-zinc-800 dark:text-zinc-300">Department</Label>
-                                    <Input
-                                        id="department"
-                                        type="text"
-                                        value={department}
-                                        onChange={(e) => setDepartment(e.target.value)}
-                                        placeholder="e.g. Media"
-                                        className="bg-zinc-100 dark:bg-zinc-800/50 border-zinc-300 dark:border-zinc-700 text-[#172b4d] dark:text-white placeholder:text-zinc-500 focus-visible:ring-amber-500"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="team" className="text-zinc-800 dark:text-zinc-300">Society / Team</Label>
-                                    <Input
-                                        id="team"
-                                        type="text"
-                                        value={team}
-                                        onChange={(e) => setTeam(e.target.value)}
-                                        placeholder="e.g. Debate Club"
-                                        className="bg-zinc-100 dark:bg-zinc-800/50 border-zinc-300 dark:border-zinc-700 text-[#172b4d] dark:text-white placeholder:text-zinc-500 focus-visible:ring-amber-500"
-                                    />
-                                </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="department" className="text-zinc-800 dark:text-zinc-300">Department</Label>
+                                <Input
+                                    id="department"
+                                    type="text"
+                                    value={department}
+                                    onChange={(e) => setDepartment(e.target.value)}
+                                    placeholder="e.g. Media"
+                                    className="bg-zinc-100 dark:bg-zinc-800/50 border-zinc-300 dark:border-zinc-700 text-[#172b4d] dark:text-white placeholder:text-zinc-500 focus-visible:ring-amber-500"
+                                />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="email" className="text-zinc-800 dark:text-zinc-300">Email Address</Label>

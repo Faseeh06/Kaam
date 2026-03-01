@@ -39,17 +39,34 @@ export default function LoginPage() {
             setError(authError.message);
             setIsLoading(false);
         } else {
-            // Fetch profile to check role
+            // 1. Fetch profile with all role info
+            const { data: { user } } = await supabase.auth.getUser();
             const { data: profile } = await supabase
                 .from('profiles')
-                .select('is_global_admin')
+                .select(`
+                    is_global_admin,
+                    user_societies(role)
+                `)
+                .eq('id', user?.id)
                 .single();
+
+            const isSuperAdmin = profile?.is_global_admin;
+            const memberships = profile?.user_societies || [];
+
+            // Define management roles
+            const managementRoles = ['Admin', 'Director', 'Deputy Director', 'HR'];
+            const isSocietyAdmin = memberships.some((m: any) => managementRoles.includes(m.role));
 
             router.refresh();
 
-            if (profile?.is_global_admin) {
-                router.push("/super/societies");
+            // 2. Route based on most powerful role
+            if (isSuperAdmin) {
+                router.push("/super");
+            } else if (isSocietyAdmin) {
+                router.push("/admin");
             } else {
+                // All other authenticated users go to dashboard
+                // They can join a society from there if needed
                 router.push("/dashboard");
             }
         }

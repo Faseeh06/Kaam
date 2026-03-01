@@ -2,12 +2,13 @@
 -- Mock data for local testing and initial environment setup.
 
 -- 1. SEED SOCIETIES
-INSERT INTO societies (id, name, acronym, members, status, description, email, website, whatsapp, accent_color)
+INSERT INTO societies (id, name, acronym, members, status, description, email, website, whatsapp, accent_color, join_code)
 VALUES 
-('87654321-4321-4321-4321-210987654321', 'Computer Science Society', 'CSS', 1200, 'Active', 'Empowering tech enthusiasts across campus.', 'contact@css.edu', 'https://css.example.com', 'https://wa.me/923001234567', 'bg-violet-500'),
-('76543210-3210-3210-3210-109876543210', 'Entrepreneurs Network', 'EN', 450, 'Active', 'Building the next generation of founders.', 'en@uni.edu', NULL, 'https://wa.me/923007654321', 'bg-amber-500'),
-('65432109-2109-2109-2109-098765432109', 'Robotics Club', 'RC', 320, 'Active', 'Engineering the future, one robot at a time.', 'rc@uni.edu', NULL, NULL, 'bg-rose-500')
-ON CONFLICT (id) DO NOTHING;
+('00000000-0000-0000-0000-000000000001', 'Computer Science Society', 'CSS', 1200, 'Active', 'Empowering tech enthusiasts across campus.', 'contact@css.edu', 'https://css.example.com', 'https://wa.me/923001234567', 'bg-amber-600', 'CSS2026'),
+('00000000-0000-0000-0000-000000000002', 'Entrepreneurs Network', 'EN', 450, 'Active', 'Building the next generation of founders.', 'en@uni.edu', NULL, 'https://wa.me/923007654321', 'bg-emerald-600', 'EN2026'),
+('00000000-0000-0000-0000-000000000003', 'Robotics Club', 'RC', 320, 'Active', 'Engineering the future, one robot at a time.', 'rc@uni.edu', NULL, NULL, 'bg-blue-600', 'RC2026')
+ON CONFLICT (id) DO UPDATE 
+SET join_code = EXCLUDED.join_code;
 
 -- 2. SEED TEAMS
 INSERT INTO teams (id, society_id, name, members, leads, color, type)

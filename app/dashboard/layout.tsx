@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
-import { Shield, LayoutDashboard, KanbanSquare, Settings, User, ChevronLeft, ChevronRight, Sun, Moon, LogOut } from "lucide-react";
+import { Shield, LayoutDashboard, KanbanSquare, Settings, User, Users2, ChevronLeft, ChevronRight, Sun, Moon, LogOut } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
@@ -62,6 +62,15 @@ export default function DashboardLayout({
                     >
                         <KanbanSquare className={`h-5 w-5 shrink-0 transition-colors ${pathname === '/dashboard/board' ? 'text-amber-600 dark:text-amber-500' : 'group-hover:!text-amber-600 dark:group-hover:!text-amber-500'}`} />
                         {!isCollapsed && <span className="text-sm font-medium">Board</span>}
+                    </Link>
+
+                    <Link
+                        href="/dashboard/team"
+                        className={`flex items-center ${isCollapsed ? 'justify-center px-0' : 'gap-3 px-3'} py-2.5 rounded-lg transition-colors group relative ${pathname === '/dashboard/team' ? 'text-amber-600 dark:text-amber-500 bg-amber-50/50 dark:bg-zinc-900/40 hover:bg-amber-100/50 dark:hover:bg-zinc-900/80' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-900/50'}`}
+                        title="My Team"
+                    >
+                        <Users2 className={`h-5 w-5 shrink-0 transition-colors ${pathname === '/dashboard/team' ? 'text-amber-600 dark:text-amber-500' : 'group-hover:!text-amber-600 dark:group-hover:!text-amber-500'}`} />
+                        {!isCollapsed && <span className="text-sm font-medium">My Team</span>}
                     </Link>
 
                     <Link

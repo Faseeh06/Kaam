@@ -166,8 +166,8 @@ BEGIN
     END IF;
 
     -- Society Admins can view and manage their own society's data
-    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Society admins can view their teams') THEN
-        CREATE POLICY "Society admins can view their teams" ON teams FOR SELECT
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Society admins can manage their teams') THEN
+        CREATE POLICY "Society admins can manage their teams" ON teams FOR ALL
         USING (EXISTS (
             SELECT 1 FROM user_societies 
             WHERE user_societies.user_id = auth.uid() 
@@ -176,8 +176,8 @@ BEGIN
         ));
     END IF;
 
-    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Society admins can view their lists') THEN
-        CREATE POLICY "Society admins can view their lists" ON board_lists FOR SELECT
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Society admins can manage their lists') THEN
+        CREATE POLICY "Society admins can manage their lists" ON board_lists FOR ALL
         USING (EXISTS (
             SELECT 1 FROM teams 
             JOIN user_societies ON teams.society_id = user_societies.society_id
@@ -198,4 +198,5 @@ BEGIN
             AND user_societies.role IN ('Admin', 'Director', 'Deputy Director', 'HR')
         ));
     END IF;
+
 END $$;

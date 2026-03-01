@@ -76,9 +76,8 @@ export default function AdminTeamsPage() {
     const handleCreateTeam = async () => {
         if (!newName.trim() || !managedSocietyId) return;
         await addTeam({
-            id: `team-${Date.now()}`,
             name: newName.trim(),
-            members: newLeads.length || 1,
+            members: newLeads.length || 0,
             leads: newLeads.length > 0 ? newLeads : ["Unassigned"],
             color: newColor,
             type: newType,

@@ -76,7 +76,7 @@ type MockDataContextType = {
     approvePendingUser: (id: string, role: string, team: string) => void;
     rejectPendingUser: (id: string) => void;
 
-    addTeam: (team: Team & { society_id: string }) => Promise<void>;
+    addTeam: (team: Omit<Team, "id"> & { society_id: string }) => Promise<void>;
     addOfficeBearerRole: (ob: OfficeBearerRole) => void;
     updateOfficeBearerRole: (id: string, updates: Partial<OfficeBearerRole>) => void;
     removeOfficeBearerRole: (id: string) => void;
@@ -386,17 +386,29 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
 
 
 
-    const addTeam = async (team: Team & { society_id: string }) => {
-        const { error } = await supabase.from('teams').insert([{
-            id: team.id,
-            name: team.name,
-            color: team.color,
-            type: team.type,
-            members: team.members,
-            leads: team.leads,
-            society_id: team.society_id
-        }]);
-        if (!error) setTeams([...teams, team]);
+    const addTeam = async (teamData: Omit<Team, "id"> & { society_id: string }) => {
+        const { data, error } = await supabase
+            .from('teams')
+            .insert([{
+                name: teamData.name,
+                color: teamData.color,
+                type: teamData.type,
+                members: teamData.members,
+                leads: teamData.leads,
+                society_id: teamData.society_id
+            }])
+            .select()
+            .single();
+
+        if (error) {
+            console.error("Error creating team:", error.message);
+            alert("Failed to create team: " + error.message);
+            return;
+        }
+
+        if (data) {
+            setTeams(prev => [...prev, data as Team]);
+        }
     };
 
     const addOfficeBearerRole = async (ob: OfficeBearerRole) => {

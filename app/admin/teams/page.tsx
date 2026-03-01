@@ -5,30 +5,60 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { useMockData } from "@/app/context/MockDataContext";
+
+const COLORS = [
+    { label: "Rose", value: "bg-rose-500" },
+    { label: "Blue", value: "bg-blue-500" },
+    { label: "Emerald", value: "bg-emerald-500" },
+    { label: "Amber", value: "bg-amber-500" },
+    { label: "Violet", value: "bg-violet-500" },
+    { label: "Fuchsia", value: "bg-fuchsia-500" },
+];
 
 export default function AdminTeamsPage() {
     const { teams, addTeam } = useMockData();
     const [selectedTeam, setSelectedTeam] = useState<any>(null);
     const [isManageModalOpen, setIsManageModalOpen] = useState(false);
+    const [isCreateOpen, setIsCreateOpen] = useState(false);
+
+    // Create team form state
+    const [newName, setNewName] = useState("");
+    const [newType, setNewType] = useState("Core");
+    const [newColor, setNewColor] = useState("bg-rose-500");
+    const [newLeadInput, setNewLeadInput] = useState("");
+    const [newLeads, setNewLeads] = useState<string[]>([]);
 
     const openManageModal = (team: any) => {
         setSelectedTeam(team);
         setIsManageModalOpen(true);
     };
 
+    const addLead = () => {
+        if (newLeadInput.trim() && !newLeads.includes(newLeadInput.trim())) {
+            setNewLeads([...newLeads, newLeadInput.trim()]);
+            setNewLeadInput("");
+        }
+    };
+
+    const removeLead = (lead: string) => setNewLeads(newLeads.filter(l => l !== lead));
+
     const handleCreateTeam = () => {
+        if (!newName.trim()) return;
         addTeam({
             id: `team-${Date.now()}`,
-            name: "New Custom Team",
-            members: 1,
-            leads: ["You"],
-            color: "bg-rose-500",
-            type: "Core"
+            name: newName.trim(),
+            members: newLeads.length || 1,
+            leads: newLeads.length > 0 ? newLeads : ["Unassigned"],
+            color: newColor,
+            type: newType,
         });
+        // reset
+        setNewName(""); setNewType("Core"); setNewColor("bg-rose-500"); setNewLeads([]); setNewLeadInput("");
+        setIsCreateOpen(false);
     };
 
     return (
@@ -41,9 +71,96 @@ export default function AdminTeamsPage() {
                         Organize your society into functional groups.
                     </p>
                 </div>
-                <Button onClick={handleCreateTeam} className="bg-rose-500 text-white hover:bg-rose-600 shadow-sm shrink-0">
-                    <Plus className="h-4 w-4 mr-2" /> Create New Team
-                </Button>
+                <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+                    <DialogTrigger asChild>
+                        <Button className="bg-rose-500 text-white hover:bg-rose-600 shadow-sm shrink-0">
+                            <Plus className="h-4 w-4 mr-2" /> Create New Team
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-md bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800">
+                        <DialogHeader>
+                            <DialogTitle className="text-[#172b4d] dark:text-white">Create New Team</DialogTitle>
+                            <DialogDescription className="text-zinc-500 dark:text-zinc-400">
+                                Set up a new functional group for your society.
+                            </DialogDescription>
+                        </DialogHeader>
+
+                        <div className="space-y-4 mt-2">
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Team Name <span className="text-rose-500">*</span></label>
+                                <input
+                                    value={newName}
+                                    onChange={e => setNewName(e.target.value)}
+                                    placeholder="e.g. Marketing & Outreach"
+                                    className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:ring-1 focus:ring-rose-500"
+                                />
+                            </div>
+
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Team Type</label>
+                                <select
+                                    value={newType}
+                                    onChange={e => setNewType(e.target.value)}
+                                    className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:ring-1 focus:ring-rose-500"
+                                >
+                                    <option>Core</option>
+                                    <option>Support</option>
+                                    <option>Advisory</option>
+                                </select>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Team Accent Color</label>
+                                <div className="flex gap-2.5">
+                                    {COLORS.map(c => (
+                                        <div
+                                            key={c.value}
+                                            title={c.label}
+                                            onClick={() => setNewColor(c.value)}
+                                            className={`h-7 w-7 rounded-full cursor-pointer border-2 transition-transform hover:scale-110 ${c.value} ${newColor === c.value ? 'border-[#172b4d] dark:border-white ring-2 ring-zinc-200 dark:ring-zinc-700 ring-offset-1 scale-110' : 'border-transparent opacity-70 hover:opacity-100'}`}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Add Team Leads</label>
+                                <div className="flex gap-2">
+                                    <input
+                                        value={newLeadInput}
+                                        onChange={e => setNewLeadInput(e.target.value)}
+                                        onKeyDown={e => e.key === 'Enter' && addLead()}
+                                        placeholder="Type a name and press Add or Enter"
+                                        className="flex-1 bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:ring-1 focus:ring-rose-500"
+                                    />
+                                    <Button size="sm" onClick={addLead} className="bg-rose-500 hover:bg-rose-600 text-white">Add</Button>
+                                </div>
+                                {newLeads.length > 0 && (
+                                    <div className="flex flex-wrap gap-2 pt-1">
+                                        {newLeads.map(lead => (
+                                            <span key={lead} className="flex items-center gap-1.5 bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/30 rounded-full px-3 py-1 text-xs font-medium">
+                                                <span className="h-4 w-4 rounded-full bg-amber-200 dark:bg-amber-500/30 flex items-center justify-center font-bold text-[10px]">{lead.charAt(0)}</span>
+                                                {lead}
+                                                <button onClick={() => removeLead(lead)} className="ml-1 text-amber-500 hover:text-rose-500 transition">×</button>
+                                            </span>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="flex gap-3 pt-2">
+                                <Button variant="outline" onClick={() => setIsCreateOpen(false)} className="flex-1 border-zinc-200 dark:border-zinc-800">Cancel</Button>
+                                <Button
+                                    disabled={!newName.trim()}
+                                    onClick={handleCreateTeam}
+                                    className="flex-1 bg-rose-500 hover:bg-rose-600 text-white disabled:opacity-50"
+                                >
+                                    Create Team
+                                </Button>
+                            </div>
+                        </div>
+                    </DialogContent>
+                </Dialog>
             </header>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full">
@@ -100,7 +217,7 @@ export default function AdminTeamsPage() {
                 ))}
 
                 {/* Create Team Card */}
-                <button onClick={handleCreateTeam} className="bg-[#f4f5f7]/50 dark:bg-zinc-900/20 border-2 border-dashed border-zinc-300 dark:border-zinc-800 rounded-2xl p-6 shadow-sm hover:border-rose-400 dark:hover:border-rose-500/50 transition flex flex-col items-center justify-center gap-3 text-zinc-500 dark:text-zinc-400 hover:text-rose-600 dark:hover:text-rose-500 min-h-[250px] group">
+                <button onClick={() => setIsCreateOpen(true)} className="bg-[#f4f5f7]/50 dark:bg-zinc-900/20 border-2 border-dashed border-zinc-300 dark:border-zinc-800 rounded-2xl p-6 shadow-sm hover:border-rose-400 dark:hover:border-rose-500/50 transition flex flex-col items-center justify-center gap-3 text-zinc-500 dark:text-zinc-400 hover:text-rose-600 dark:hover:text-rose-500 min-h-[250px] group">
                     <div className="h-12 w-12 rounded-full bg-white dark:bg-zinc-800 shadow-sm flex items-center justify-center group-hover:bg-rose-50 dark:group-hover:bg-rose-500/10 transition">
                         <Plus className="h-6 w-6" />
                     </div>

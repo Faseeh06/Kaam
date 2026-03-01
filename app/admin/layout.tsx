@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
-import { Shield, LayoutDashboard, KanbanSquare, Settings, Users, Building2, UsersRound, ChevronLeft, ChevronRight, Sun, Moon, ShieldAlert, MessageCircle, LogOut } from "lucide-react";
+import { Shield, LayoutDashboard, KanbanSquare, Settings, Users, Building2, UsersRound, Crown, ChevronLeft, ChevronRight, Sun, Moon, ShieldAlert, MessageCircle, LogOut } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
@@ -80,6 +80,15 @@ export default function AdminLayout({
                     >
                         <UsersRound className={`h-5 w-5 shrink-0 transition-colors ${pathname === '/admin/teams' ? 'text-rose-600 dark:text-rose-500' : 'group-hover:!text-rose-600 dark:group-hover:!text-rose-500'}`} />
                         {!isCollapsed && <span className="text-sm font-medium">Teams Management</span>}
+                    </Link>
+
+                    <Link
+                        href="/admin/office-bearers"
+                        className={`flex items-center ${isCollapsed ? 'justify-center px-0' : 'gap-3 px-3'} py-2.5 rounded-lg transition-colors group relative ${pathname === '/admin/office-bearers' ? 'text-rose-600 dark:text-rose-500 bg-rose-50/80 dark:bg-rose-500/10 hover:bg-rose-100/50 dark:hover:bg-rose-500/20' : 'text-zinc-500 dark:text-zinc-400 hover:text-[#172b4d] dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-900/50'}`}
+                        title="Office Bearers"
+                    >
+                        <Crown className={`h-5 w-5 shrink-0 transition-colors ${pathname === '/admin/office-bearers' ? 'text-rose-600 dark:text-rose-500' : 'group-hover:!text-rose-600 dark:group-hover:!text-rose-500'}`} />
+                        {!isCollapsed && <span className="text-sm font-medium">Office Bearers</span>}
                     </Link>
 
                     <Link

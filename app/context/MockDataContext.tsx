@@ -38,11 +38,13 @@ export type TeamRole = "Director" | "Deputy Director" | "HR" | "Executive";
 
 export type TeamMember = {
     id: string;
+    userId: string;
     name: string;
     email: string;
     teamRole: TeamRole;
     joinedAt: string;
 };
+
 
 export const TEAM_ROLE_PERMISSIONS: Record<TeamRole, { canAddToBoard: boolean; canAssign: boolean; canComment: boolean; canManageMembers: boolean }> = {
     "Director": { canAddToBoard: true, canAssign: true, canComment: true, canManageMembers: false },
@@ -80,8 +82,9 @@ type MockDataContextType = {
     addOfficeBearerRole: (ob: OfficeBearerRole) => void;
     updateOfficeBearerRole: (id: string, updates: Partial<OfficeBearerRole>) => void;
     removeOfficeBearerRole: (id: string) => void;
-    addTeamMember: (teamId: string, member: TeamMember) => void;
-    removeTeamMember: (teamId: string, memberId: string) => void;
+    addTeamMember: (teamId: string, userId: string, role?: TeamRole) => Promise<void>;
+    removeTeamMember: (memberId: string) => Promise<void>;
+
     updateTeamMemberRole: (teamId: string, memberId: string, role: TeamRole) => void;
 
     // Board Actions
@@ -218,6 +221,29 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
             const { data: cardData } = await supabase.from('board_cards').select('*').order('position');
             if (cardData) setBoardCards(cardData);
 
+            // Fetch Team Members
+            const { data: memberData } = await supabase
+                .from('team_members')
+                .select('*, profiles(full_name, email)');
+
+            if (memberData) {
+                const grouped: Record<string, TeamMember[]> = {};
+                memberData.forEach((m: any) => {
+                    const tId = m.team_id;
+                    if (!grouped[tId]) grouped[tId] = [];
+                    grouped[tId].push({
+                        id: m.id,
+                        userId: m.user_id,
+                        name: m.profiles?.full_name || "Unknown",
+                        email: m.profiles?.email || "N/A",
+                        teamRole: m.role as TeamRole,
+                        joinedAt: m.joined_at
+                    });
+                });
+                setTeamMembers(grouped);
+            }
+
+
         } catch (err) {
             console.error("Error fetching context data:", err);
         } finally {
@@ -233,10 +259,12 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
             .channel('db-changes')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'user_societies' }, () => fetchData())
             .on('postgres_changes', { event: '*', schema: 'public', table: 'teams' }, () => fetchData())
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'team_members' }, () => fetchData())
             .on('postgres_changes', { event: '*', schema: 'public', table: 'board_lists' }, () => fetchData())
             .on('postgres_changes', { event: '*', schema: 'public', table: 'board_cards' }, () => fetchData())
             .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => fetchData())
             .on('postgres_changes', { event: '*', schema: 'public', table: 'societies' }, () => fetchData())
+
             .subscribe();
 
         return () => {
@@ -421,11 +449,29 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
 
     const removeOfficeBearerRole = (id: string) => setOfficeBearers(officeBearers.filter(ob => ob.id !== id));
 
-    const addTeamMember = (teamId: string, member: TeamMember) =>
-        setTeamMembers(prev => ({ ...prev, [teamId]: [...(prev[teamId] || []), member] }));
+    const addTeamMember = async (teamId: string, userId: string, role: TeamRole = "Executive") => {
+        const { error } = await supabase
+            .from('team_members')
+            .insert([{ team_id: teamId, user_id: userId, role }]);
 
-    const removeTeamMember = (teamId: string, memberId: string) =>
-        setTeamMembers(prev => ({ ...prev, [teamId]: (prev[teamId] || []).filter(m => m.id !== memberId) }));
+        if (error) {
+            console.error("Error adding team member:", error.message);
+            alert("Failed to add member: " + error.message);
+        }
+    };
+
+    const removeTeamMember = async (memberId: string) => {
+        const { error } = await supabase
+            .from('team_members')
+            .delete()
+            .eq('id', memberId);
+
+        if (error) {
+            console.error("Error removing team member:", error.message);
+            alert("Failed to remove member: " + error.message);
+        }
+    };
+
 
     const updateTeamMemberRole = (teamId: string, memberId: string, role: TeamRole) =>
         setTeamMembers(prev => ({

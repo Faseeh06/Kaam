@@ -1,6 +1,6 @@
 "use client";
 
-import { Users, Plus, Star, MoreVertical, LayoutGrid, Settings, ShieldAlert } from "lucide-react";
+import { Users, Plus, Star, MoreVertical, LayoutGrid, Settings, ShieldAlert, Search, Check } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMockData } from "@/app/context/MockDataContext";
 import { createClient } from "@/lib/supabase/client";
 import { Loader2 } from "lucide-react";
+
 
 const COLORS = [
     { label: "Rose", value: "bg-rose-500" },
@@ -21,12 +22,17 @@ const COLORS = [
 ];
 
 export default function AdminTeamsPage() {
-    const { teams, addTeam } = useMockData();
+    const { teams, addTeam, users, teamMembers, addTeamMember, removeTeamMember } = useMockData();
     const [managedSocietyId, setManagedSocietyId] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedTeam, setSelectedTeam] = useState<any>(null);
     const [isManageModalOpen, setIsManageModalOpen] = useState(false);
     const [isCreateOpen, setIsCreateOpen] = useState(false);
+
+    // Member search for management
+    const [memberSearch, setMemberSearch] = useState("");
+    const [showResults, setShowResults] = useState(false);
+
 
     useEffect(() => {
         const getManagedSociety = async () => {
@@ -72,6 +78,29 @@ export default function AdminTeamsPage() {
     };
 
     const removeLead = (lead: string) => setNewLeads(newLeads.filter(l => l !== lead));
+
+
+    // For member management modal
+    const manageableUsers = users.filter(u => u.societyIds.includes(managedSocietyId || "") &&
+        !teamMembers[selectedTeam?.id]?.some(m => m.userId === u.id)
+    );
+
+    const searchResults = manageableUsers.filter(u =>
+        u.name.toLowerCase().includes(memberSearch.toLowerCase()) ||
+        u.email.toLowerCase().includes(memberSearch.toLowerCase())
+    ).slice(0, 5);
+
+    const handleAddMember = async (userId: string) => {
+        if (!selectedTeam) return;
+        await addTeamMember(selectedTeam.id, userId);
+        setMemberSearch("");
+        setShowResults(false);
+    };
+
+    const handleRemoveMember = async (recordId: string) => {
+        await removeTeamMember(recordId);
+    };
+
 
     const handleCreateTeam = async () => {
         if (!newName.trim() || !managedSocietyId) return;
@@ -285,52 +314,75 @@ export default function AdminTeamsPage() {
                         </TabsList>
 
                         <TabsContent value="members" className="space-y-4">
-                            <div className="flex items-center gap-2 mb-2">
-                                <input
-                                    placeholder="Search & add member by name..."
-                                    className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2 text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:ring-1 focus:ring-rose-500"
-                                />
-                                <Button size="sm" className="bg-rose-500 text-white hover:bg-rose-600">Add</Button>
+                            <div className="relative">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <div className="relative flex-1">
+                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+                                        <input
+                                            value={memberSearch}
+                                            onChange={(e) => {
+                                                setMemberSearch(e.target.value);
+                                                setShowResults(true);
+                                            }}
+                                            onFocus={() => setShowResults(true)}
+                                            placeholder="Search & add society member..."
+                                            className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg pl-9 pr-4 py-2 text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:ring-1 focus:ring-rose-500"
+                                        />
+                                    </div>
+                                    <Button size="sm" variant="ghost" className="text-zinc-400 hover:text-zinc-600" onClick={() => {
+                                        setMemberSearch("");
+                                        setShowResults(false);
+                                    }}>Clear</Button>
+                                </div>
+
+                                {showResults && memberSearch.length > 0 && (
+                                    <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-xl overflow-hidden max-h-48 overflow-y-auto">
+                                        {searchResults.length > 0 ? (
+                                            searchResults.map(u => (
+                                                <button key={u.id} onClick={() => handleAddMember(u.id)} className="w-full flex items-center gap-3 p-3 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition text-left border-b border-zinc-100 dark:border-zinc-800 last:border-0 group">
+                                                    <Avatar className="h-8 w-8">
+                                                        <AvatarFallback className="bg-rose-100 dark:bg-rose-500/20 text-rose-600 dark:text-rose-400 text-[10px] font-bold">{u.name.charAt(0)}</AvatarFallback>
+                                                    </Avatar>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="text-sm font-medium text-[#172b4d] dark:text-zinc-100 truncate">{u.name}</p>
+                                                        <p className="text-[10px] text-zinc-500 truncate">{u.email}</p>
+                                                    </div>
+                                                    <Plus className="h-4 w-4 text-zinc-400 group-hover:text-rose-500 transition" />
+                                                </button>
+                                            ))
+                                        ) : (
+                                            <div className="p-4 text-center text-xs text-zinc-500">No matching members found in society.</div>
+                                        )}
+                                    </div>
+                                )}
                             </div>
 
                             <div className="bg-zinc-50 dark:bg-zinc-900/50 rounded-lg border border-zinc-200 dark:border-zinc-800 p-4 min-h-[150px] max-h-[300px] overflow-y-auto custom-scrollbar">
-                                {selectedTeam?.leads?.map((lead: string, i: number) => (
-                                    <div key={`lead-${i}`} className="flex items-center justify-between py-2 border-b border-zinc-100 dark:border-zinc-800/50 last:border-0 hover:bg-white dark:hover:bg-zinc-800 p-2 rounded-md transition-colors group">
+                                {teamMembers[selectedTeam?.id]?.map((m) => (
+                                    <div key={m.id} className="flex items-center justify-between py-2 border-b border-zinc-100 dark:border-zinc-800/50 last:border-0 hover:bg-white dark:hover:bg-zinc-800 p-2 rounded-md transition-colors group">
                                         <div className="flex items-center gap-2">
                                             <Avatar className="h-8 w-8 border border-zinc-200 dark:border-zinc-700">
-                                                <AvatarFallback className="bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-500 text-xs font-bold">{lead.charAt(0)}</AvatarFallback>
+                                                <AvatarFallback className="bg-zinc-100 dark:bg-zinc-800 text-[#172b4d] dark:text-zinc-300 text-xs font-bold">{m.name.charAt(0)}</AvatarFallback>
                                             </Avatar>
                                             <div>
-                                                <p className="text-sm font-medium text-[#172b4d] dark:text-zinc-200">{lead}</p>
-                                                <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold">Team Lead</p>
+                                                <p className="text-sm font-medium text-[#172b4d] dark:text-zinc-200">{m.name}</p>
+                                                <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold">{m.teamRole}</p>
                                             </div>
                                         </div>
                                         <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2">
-                                            <Button variant="ghost" size="sm" className="h-7 px-2 text-xs text-zinc-500 hover:text-[#172b4d] dark:hover:text-white">Demote</Button>
-                                            <Button variant="ghost" size="sm" className="h-7 px-2 text-xs text-rose-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10">Remove</Button>
+                                            <Button variant="ghost" size="sm" onClick={() => handleRemoveMember(m.id)} className="h-7 px-2 text-xs text-rose-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10">Remove</Button>
                                         </div>
                                     </div>
                                 ))}
-                                {/* Dummy members to show off the UI scroll */}
-                                {Array.from({ length: selectedTeam?.members > 0 ? selectedTeam.members - selectedTeam.leads.length : 0 }).slice(0, 4).map((_, i) => (
-                                    <div key={`member-${i}`} className="flex items-center justify-between py-2 border-b border-zinc-100 dark:border-zinc-800/50 last:border-0 hover:bg-white dark:hover:bg-zinc-800 p-2 rounded-md transition-colors group">
-                                        <div className="flex items-center gap-2">
-                                            <Avatar className="h-8 w-8 border border-zinc-200 dark:border-zinc-700">
-                                                <AvatarFallback className="bg-zinc-200 dark:bg-zinc-800/60 text-zinc-600 dark:text-zinc-400 text-xs font-bold">U{i + 1}</AvatarFallback>
-                                            </Avatar>
-                                            <div>
-                                                <p className="text-sm font-medium text-[#172b4d] dark:text-zinc-200">Dummy User {i + 1}</p>
-                                                <p className="text-xs text-zinc-500 font-medium">Member</p>
-                                            </div>
-                                        </div>
-                                        <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2">
-                                            <Button variant="ghost" size="sm" className="h-7 px-2 text-xs text-amber-600 hover:text-amber-700 hover:bg-amber-50 dark:hover:bg-amber-500/10">Make Lead</Button>
-                                            <Button variant="ghost" size="sm" className="h-7 px-2 text-xs text-rose-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10">Remove</Button>
-                                        </div>
+                                {(!teamMembers[selectedTeam?.id] || teamMembers[selectedTeam?.id].length === 0) && (
+                                    <div className="h-32 flex flex-col items-center justify-center text-zinc-500 text-xs italic gap-2">
+                                        <Users className="h-5 w-5 opacity-30" />
+                                        No members in this team yet.
                                     </div>
-                                ))}
+                                )}
                             </div>
                         </TabsContent>
+
 
                         <TabsContent value="settings" className="space-y-4 pt-2">
                             <div className="space-y-4 border border-zinc-200 dark:border-zinc-800 bg-[#f4f5f7]/50 dark:bg-zinc-900/30 p-5 rounded-xl">

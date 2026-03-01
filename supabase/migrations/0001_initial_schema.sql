@@ -165,38 +165,48 @@ BEGIN
         CREATE POLICY "Users can join a society" ON user_societies FOR INSERT WITH CHECK (user_id = auth.uid());
     END IF;
 
-    -- Society Admins can view and manage their own society's data
-    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Society admins can manage their teams') THEN
-        CREATE POLICY "Society admins can manage their teams" ON teams FOR ALL
-        USING (EXISTS (
+    -- ─── TEAMS POLICIES ───
+    DROP POLICY IF EXISTS "Society admins can manage their teams" ON teams;
+    DROP POLICY IF EXISTS "Society admins can view their teams" ON teams;
+    CREATE POLICY "Manage teams" ON teams FOR ALL USING (
+        (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_global_admin = true))
+        OR
+        (EXISTS (
             SELECT 1 FROM user_societies 
-            WHERE user_societies.user_id = auth.uid() 
-            AND user_societies.society_id = teams.society_id
-            AND user_societies.role IN ('Admin', 'Director', 'Deputy Director', 'HR')
-        ));
-    END IF;
+            WHERE user_id = auth.uid() 
+            AND society_id = teams.society_id
+            AND role NOT IN ('Member', 'User', 'Pending', 'Guest')
+        ))
+    );
 
-    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Society admins can manage their lists') THEN
-        CREATE POLICY "Society admins can manage their lists" ON board_lists FOR ALL
-        USING (EXISTS (
+    -- ─── BOARD LISTS POLICIES ───
+    DROP POLICY IF EXISTS "Society admins can manage their lists" ON board_lists;
+    DROP POLICY IF EXISTS "Society admins can view their lists" ON board_lists;
+    CREATE POLICY "Manage lists" ON board_lists FOR ALL USING (
+        (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_global_admin = true))
+        OR
+        (EXISTS (
             SELECT 1 FROM teams 
             JOIN user_societies ON teams.society_id = user_societies.society_id
             WHERE user_societies.user_id = auth.uid()
             AND teams.id = board_lists.team_id
-            AND user_societies.role IN ('Admin', 'Director', 'Deputy Director', 'HR')
-        ));
-    END IF;
+            AND user_societies.role NOT IN ('Member', 'User', 'Pending', 'Guest')
+        ))
+    );
 
-    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Society admins can manage their cards') THEN
-        CREATE POLICY "Society admins can manage their cards" ON board_cards FOR ALL
-        USING (EXISTS (
+    -- ─── BOARD CARDS POLICIES ───
+    DROP POLICY IF EXISTS "Society admins can manage their cards" ON board_cards;
+    CREATE POLICY "Manage cards" ON board_cards FOR ALL USING (
+        (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_global_admin = true))
+        OR
+        (EXISTS (
             SELECT 1 FROM board_lists
             JOIN teams ON board_lists.team_id = teams.id
             JOIN user_societies ON teams.society_id = user_societies.society_id
             WHERE user_societies.user_id = auth.uid()
             AND board_lists.id = board_cards.list_id
-            AND user_societies.role IN ('Admin', 'Director', 'Deputy Director', 'HR')
-        ));
-    END IF;
+            AND user_societies.role NOT IN ('Member', 'User', 'Pending', 'Guest')
+        ))
+    );
 
 END $$;

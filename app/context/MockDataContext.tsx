@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
 // Types
-export type Society = { id: string; name: string; acronym: string; members: number; status: string };
+export type Society = { id: string; name: string; acronym: string; members: number; status: string; description?: string; email?: string; website?: string; whatsapp?: string; };
 export type GlobalAdmin = { id: string; name: string; email: string; role: string; scope: string };
 export type AppUser = { id: string; name: string; email: string; society: string; joined: string; role: string; team: string; status: string };
 export type PendingUser = { id: string; name: string; email: string; society: string; time: string; status: string };
@@ -18,6 +18,7 @@ type MockDataContextType = {
 
     // Actions
     addSociety: (soc: Society) => void;
+    updateSociety: (id: string, updates: Partial<Society>) => void;
     addAdmin: (admin: GlobalAdmin) => void;
     addUser: (user: AppUser) => void;
     removeUser: (id: string) => void;
@@ -27,10 +28,10 @@ type MockDataContextType = {
 };
 
 const initialSocieties: Society[] = [
-    { id: "1", name: "Computer Science Society", acronym: "CSS", members: 1200, status: "Active" },
-    { id: "2", name: "Entrepreneurs Network", acronym: "EN", members: 450, status: "Active" },
-    { id: "3", name: "Robotics Club", acronym: "RC", members: 320, status: "Active" },
-    { id: "4", name: "Literature & Debating", acronym: "LDS", members: 210, status: "Inactive" }
+    { id: "1", name: "Computer Science Society", acronym: "CSS", members: 1200, status: "Active", description: "Empowering tech enthusiasts across campus.", email: "contact@css.edu", website: "https://css.example.com", whatsapp: "https://wa.me/923001234567" },
+    { id: "2", name: "Entrepreneurs Network", acronym: "EN", members: 450, status: "Active", description: "Building the next generation of founders.", email: "en@uni.edu", whatsapp: "https://wa.me/923007654321" },
+    { id: "3", name: "Robotics Club", acronym: "RC", members: 320, status: "Active", description: "Engineering the future, one robot at a time.", email: "rc@uni.edu" },
+    { id: "4", name: "Literature & Debating", acronym: "LDS", members: 210, status: "Inactive", description: "Where words meet wisdom.", email: "lds@uni.edu" }
 ];
 
 const initialAdmins: GlobalAdmin[] = [
@@ -69,6 +70,8 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
     const [teams, setTeams] = useState<Team[]>(initialTeams);
 
     const addSociety = (soc: Society) => setSocieties([...societies, soc]);
+    const updateSociety = (id: string, updates: Partial<Society>) =>
+        setSocieties(societies.map(s => s.id === id ? { ...s, ...updates } : s));
     const addAdmin = (admin: GlobalAdmin) => setAdmins([...admins, admin]);
     const addUser = (user: AppUser) => setUsers([...users, user]);
     const removeUser = (id: string) => setUsers(users.filter(u => u.id !== id));
@@ -98,7 +101,7 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
     return (
         <MockDataContext.Provider value={{
             societies, admins, users, pendingUsers, teams,
-            addSociety, addAdmin, addUser, removeUser, approvePendingUser, rejectPendingUser, addTeam
+            addSociety, updateSociety, addAdmin, addUser, removeUser, approvePendingUser, rejectPendingUser, addTeam
         }}>
             {children}
         </MockDataContext.Provider>

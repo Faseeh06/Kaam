@@ -450,27 +450,54 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
     const removeOfficeBearerRole = (id: string) => setOfficeBearers(officeBearers.filter(ob => ob.id !== id));
 
     const addTeamMember = async (teamId: string, userId: string, role: TeamRole = "Executive") => {
-        const { error } = await supabase
+        // 1. Get Team Name for primary_team sync
+        const { data: teamInfo } = await supabase.from('teams').select('name').eq('id', teamId).single();
+
+        // 2. Insert into team_members
+        const { error: memberError } = await supabase
             .from('team_members')
             .insert([{ team_id: teamId, user_id: userId, role }]);
 
-        if (error) {
-            console.error("Error adding team member:", error.message);
-            alert("Failed to add member: " + error.message);
+        if (memberError && memberError.code !== '23505') {
+            console.error("Error adding team member:", memberError.message);
+            alert("Failed to add member: " + memberError.message);
+            return;
         }
+
+        // 3. Sync to profiles.primary_team (for existing dashboard logic)
+        if (teamInfo) {
+            await supabase.from('profiles').update({ primary_team: teamInfo.name }).eq('id', userId);
+        }
+
+        // 4. Increment team count (optional but good for consistency if we use team.members)
+        await supabase.rpc('increment_team_members', { t_id: teamId });
     };
 
+
+
     const removeTeamMember = async (memberId: string) => {
-        const { error } = await supabase
+        // 1. Get member info before delete
+        const { data: memberInfo } = await supabase.from('team_members').select('user_id, team_id').eq('id', memberId).single();
+
+        // 2. Delete record
+        const { error: delError } = await supabase
             .from('team_members')
             .delete()
             .eq('id', memberId);
 
-        if (error) {
-            console.error("Error removing team member:", error.message);
-            alert("Failed to remove member: " + error.message);
+        if (delError) {
+            console.error("Error removing team member:", delError.message);
+            alert("Failed to remove member: " + delError.message);
+            return;
+        }
+
+        // 3. Clear profile primary_team and decrement count
+        if (memberInfo) {
+            await supabase.from('profiles').update({ primary_team: "" }).eq('id', memberInfo.user_id);
+            await supabase.rpc('decrement_team_members', { t_id: memberInfo.team_id });
         }
     };
+
 
 
     const updateTeamMemberRole = (teamId: string, memberId: string, role: TeamRole) =>

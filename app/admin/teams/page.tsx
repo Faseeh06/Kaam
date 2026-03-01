@@ -32,6 +32,8 @@ export default function AdminTeamsPage() {
     // Member search for management
     const [memberSearch, setMemberSearch] = useState("");
     const [showResults, setShowResults] = useState(false);
+    const [isAddingMember, setIsAddingMember] = useState(false);
+
 
 
     useEffect(() => {
@@ -91,11 +93,17 @@ export default function AdminTeamsPage() {
     ).slice(0, 5);
 
     const handleAddMember = async (userId: string) => {
-        if (!selectedTeam) return;
-        await addTeamMember(selectedTeam.id, userId);
-        setMemberSearch("");
-        setShowResults(false);
+        if (!selectedTeam || isAddingMember) return;
+        setIsAddingMember(true);
+        try {
+            await addTeamMember(selectedTeam.id, userId);
+            setMemberSearch("");
+            setShowResults(false);
+        } finally {
+            setIsAddingMember(false);
+        }
     };
+
 
     const handleRemoveMember = async (recordId: string) => {
         await removeTeamMember(recordId);
@@ -263,7 +271,9 @@ export default function AdminTeamsPage() {
                                 <span className="text-zinc-600 dark:text-zinc-400 flex items-center">
                                     <Users className="h-4 w-4 mr-2 opacity-70" /> Members
                                 </span>
-                                <span className="font-medium text-[#172b4d] dark:text-zinc-200">{team.members}</span>
+                                <span className="font-medium text-[#172b4d] dark:text-zinc-200">
+                                    {teamMembers[team.id]?.length || team.members || 0}
+                                </span>
                             </div>
 
                             <div className="flex justify-between items-center text-sm border-t border-zinc-100 dark:border-zinc-800/50 pt-4">
@@ -271,13 +281,15 @@ export default function AdminTeamsPage() {
                                     <Star className="h-4 w-4 mr-2 opacity-70 text-amber-500" /> Team Leads
                                 </span>
                                 <div className="flex -space-x-2">
-                                    {team.leads.map((lead, i) => (
-                                        <div key={i} className="h-7 w-7 rounded-full bg-zinc-200 dark:bg-zinc-800 border-2 border-white dark:border-zinc-950 flex items-center justify-center text-[10px] font-bold text-zinc-600 dark:text-zinc-300" title={lead}>
-                                            {lead.charAt(0)}
-                                        </div>
-                                    ))}
+                                    {(teamMembers[team.id]?.filter(m => m.teamRole === 'Director' || m.teamRole === 'Deputy Director') ||
+                                        team.leads.map(l => ({ name: l }))).map((lead: any, i: number) => (
+                                            <div key={i} className="h-7 w-7 rounded-full bg-zinc-200 dark:bg-zinc-800 border-2 border-white dark:border-zinc-950 flex items-center justify-center text-[10px] font-bold text-zinc-600 dark:text-zinc-300" title={lead.name}>
+                                                {lead.name.charAt(0)}
+                                            </div>
+                                        ))}
                                 </div>
                             </div>
+
                         </div>
 
                         <div className="mt-6">
@@ -339,7 +351,12 @@ export default function AdminTeamsPage() {
                                     <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-xl overflow-hidden max-h-48 overflow-y-auto">
                                         {searchResults.length > 0 ? (
                                             searchResults.map(u => (
-                                                <button key={u.id} onClick={() => handleAddMember(u.id)} className="w-full flex items-center gap-3 p-3 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition text-left border-b border-zinc-100 dark:border-zinc-800 last:border-0 group">
+                                                <button
+                                                    key={u.id}
+                                                    disabled={isAddingMember}
+                                                    onClick={() => handleAddMember(u.id)}
+                                                    className={`w-full flex items-center gap-3 p-3 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition text-left border-b border-zinc-100 dark:border-zinc-800 last:border-0 group ${isAddingMember ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                >
                                                     <Avatar className="h-8 w-8">
                                                         <AvatarFallback className="bg-rose-100 dark:bg-rose-500/20 text-rose-600 dark:text-rose-400 text-[10px] font-bold">{u.name.charAt(0)}</AvatarFallback>
                                                     </Avatar>
@@ -347,8 +364,9 @@ export default function AdminTeamsPage() {
                                                         <p className="text-sm font-medium text-[#172b4d] dark:text-zinc-100 truncate">{u.name}</p>
                                                         <p className="text-[10px] text-zinc-500 truncate">{u.email}</p>
                                                     </div>
-                                                    <Plus className="h-4 w-4 text-zinc-400 group-hover:text-rose-500 transition" />
+                                                    {isAddingMember ? <Loader2 className="h-4 w-4 animate-spin text-rose-500" /> : <Plus className="h-4 w-4 text-zinc-400 group-hover:text-rose-500 transition" />}
                                                 </button>
+
                                             ))
                                         ) : (
                                             <div className="p-4 text-center text-xs text-zinc-500">No matching members found in society.</div>

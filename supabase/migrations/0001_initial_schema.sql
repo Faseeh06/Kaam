@@ -161,17 +161,37 @@ BEGIN
         );
     END IF;
 
-    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Society admins can manage their memberships') THEN
-        CREATE POLICY "Society admins can manage their memberships" ON user_societies 
-        FOR ALL USING (
-            EXISTS (
-                SELECT 1 FROM user_societies AS admins
-                WHERE admins.user_id = auth.uid() 
-                AND admins.society_id = user_societies.society_id
-                AND admins.role NOT IN ('Member', 'User', 'Pending', 'Guest')
-            )
-        );
-    END IF;
+    DROP POLICY IF EXISTS "Society admins can manage their memberships" ON user_societies;
+    DROP POLICY IF EXISTS "Society admins insert memberships" ON user_societies;
+    DROP POLICY IF EXISTS "Society admins update memberships" ON user_societies;
+    DROP POLICY IF EXISTS "Society admins delete memberships" ON user_societies;
+
+    CREATE POLICY "Society admins insert memberships" ON user_societies FOR INSERT WITH CHECK (
+        EXISTS (
+            SELECT 1 FROM user_societies AS admins
+            WHERE admins.user_id = auth.uid() 
+            AND admins.society_id = user_societies.society_id
+            AND admins.role NOT IN ('Member', 'User', 'Pending', 'Guest')
+        )
+    );
+    CREATE POLICY "Society admins update memberships" ON user_societies FOR UPDATE USING (
+        EXISTS (
+            SELECT 1 FROM user_societies AS admins
+            WHERE admins.user_id = auth.uid() 
+            AND admins.society_id = user_societies.society_id
+            AND admins.role NOT IN ('Member', 'User', 'Pending', 'Guest')
+        )
+    );
+    CREATE POLICY "Society admins delete memberships" ON user_societies FOR DELETE USING (
+        EXISTS (
+            SELECT 1 FROM user_societies AS admins
+            WHERE admins.user_id = auth.uid() 
+            AND admins.society_id = user_societies.society_id
+            AND admins.role NOT IN ('Member', 'User', 'Pending', 'Guest')
+        )
+    );
+
+
 
     IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users can join a society') THEN
         CREATE POLICY "Users can join a society" ON user_societies FOR INSERT WITH CHECK (user_id = auth.uid());
@@ -224,5 +244,40 @@ BEGIN
         ))
     );
 
+    -- ─── TEAM MEMBERS POLICIES ───
+    DROP POLICY IF EXISTS "Authenticated users can view team memberships" ON team_members;
+    CREATE POLICY "Authenticated users can view team memberships" ON team_members 
+        FOR SELECT USING (auth.role() = 'authenticated');
+
+    DROP POLICY IF EXISTS "Manage team memberships" ON team_members;
+    CREATE POLICY "Manage team memberships" ON team_members FOR ALL USING (
+        (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_global_admin = true))
+        OR
+        (EXISTS (
+            SELECT 1 FROM teams 
+            JOIN user_societies AS admins ON teams.society_id = admins.society_id
+            WHERE admins.user_id = auth.uid()
+            AND teams.id = team_members.team_id
+            AND admins.role NOT IN ('Member', 'User', 'Pending', 'Guest')
+        ))
+    );
+
+
 
 END $$;
+
+-- 10. FUNCTIONS
+CREATE OR REPLACE FUNCTION increment_team_members(t_id UUID)
+RETURNS void AS $$
+BEGIN
+    UPDATE teams SET members = COALESCE(members, 0) + 1 WHERE id = t_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE OR REPLACE FUNCTION decrement_team_members(t_id UUID)
+RETURNS void AS $$
+BEGIN
+    UPDATE teams SET members = GREATEST(0, COALESCE(members, 0) - 1) WHERE id = t_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+

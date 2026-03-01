@@ -107,136 +107,143 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
     const [boardCards, setBoardCards] = useState<any[]>([]);
 
     // ─── Fetch Data ───────────────────────────────────────────────────────────
-    useEffect(() => {
-        const fetchData = async () => {
-            setIsLoading(true);
-            try {
-                // Fetch Societies
-                const { data: socData } = await supabase.from('societies').select('*');
-                if (socData) setSocieties(socData);
+    // ─── Fetch Data (Wrapped in useCallback for Realtime) ───────────────────
+    const fetchData = React.useCallback(async () => {
+        // We only set loading on initial fetch to avoid flickering
+        try {
+            // Fetch Societies
+            const { data: socData } = await supabase.from('societies').select('*');
+            if (socData) setSocieties(socData);
 
-                // Fetch Teams
-                const { data: teamData } = await supabase.from('teams').select('*');
-                if (teamData) setTeams(teamData);
+            // Fetch Teams
+            const { data: teamData } = await supabase.from('teams').select('*');
+            if (teamData) setTeams(teamData);
 
-                // Fetch Global Admins
-                const { data: globalAdminData } = await supabase.from('profiles').select('*').eq('is_global_admin', true);
+            // Fetch Global Admins
+            const { data: globalAdminData } = await supabase.from('profiles').select('*').eq('is_global_admin', true);
 
-                // Fetch Society Admins
-                const { data: societyAdminData } = await supabase
-                    .from('user_societies')
-                    .select('*, profiles(full_name, email), societies(name)')
-                    .in('role', ['Admin', 'Director', 'Deputy Director', 'HR', 'Society President', 'Vice President', 'Secretary', 'Treasurer', 'General Admin']);
+            // Fetch Society Admins
+            const { data: societyAdminData } = await supabase
+                .from('user_societies')
+                .select('*, profiles(full_name, email), societies(name)')
+                .in('role', ['Admin', 'Director', 'Deputy Director', 'HR', 'Society President', 'Vice President', 'Secretary', 'Treasurer', 'General Admin']);
 
-                const allAdmins: GlobalAdmin[] = [];
+            const allAdmins: GlobalAdmin[] = [];
 
-                if (globalAdminData) {
-                    globalAdminData.forEach(p => {
-                        allAdmins.push({
-                            id: p.id,
-                            name: p.full_name,
-                            email: p.email,
-                            role: "Super Admin",
-                            scope: "Global"
-                        });
+            if (globalAdminData) {
+                globalAdminData.forEach(p => {
+                    allAdmins.push({
+                        id: p.id,
+                        name: p.full_name,
+                        email: p.email,
+                        role: "Super Admin",
+                        scope: "Global"
                     });
-                }
-
-                if (societyAdminData) {
-                    societyAdminData.forEach((m: any) => {
-                        // Avoid duplicates if they are already global admins
-                        if (!allAdmins.some(a => a.id === m.user_id && a.scope === "Global")) {
-                            allAdmins.push({
-                                id: m.user_id,
-                                name: m.profiles.full_name,
-                                email: m.profiles.email,
-                                role: m.role,
-                                scope: m.societies.name
-                            });
-                        }
-                    });
-                }
-                setAdmins(allAdmins);
-
-
-                // Fetch User Societies (to get memberships and pending status)
-                const { data: membershipData } = await supabase
-                    .from('user_societies')
-                    .select('*, profiles(full_name, email, created_at, primary_team), societies(name)');
-
-                if (membershipData) {
-                    console.log("Fetched memberships:", membershipData);
-                    const activeMembers: AppUser[] = [];
-                    const pendingMembers: PendingUser[] = [];
-
-                    membershipData.forEach((m: any) => {
-                        const profile = m.profiles;
-                        const society = m.societies;
-
-                        // Safety check: if profile is missing, skip or provide fallback
-                        if (!profile) return;
-
-                        if (m.status === 'Active') {
-                            activeMembers.push({
-                                id: m.user_id,
-                                name: profile.full_name || "Unknown User",
-                                email: profile.email || "No Email",
-                                societyIds: [m.society_id],
-                                joined: profile.created_at ? new Date(profile.created_at).toLocaleDateString() : 'N/A',
-                                role: m.role || "Member",
-                                team: profile.primary_team || "Unassigned",
-                                status: "Active"
-                            });
-                        } else {
-                            pendingMembers.push({
-                                id: m.user_id,
-                                name: profile.full_name || "New Applicant",
-                                email: profile.email || "No Email",
-                                society: society?.name || "Unknown Society",
-                                societyId: m.society_id,
-                                time: profile.created_at ? new Date(profile.created_at).toLocaleDateString() : 'Just now',
-                                status: "Pending"
-                            });
-                        }
-                    });
-
-                    setUsers(activeMembers);
-                    setPendingUsers(pendingMembers);
-                }
-
-
-
-
-                // Fetch Office Bearers
-                const { data: obData } = await supabase.from('office_bearers').select('*, profiles(full_name, email)');
-                if (obData) {
-                    setOfficeBearers(obData.map(ob => ({
-                        id: ob.id,
-                        name: ob.profiles.full_name,
-                        email: ob.profiles.email,
-                        position: ob.position,
-                        assignedTeamIds: ob.assigned_team_ids || []
-                    })));
-                }
-
-                // Fetch Board Lists
-                const { data: listData } = await supabase.from('board_lists').select('*').order('position');
-                if (listData) setBoardLists(listData);
-
-                // Fetch Board Cards
-                const { data: cardData } = await supabase.from('board_cards').select('*').order('position');
-                if (cardData) setBoardCards(cardData);
-
-            } catch (err) {
-                console.error("Error fetching context data:", err);
-            } finally {
-                setIsLoading(false);
+                });
             }
-        };
 
+            if (societyAdminData) {
+                societyAdminData.forEach((m: any) => {
+                    if (!allAdmins.some(a => a.id === m.user_id && a.scope === "Global")) {
+                        allAdmins.push({
+                            id: m.user_id,
+                            name: m.profiles.full_name,
+                            email: m.profiles.email,
+                            role: m.role,
+                            scope: m.societies.name
+                        });
+                    }
+                });
+            }
+            setAdmins(allAdmins);
+
+            // Fetch User Societies
+            const { data: membershipData } = await supabase
+                .from('user_societies')
+                .select('*, profiles(full_name, email, created_at, primary_team), societies(name)');
+
+            if (membershipData) {
+                const activeMembers: AppUser[] = [];
+                const pendingMembers: PendingUser[] = [];
+
+                membershipData.forEach((m: any) => {
+                    const profile = m.profiles;
+                    const society = m.societies;
+                    if (!profile) return;
+
+                    if (m.status === 'Active') {
+                        activeMembers.push({
+                            id: m.user_id,
+                            name: profile.full_name || "Unknown User",
+                            email: profile.email || "No Email",
+                            societyIds: [m.society_id],
+                            joined: profile.created_at ? new Date(profile.created_at).toLocaleDateString() : 'N/A',
+                            role: m.role || "Member",
+                            team: profile.primary_team || "Unassigned",
+                            status: "Active"
+                        });
+                    } else {
+                        pendingMembers.push({
+                            id: m.user_id,
+                            name: profile.full_name || "New Applicant",
+                            email: profile.email || "No Email",
+                            society: society?.name || "Unknown Society",
+                            societyId: m.society_id,
+                            time: profile.created_at ? new Date(profile.created_at).toLocaleDateString() : 'Just now',
+                            status: "Pending"
+                        });
+                    }
+                });
+
+                setUsers(activeMembers);
+                setPendingUsers(pendingMembers);
+            }
+
+            // Fetch Office Bearers
+            const { data: obData } = await supabase.from('office_bearers').select('*, profiles(full_name, email)');
+            if (obData) {
+                setOfficeBearers(obData.map(ob => ({
+                    id: ob.id,
+                    name: ob.profiles.full_name,
+                    email: ob.profiles.email,
+                    position: ob.position,
+                    assignedTeamIds: ob.assigned_team_ids || []
+                })));
+            }
+
+            // Fetch Board Lists/Cards
+            const { data: listData } = await supabase.from('board_lists').select('*').order('position');
+            if (listData) setBoardLists(listData);
+
+            const { data: cardData } = await supabase.from('board_cards').select('*').order('position');
+            if (cardData) setBoardCards(cardData);
+
+        } catch (err) {
+            console.error("Error fetching context data:", err);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [supabase]);
+
+    useEffect(() => {
         fetchData();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+
+        // ─── Realtime Subscriptions ──────────────────────────────────────────
+        const channel = supabase
+            .channel('db-changes')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'user_societies' }, () => fetchData())
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'teams' }, () => fetchData())
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'board_lists' }, () => fetchData())
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'board_cards' }, () => fetchData())
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => fetchData())
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'societies' }, () => fetchData())
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, [supabase, fetchData]);
+
 
     // ─── Actions (Now wired to Supabase) ───────────────────────────
 

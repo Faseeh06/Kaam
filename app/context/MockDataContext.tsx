@@ -10,6 +10,7 @@ export type Society = {
     description?: string; email?: string; website?: string; whatsapp?: string;
     logo?: string;
     cover_url?: string;
+    join_code?: string;
 };
 
 export type GlobalAdmin = { id: string; name: string; email: string; role: string; scope: string };
@@ -47,11 +48,11 @@ export type TeamMember = {
 };
 
 
-export const TEAM_ROLE_PERMISSIONS: Record<TeamRole, { canAddToBoard: boolean; canAssign: boolean; canComment: boolean; canManageMembers: boolean }> = {
-    "Director": { canAddToBoard: true, canAssign: true, canComment: true, canManageMembers: false },
-    "Deputy Director": { canAddToBoard: true, canAssign: true, canComment: true, canManageMembers: false },
-    "HR": { canAddToBoard: true, canAssign: true, canComment: true, canManageMembers: true },
-    "Executive": { canAddToBoard: false, canAssign: false, canComment: true, canManageMembers: false },
+export const TEAM_ROLE_PERMISSIONS: Record<TeamRole, { canAddToBoard: boolean; canAssign: boolean; canComment: boolean; canManageMembers: boolean; canDelete: boolean }> = {
+    "Director": { canAddToBoard: true, canAssign: true, canComment: true, canManageMembers: false, canDelete: true },
+    "Deputy Director": { canAddToBoard: true, canAssign: true, canComment: true, canManageMembers: false, canDelete: true },
+    "HR": { canAddToBoard: true, canAssign: true, canComment: true, canManageMembers: true, canDelete: true },
+    "Executive": { canAddToBoard: false, canAssign: false, canComment: true, canManageMembers: false, canDelete: false },
 };
 
 // ─── Context type ─────────────────────────────────────────────────────────────
@@ -96,8 +97,10 @@ type MockDataContextType = {
     updateBoardList: (listId: string, title: string) => Promise<void>;
     addBoardCard: (listId: string, title: string) => Promise<void>;
     updateBoardCard: (cardId: string, updates: any) => Promise<void>;
+    removeBoardCard: (cardId: string) => Promise<void>;
     updateCardStatus: (cardId: string, isCompleted: boolean) => Promise<void>;
     moveCard: (cardId: string, newListId: string) => Promise<void>;
+    removeBoardList: (listId: string) => Promise<void>;
 };
 
 const MockDataContext = createContext<MockDataContextType | undefined>(undefined);
@@ -266,8 +269,17 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
             const { data: listData } = await supabase.from('board_lists').select('*').order('position');
             if (listData) setBoardLists(listData);
 
-            const { data: cardData } = await supabase.from('board_cards').select('*').order('position');
-            if (cardData) setBoardCards(cardData);
+            const { data: cardData } = await supabase
+                .from('board_cards')
+                .select('*, profiles(full_name)')
+                .order('position');
+
+            if (cardData) {
+                setBoardCards(cardData.map((c: any) => ({
+                    ...c,
+                    assigned_to_name: c.profiles?.full_name || null
+                })));
+            }
 
 
 
@@ -309,6 +321,18 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
     };
 
     const updateSociety = async (id: string, updates: Partial<Society>) => {
+        // Handle join_code migration if it's changing
+        if (updates.join_code) {
+            const oldSociety = societies.find(s => s.id === id);
+            if (oldSociety?.join_code && oldSociety.join_code !== updates.join_code) {
+                console.log(`Migrating join code from ${oldSociety.join_code} to ${updates.join_code}`);
+                await supabase
+                    .from('profiles')
+                    .update({ society_code: updates.join_code })
+                    .eq('society_code', oldSociety.join_code);
+            }
+        }
+
         const { error } = await supabase.from('societies').update(updates).eq('id', id);
         if (error) throw error;
         setSocieties(societies.map(s => s.id === id ? { ...s, ...updates } : s));
@@ -659,6 +683,19 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
         if (!error) setBoardCards(boardCards.map(c => c.id === cardId ? { ...c, list_id: newListId } : c));
     };
 
+    const removeBoardCard = async (cardId: string) => {
+        const { error } = await supabase.from('board_cards').delete().eq('id', cardId);
+        if (!error) setBoardCards(prev => prev.filter(c => c.id !== cardId));
+    };
+
+    const removeBoardList = async (listId: string) => {
+        const { error } = await supabase.from('board_lists').delete().eq('id', listId);
+        if (!error) {
+            setBoardLists(prev => prev.filter(l => l.id !== listId));
+            setBoardCards(prev => prev.filter(c => c.list_id !== listId));
+        }
+    };
+
     return (
         <MockDataContext.Provider value={{
             societies, admins, users, allRegisteredUsers, pendingUsers, teams, officeBearers, teamMembers, boardLists, boardCards, isLoading,
@@ -670,7 +707,7 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
             approvePendingUser, rejectPendingUser, addTeam, removeTeam,
             addOfficeBearerRole, updateOfficeBearerRole, removeOfficeBearerRole,
             addTeamMember, removeTeamMember, updateTeamMemberRole,
-            addBoardList, updateBoardList, addBoardCard, updateBoardCard, updateCardStatus, moveCard,
+            addBoardList, updateBoardList, removeBoardList, addBoardCard, updateBoardCard, removeBoardCard, updateCardStatus, moveCard,
         }}>
             {children}
         </MockDataContext.Provider>

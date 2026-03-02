@@ -1,31 +1,16 @@
 "use client";
 
 import {
-    MoreHorizontal,
-    Plus,
-    AlignLeft,
-    MessageSquare,
-    Paperclip,
-    CheckCircle2,
-    Inbox,
-    Calendar,
-    KanbanSquare,
-    Layers,
-    Search,
-    X,
-    Tag,
-    Clock,
-    CheckSquare,
-    Users,
-    Circle,
-    Activity,
-    CreditCard,
-    LayoutGrid
+    MoreHorizontal, Plus, AlignLeft, MessageSquare, Paperclip,
+    CheckCircle2, Inbox, Calendar, KanbanSquare, Layers, Search,
+    X, Tag, Clock, CheckSquare, Users, Circle, Activity,
+    CreditCard, LayoutGrid, Trash2, Flag, ChevronDown, UserCircle2
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useState, useRef, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useMockData } from "@/app/context/MockDataContext";
 import { createClient } from "@/lib/supabase/client";
 import { Loader2 } from "lucide-react";
@@ -41,7 +26,30 @@ type CardProps = {
     isCompleted?: boolean;
     comments?: number;
     hasAvatar?: boolean;
+    severity?: string;
+    assigned_to?: string;
+    deadline?: string;
     activity?: { user: string; action: string; time: string; avatar: string }[];
+};
+
+type Severity = "High" | "Medium" | "Low";
+
+const SEVERITY_CONFIG: Record<Severity, { stripe: string; badge: string; icon: string }> = {
+    "High": {
+        stripe: "bg-rose-500",
+        badge: "bg-rose-50 dark:bg-rose-500/10 text-rose-600 border-rose-200 dark:border-rose-500/20",
+        icon: "text-rose-500"
+    },
+    "Medium": {
+        stripe: "bg-amber-500",
+        badge: "bg-amber-50 dark:bg-amber-500/10 text-amber-600 border-amber-200 dark:border-amber-500/20",
+        icon: "text-amber-500"
+    },
+    "Low": {
+        stripe: "bg-emerald-500",
+        badge: "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 border-emerald-200 dark:border-emerald-500/20",
+        icon: "text-emerald-500"
+    }
 };
 
 type ListProps = {
@@ -54,11 +62,12 @@ type ListProps = {
 
 export default function BoardPage() {
     const {
-        teams, boardLists, boardCards,
-        addBoardList, updateBoardList, addBoardCard, updateBoardCard, updateCardStatus, moveCard
+        teams, boardLists, boardCards, teamMembers,
+        addBoardList, updateBoardList, removeBoardList, addBoardCard, updateBoardCard, removeBoardCard, updateCardStatus, moveCard
     } = useMockData();
 
     const [managedSocietyId, setManagedSocietyId] = useState<string | null>(null);
+    const [userRole, setUserRole] = useState<string | null>(null);
     const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [mounted, setMounted] = useState(false);
@@ -79,6 +88,7 @@ export default function BoardPage() {
                     const managementRoles = ['Admin', 'Director', 'Deputy Director', 'HR', 'Society President', 'Vice President', 'Secretary', 'Treasurer', 'General Admin'];
                     const managed = (profile.user_societies as any[])?.find(us => managementRoles.includes(us.role));
                     setManagedSocietyId(managed?.society_id);
+                    setUserRole(managed?.role);
                 }
             }
             setIsLoading(false);
@@ -110,9 +120,11 @@ export default function BoardPage() {
                     title: c.title,
                     description: c.description,
                     isCompleted: c.is_completed,
-                    hasDescription: !!c.description,
                 }))
         }));
+
+    const canDelete = userRole && ['Admin', 'Director', 'Deputy Director', 'HR'].includes(userRole);
+    const selectedTeamMembers = selectedTeamId ? (teamMembers[selectedTeamId] || []) : [];
 
     // List addition state
     const [isAddingList, setIsAddingList] = useState(false);
@@ -263,9 +275,23 @@ export default function BoardPage() {
                                             {list.title}
                                         </h2>
                                     )}
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-500 hover:text-zinc-800 dark:text-zinc-200 hover:bg-zinc-200/50 dark:hover:bg-zinc-800 dark:bg-zinc-800 ml-2">
-                                        <MoreHorizontal className="h-4 w-4" />
-                                    </Button>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-500 hover:text-zinc-800 dark:text-zinc-200 hover:bg-zinc-200/50 dark:hover:bg-zinc-800 dark:bg-zinc-800 ml-2">
+                                                <MoreHorizontal className="h-4 w-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end" className="bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800">
+                                            {canDelete && (
+                                                <DropdownMenuItem
+                                                    className="text-rose-500 focus:text-rose-500 cursor-pointer"
+                                                    onClick={() => { if (confirm("Are you sure you want to delete this list?")) removeBoardList(list.id); }}
+                                                >
+                                                    <Trash2 className="h-4 w-4 mr-2" /> Delete List
+                                                </DropdownMenuItem>
+                                            )}
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
                                 </div>
 
                                 {/* Cards Container / Droppable */}
@@ -287,6 +313,39 @@ export default function BoardPage() {
                                                             className={`group flex flex-col gap-2 bg-white dark:bg-zinc-950 p-3.5 rounded-lg border hover:border-zinc-400 dark:hover:border-zinc-400 dark:border-zinc-600 transition shadow-sm relative overflow-hidden ${snapshot.isDragging ? 'border-rose-500/50 shadow-2xl scale-[1.02] z-50' : 'border-zinc-200 dark:border-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-400 dark:border-zinc-600 cursor-pointer'}`}
                                                             style={provided.draggableProps.style}
                                                         >
+                                                            {/* Severity stripe & Menu toggle */}
+                                                            <div className="flex items-center justify-between group/header h-1 mb-1">
+                                                                {card.severity && <div className={`h-full flex-1 ${SEVERITY_CONFIG[card.severity as Severity].stripe}`} />}
+                                                                {canDelete && (
+                                                                    <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                                                                        <DropdownMenu>
+                                                                            <DropdownMenuTrigger asChild>
+                                                                                <Button variant="ghost" size="icon" className="h-6 w-6 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-sm border border-zinc-200 dark:border-zinc-800 shadow-sm" onClick={e => e.stopPropagation()}>
+                                                                                    <MoreHorizontal className="h-3 w-3" />
+                                                                                </Button>
+                                                                            </DropdownMenuTrigger>
+                                                                            <DropdownMenuContent align="end" className="w-48 bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800">
+                                                                                <div className="px-2 py-1.5 text-xs font-semibold text-zinc-500 uppercase tracking-wider">Set Priority</div>
+                                                                                {(["High", "Medium", "Low"] as Severity[]).map(s => (
+                                                                                    <DropdownMenuItem key={s} onClick={(e) => { e.stopPropagation(); updateBoardCard(card.id, { severity: s }); }} className="cursor-pointer">
+                                                                                        <span className={`w-2 h-2 rounded-full mr-2 ${SEVERITY_CONFIG[s].stripe}`} /> {s}
+                                                                                    </DropdownMenuItem>
+                                                                                ))}
+                                                                                <div className="h-px bg-zinc-100 dark:bg-zinc-800 my-1" />
+                                                                                <div className="px-2 py-1.5 text-xs font-semibold text-zinc-500 uppercase tracking-wider">Assign Member</div>
+                                                                                {selectedTeamMembers.map(m => (
+                                                                                    <DropdownMenuItem key={m.id} onClick={(e) => { e.stopPropagation(); updateBoardCard(card.id, { assigned_to: m.userId }); }} className="cursor-pointer">
+                                                                                        <Avatar className="h-5 w-5 mr-2">
+                                                                                            <AvatarFallback className="text-[9px]">{m.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                                                                                        </Avatar>
+                                                                                        <span className="truncate text-sm">{m.name}</span>
+                                                                                    </DropdownMenuItem>
+                                                                                ))}
+                                                                            </DropdownMenuContent>
+                                                                        </DropdownMenu>
+                                                                    </div>
+                                                                )}
+                                                            </div>
                                                             {card.imageCover && (
                                                                 <div className="w-full h-24 bg-white dark:bg-zinc-900 overflow-hidden mb-1 -mx-3.5 -mt-3.5 w-[calc(100%+28px)] border-b border-zinc-200 dark:border-zinc-800">
                                                                     <img src={card.imageCover} alt="Cover" className="w-full h-full object-cover transition-transform group-hover:scale-105 pointer-events-none" />
@@ -486,6 +545,61 @@ export default function BoardPage() {
                                     <p className="text-sm text-zinc-500 dark:text-zinc-400">
                                         in list <span className="underline decoration-zinc-500 underline-offset-4 cursor-pointer hover:text-zinc-800 dark:text-zinc-300">{selectedCard.listTitle}</span>
                                     </p>
+                                    <div className="flex flex-wrap gap-2 mt-4">
+                                        {canDelete ? (
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <button className={`flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full border transition hover:opacity-80 active:scale-95 ${selectedCard.card.severity ? SEVERITY_CONFIG[selectedCard.card.severity as Severity].badge : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border-zinc-200 dark:border-zinc-700'}`}>
+                                                        <Flag className="h-3.5 w-3.5" /> {selectedCard.card.severity ? `${selectedCard.card.severity} Priority` : 'Set Priority'}
+                                                    </button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="start" className="w-40 bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800">
+                                                    {(["High", "Medium", "Low"] as Severity[]).map(s => (
+                                                        <DropdownMenuItem key={s} onClick={() => updateBoardCard(selectedCard.card.id, { severity: s })} className="cursor-pointer">
+                                                            <span className={`w-2 h-2 rounded-full mr-2 ${SEVERITY_CONFIG[s].stripe}`} /> {s}
+                                                        </DropdownMenuItem>
+                                                    ))}
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        ) : selectedCard.card.severity && (
+                                            <span className={`flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full border ${SEVERITY_CONFIG[selectedCard.card.severity as Severity].badge}`}>
+                                                <Flag className="h-3.5 w-3.5" /> {selectedCard.card.severity} Priority
+                                            </span>
+                                        )}
+
+                                        {canDelete ? (
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="outline" size="sm" className="h-7 px-2.5 text-[11px] font-medium border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-800/80 transition-all rounded-full">
+                                                        <Users className="h-3.5 w-3.5 mr-1.5 text-zinc-400" />
+                                                        {(selectedCard.card as any).assigned_to_name || "Assignee"}
+                                                        <ChevronDown className="h-3 w-3 ml-1.5 text-zinc-400" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="start" className="w-56 bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800">
+                                                    <DropdownMenuItem onClick={() => updateBoardCard(selectedCard.card.id, { assigned_to: null })} className="cursor-pointer text-zinc-500 font-medium">
+                                                        <UserCircle2 className="h-4 w-4 mr-2" /> Unassign
+                                                    </DropdownMenuItem>
+                                                    <div className="h-px bg-zinc-100 dark:bg-zinc-800 my-1" />
+                                                    {selectedTeamMembers.map(m => (
+                                                        <DropdownMenuItem key={m.id} onClick={() => updateBoardCard(selectedCard.card.id, { assigned_to: m.userId })} className="cursor-pointer">
+                                                            <Avatar className="h-6 w-6 mr-2">
+                                                                <AvatarFallback className="text-[10px] bg-amber-100 text-amber-600 font-bold">{m.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                                                            </Avatar>
+                                                            <div className="flex flex-col text-left">
+                                                                <span className="text-sm font-medium">{m.name}</span>
+                                                                <span className="text-[10px] text-zinc-500 lowercase">{m.teamRole}</span>
+                                                            </div>
+                                                        </DropdownMenuItem>
+                                                    ))}
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        ) : (selectedCard.card as any).assigned_to_name && (
+                                            <span className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-full border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400">
+                                                <Users className="h-3.5 w-3.5" /> {(selectedCard.card as any).assigned_to_name}
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
 
@@ -506,6 +620,16 @@ export default function BoardPage() {
                                 <Button variant="outline" size="sm" className="bg-zinc-100 dark:bg-zinc-800/40 border-zinc-300 dark:border-zinc-700/80 hover:border-zinc-500 text-zinc-800 dark:text-zinc-300 hover:bg-zinc-700/60 transition h-8 px-3 text-xs w-auto">
                                     <Users className="h-3 w-3 mr-1.5" /> Members
                                 </Button>
+                                {canDelete && (
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => { if (confirm("Delete this card?")) { removeBoardCard(selectedCard.card.id); setSelectedCard(null); } }}
+                                        className="bg-rose-500/10 border-rose-500/20 text-rose-600 hover:bg-rose-500 hover:text-white transition h-8 px-3 text-xs w-auto ml-auto"
+                                    >
+                                        <Trash2 className="h-3 w-3 mr-1.5" /> Delete Card
+                                    </Button>
+                                )}
                             </div>
 
                             {/* Description Section */}

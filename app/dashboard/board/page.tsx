@@ -4,12 +4,13 @@ import {
     MoreHorizontal, Plus, AlignLeft, MessageSquare, Paperclip,
     CheckCircle2, Calendar, KanbanSquare, Search, X, Tag,
     Clock, CheckSquare, Users, Circle, Activity, CreditCard,
-    Flag, UserCircle2, ChevronDown, Loader2, LayoutGrid
+    Flag, UserCircle2, ChevronDown, Loader2, LayoutGrid, Trash2
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useMockData, TEAM_ROLE_PERMISSIONS, TeamRole, Team } from "@/app/context/MockDataContext";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
@@ -59,11 +60,11 @@ const formatDeadline = (d?: string) => {
 export default function BoardPage() {
     const {
         teams, boardLists, boardCards, teamMembers, isLoading: isContextLoading,
-        addBoardList, updateBoardList, addBoardCard, updateBoardCard, updateCardStatus, moveCard
+        addBoardList, updateBoardList, removeBoardList, addBoardCard, updateBoardCard, removeBoardCard, updateCardStatus, moveCard
     } = useMockData();
 
     // ── Current User Logic ────────────────────────────────────────────────────
-    const [userData, setUserData] = useState<{ id: string; primary_team: string } | null>(null);
+    const [userData, setUserData] = useState<{ id: string; primary_team: string; isSocietyAdmin: boolean } | null>(null);
     const [isLocalLoading, setIsLocalLoading] = useState(true);
     const [mounted, setMounted] = useState(false);
 
@@ -75,7 +76,17 @@ export default function BoardPage() {
 
             if (user) {
                 const { data: profile } = await supabase.from('profiles').select('id, primary_team').eq('id', user.id).single();
-                setUserData({ id: user.id, primary_team: profile?.primary_team || "" });
+
+                // Also check if they are a society admin/mgmt
+                const { data: societyRoles } = await supabase.from('user_societies').select('role').eq('user_id', user.id);
+                const managementRoles = ['Admin', 'Director', 'Deputy Director', 'HR', 'Society President', 'Vice President', 'Secretary', 'Treasurer', 'General Admin'];
+                const isSocietyAdmin = societyRoles?.some(sr => managementRoles.includes(sr.role)) || false;
+
+                setUserData({
+                    id: user.id,
+                    primary_team: profile?.primary_team || "",
+                    isSocietyAdmin
+                });
             }
             setIsLocalLoading(false);
         };
@@ -96,9 +107,20 @@ export default function BoardPage() {
     const myTeamMemberRecord = userData ? members.find(m => m.userId === userData.id) : null;
     const rawRole = myTeamMemberRecord?.teamRole || "Executive";
     const myRole = TEAM_ROLE_PERMISSIONS[rawRole as TeamRole] ? rawRole : "Executive";
-    const myPerms = TEAM_ROLE_PERMISSIONS[myRole as TeamRole] || TEAM_ROLE_PERMISSIONS["Executive"];
+    const basePerms = TEAM_ROLE_PERMISSIONS[myRole as TeamRole] || TEAM_ROLE_PERMISSIONS["Executive"];
+
+    // Society Admins get delete/edit perms regardless of team role
+    const myPerms = {
+        ...basePerms,
+        canDelete: basePerms.canDelete || userData?.isSocietyAdmin || false,
+        canAddToBoard: basePerms.canAddToBoard || userData?.isSocietyAdmin || false
+    };
 
     // ── Board Data Formatting ──────────────────────────────────────────────────
+    console.log("Rendering Dashboard Board. Total Cards:", boardCards.length, "Lists:", boardLists.length);
+    if (boardCards.length > 0) {
+        console.log("Sample card list_id:", boardCards[0].list_id, "Sample list id:", boardLists[0]?.id);
+    }
 
     const displayLists: ListProps[] = boardLists
         .filter(l => l.team_id === myTeam?.id)
@@ -114,7 +136,7 @@ export default function BoardPage() {
                     isCompleted: c.is_completed,
                     severity: c.severity as Severity,
                     deadline: c.deadline,
-                    assignedTo: c.assigned_to_name, // You might need to add this to your schema/mock
+                    assignedTo: (c as any).assigned_to_name || (c as any).assigned_to,
                     hasDescription: !!c.description,
                 }))
         }));
@@ -254,9 +276,23 @@ export default function BoardPage() {
                                             <span className="ml-2 text-xs text-zinc-400 font-normal">({list.cards.length})</span>
                                         </h2>
                                     )}
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-500 hover:text-zinc-800 dark:text-zinc-200 hover:bg-zinc-200/50 dark:hover:bg-zinc-800 ml-2">
-                                        <MoreHorizontal className="h-4 w-4" />
-                                    </Button>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-500 hover:text-zinc-800 dark:text-zinc-200 hover:bg-zinc-200/50 dark:hover:bg-zinc-800 ml-2">
+                                                <MoreHorizontal className="h-4 w-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end" className="bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800">
+                                            {myPerms.canDelete && (
+                                                <DropdownMenuItem
+                                                    className="text-rose-500 focus:text-rose-500 cursor-pointer"
+                                                    onClick={() => { if (confirm("Delete this list?")) removeBoardList(list.id); }}
+                                                >
+                                                    <Trash2 className="h-4 w-4 mr-2" /> Delete List
+                                                </DropdownMenuItem>
+                                            )}
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
                                 </div>
 
                                 {/* Cards */}
@@ -277,8 +313,47 @@ export default function BoardPage() {
                                                                 className={`group flex flex-col gap-2 bg-white dark:bg-zinc-950 rounded-lg border shadow-sm relative overflow-hidden cursor-pointer transition
                                                                     ${snapshot.isDragging ? 'border-amber-500/50 shadow-2xl scale-[1.02] z-50' : 'border-zinc-200 dark:border-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-500'}`}>
 
-                                                                {/* Severity stripe */}
-                                                                {sev && <div className={`h-1 w-full ${sev.stripe} shrink-0`} />}
+                                                                {/* Severity stripe & Menu toggle */}
+                                                                <div className="flex items-center justify-between group/header h-1">
+                                                                    {sev && <div className={`h-full flex-1 ${sev.stripe}`} />}
+                                                                    {myPerms.canAssign && (
+                                                                        <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                                                                            <DropdownMenu>
+                                                                                <DropdownMenuTrigger asChild>
+                                                                                    <Button variant="ghost" size="icon" className="h-6 w-6 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-sm border border-zinc-200 dark:border-zinc-800 shadow-sm" onClick={e => e.stopPropagation()}>
+                                                                                        <MoreHorizontal className="h-3 w-3" />
+                                                                                    </Button>
+                                                                                </DropdownMenuTrigger>
+                                                                                <DropdownMenuContent align="end" className="w-48 bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800">
+                                                                                    <div className="px-2 py-1.5 text-xs font-semibold text-zinc-500 uppercase tracking-wider">Set Priority</div>
+                                                                                    {(["High", "Medium", "Low"] as Severity[]).map(s => (
+                                                                                        <DropdownMenuItem key={s} onClick={(e) => { e.stopPropagation(); updateBoardCard(card.id, { severity: s }); }} className="cursor-pointer">
+                                                                                            <span className={`w-2 h-2 rounded-full mr-2 ${SEVERITY_CONFIG[s].stripe}`} /> {s}
+                                                                                        </DropdownMenuItem>
+                                                                                    ))}
+                                                                                    <div className="h-px bg-zinc-100 dark:bg-zinc-800 my-1" />
+                                                                                    <div className="px-2 py-1.5 text-xs font-semibold text-zinc-500 uppercase tracking-wider">Assign Member</div>
+                                                                                    {members.map(m => (
+                                                                                        <DropdownMenuItem key={m.id} onClick={(e) => { e.stopPropagation(); updateBoardCard(card.id, { assigned_to: m.userId }); }} className="cursor-pointer">
+                                                                                            <Avatar className="h-5 w-5 mr-2">
+                                                                                                <AvatarFallback className="text-[9px]">{m.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                                                                                            </Avatar>
+                                                                                            <span className="truncate">{m.name}</span>
+                                                                                        </DropdownMenuItem>
+                                                                                    ))}
+                                                                                    {myPerms.canDelete && (
+                                                                                        <>
+                                                                                            <div className="h-px bg-zinc-100 dark:bg-zinc-800 my-1" />
+                                                                                            <DropdownMenuItem className="text-rose-500 focus:text-rose-500 cursor-pointer" onClick={(e) => { e.stopPropagation(); if (confirm("Delete card?")) removeBoardCard(card.id); }}>
+                                                                                                <Trash2 className="h-3.5 w-3.5 mr-2" /> Delete Card
+                                                                                            </DropdownMenuItem>
+                                                                                        </>
+                                                                                    )}
+                                                                                </DropdownMenuContent>
+                                                                            </DropdownMenu>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
 
                                                                 <div className="px-3.5 pb-3.5 pt-2.5 flex flex-col gap-2">
                                                                     <div className="flex gap-2 items-start">
@@ -413,11 +488,27 @@ export default function BoardPage() {
                                     <p className="text-sm text-zinc-500">in list <span className="underline underline-offset-4 cursor-pointer">{selectedCard.listTitle}</span></p>
 
                                     <div className="flex flex-wrap gap-2 mt-3">
-                                        {selectedCard.card.severity && (
+                                        {myPerms.canAssign ? (
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <button className={`flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full border transition hover:opacity-80 active:scale-95 ${selectedCard.card.severity ? SEVERITY_CONFIG[selectedCard.card.severity].badge : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border-zinc-200 dark:border-zinc-700'}`}>
+                                                        <Flag className="h-3.5 w-3.5" /> {selectedCard.card.severity ? `${selectedCard.card.severity} Priority` : 'Set Priority'}
+                                                    </button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="start" className="w-40 bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800">
+                                                    {(["High", "Medium", "Low"] as Severity[]).map(s => (
+                                                        <DropdownMenuItem key={s} onClick={() => updateBoardCard(selectedCard.card.id, { severity: s })} className="cursor-pointer">
+                                                            <span className={`w-2 h-2 rounded-full mr-2 ${SEVERITY_CONFIG[s].stripe}`} /> {s}
+                                                        </DropdownMenuItem>
+                                                    ))}
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        ) : selectedCard.card.severity && (
                                             <span className={`flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full border ${SEVERITY_CONFIG[selectedCard.card.severity].badge}`}>
                                                 <Flag className="h-3.5 w-3.5" /> {selectedCard.card.severity} Priority
                                             </span>
                                         )}
+
                                         {selectedCard.card.deadline && (() => {
                                             const d = formatDeadline(selectedCard.card.deadline); return d ? (
                                                 <span className={`flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full border ${d.color}`}>
@@ -425,6 +516,66 @@ export default function BoardPage() {
                                                 </span>
                                             ) : null;
                                         })()}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="ml-0 md:ml-10">
+                                <div className="space-y-4">
+                                    <div className="flex items-center gap-4">
+                                        <Users className="h-5 w-5 text-zinc-400 shrink-0" />
+                                        <div className="flex flex-col gap-1.5">
+                                            <h4 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Assignee</h4>
+                                            {myPerms.canAssign ? (
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="outline" size="sm" className="h-9 px-3 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-800/80 transition-all rounded-lg">
+                                                            {selectedCard.card.assignedTo ? (
+                                                                <div className="flex items-center gap-2">
+                                                                    <Avatar className="h-5 w-5">
+                                                                        <AvatarFallback className="text-[9px] bg-rose-500/10 text-rose-500 font-bold">{selectedCard.card.assignedTo.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                                                                    </Avatar>
+                                                                    <span className="text-sm font-medium">{selectedCard.card.assignedTo}</span>
+                                                                </div>
+                                                            ) : (
+                                                                <span className="text-sm text-zinc-500 italic">Unassigned</span>
+                                                            )}
+                                                            <ChevronDown className="h-3.5 w-3.5 ml-2 text-zinc-400" />
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="start" className="w-56 bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800">
+                                                        <DropdownMenuItem onClick={() => updateBoardCard(selectedCard.card.id, { assigned_to: null })} className="cursor-pointer text-zinc-500 font-medium">
+                                                            <UserCircle2 className="h-4 w-4 mr-2" /> Unassign
+                                                        </DropdownMenuItem>
+                                                        <div className="h-px bg-zinc-100 dark:bg-zinc-800 my-1" />
+                                                        {members.map(m => (
+                                                            <DropdownMenuItem key={m.id} onClick={() => updateBoardCard(selectedCard.card.id, { assigned_to: m.userId })} className="cursor-pointer">
+                                                                <Avatar className="h-6 w-6 mr-2">
+                                                                    <AvatarFallback className="text-[10px] bg-blue-100 dark:bg-blue-500/20 text-blue-600 font-bold">{m.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                                                                </Avatar>
+                                                                <div className="flex flex-col">
+                                                                    <span className="text-sm font-medium">{m.name}</span>
+                                                                    <span className="text-[10px] text-zinc-500 lowercase">{m.teamRole}</span>
+                                                                </div>
+                                                            </DropdownMenuItem>
+                                                        ))}
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            ) : (
+                                                <div className="flex items-center gap-2 px-1">
+                                                    {selectedCard.card.assignedTo ? (
+                                                        <>
+                                                            <Avatar className="h-6 w-6">
+                                                                <AvatarFallback className="text-[10px] font-bold">{selectedCard.card.assignedTo.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                                                            </Avatar>
+                                                            <span className="text-sm font-medium">{selectedCard.card.assignedTo}</span>
+                                                        </>
+                                                    ) : (
+                                                        <span className="text-sm text-zinc-500 italic">No one assigned</span>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -475,6 +626,21 @@ export default function BoardPage() {
                                         </div>
                                     )}
                                 </div>
+                            </div>
+
+                            {/* Card Actions Bottom */}
+                            <div className="mt-8 pt-8 border-t border-zinc-100 dark:border-zinc-800 flex justify-end gap-3">
+                                {myPerms.canDelete && (
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => { if (confirm("Delete this card?")) { removeBoardCard(selectedCard.card.id); setSelectedCard(null); } }}
+                                        className="bg-rose-500/10 border-rose-500/20 text-rose-600 hover:bg-rose-500 hover:text-white transition"
+                                    >
+                                        <Trash2 className="h-4 w-4 mr-2" /> Delete Card
+                                    </Button>
+                                )}
+                                <Button size="sm" onClick={() => setSelectedCard(null)} className="bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900">Close</Button>
                             </div>
                         </div>
 

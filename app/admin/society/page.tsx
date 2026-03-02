@@ -1,6 +1,6 @@
 "use client";
 
-import { Building2, Save, Mail, LinkIcon, MapPin, Search, Loader2, UploadCloud, Link as LinkIcon2 } from "lucide-react";
+import { Building2, Save, Mail, LinkIcon, MapPin, Search, Loader2, UploadCloud, Link as LinkIcon2, Key } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -44,6 +44,7 @@ export default function AdminSocietyPage() {
     const [website, setWebsite] = useState("");
     const [logo, setLogo] = useState("");
     const [coverUrl, setCoverUrl] = useState("");
+    const [joinCode, setJoinCode] = useState("");
     const [isSaving, setIsSaving] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const [isLogoModalOpen, setIsLogoModalOpen] = useState(false);
@@ -61,6 +62,7 @@ export default function AdminSocietyPage() {
             setWebsite(society.website || "");
             setLogo(society.logo || "");
             setCoverUrl(society.cover_url || "");
+            setJoinCode(society.join_code || "");
         }
     }, [society]);
 
@@ -74,7 +76,8 @@ export default function AdminSocietyPage() {
                 email,
                 website,
                 logo,
-                cover_url: coverUrl
+                cover_url: coverUrl,
+                join_code: joinCode.trim().toUpperCase()
             });
             toast.success("Society updated successfully");
         } catch (error: any) {
@@ -310,6 +313,24 @@ export default function AdminSocietyPage() {
                                             onChange={(e) => setWebsite(e.target.value)}
                                             className="w-full bg-[#f4f5f7] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
                                         />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300 flex items-center gap-2">
+                                        <Key className="h-4 w-4 text-amber-500" /> Society Join Code
+                                    </label>
+                                    <div className="flex gap-3">
+                                        <input
+                                            type="text"
+                                            value={joinCode}
+                                            onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
+                                            placeholder="e.g. CSS2026"
+                                            className="flex-1 bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/30 dark:border-amber-500/20 rounded-lg p-2.5 text-sm font-mono tracking-widest text-amber-700 dark:text-amber-400 outline-none focus:border-amber-500 transition uppercase"
+                                        />
+                                        <div className="flex-1 text-xs text-zinc-500 flex items-center italic">
+                                            Changing this will instantly update the code for all current members.
+                                        </div>
                                     </div>
                                 </div>
 

@@ -214,20 +214,7 @@ export default function DashboardLayout({
                         {!isCollapsed && <span className="text-sm font-medium">Settings</span>}
                     </Link>
 
-                    {userData?.isSocietyAdmin && (
-                        <>
-                            <div className="h-px bg-zinc-200 dark:bg-zinc-800 my-4 mx-3" />
-                            {!isCollapsed && <div className="text-xs font-semibold text-rose-500 uppercase tracking-wider mb-4 px-3">Administration</div>}
-                            <Link
-                                href="/admin"
-                                className={`flex items-center ${isCollapsed ? 'justify-center px-0' : 'gap-3 px-3'} py-2.5 rounded-lg transition-colors group relative text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10`}
-                                title="Admin Panel"
-                            >
-                                <ShieldAlert className={`h-5 w-5 shrink-0 transition-colors group-hover:text-rose-600`} />
-                                {!isCollapsed && <span className="text-sm font-semibold">Admin Panel</span>}
-                            </Link>
-                        </>
-                    )}
+
                 </div>
 
                 <div className={`p-4 border-t border-zinc-200 dark:border-zinc-800/50 transition-all flex flex-col gap-2`}>

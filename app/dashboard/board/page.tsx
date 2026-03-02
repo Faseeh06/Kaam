@@ -109,13 +109,25 @@ export default function BoardPage() {
     const myRole = TEAM_ROLE_PERMISSIONS[rawRole as TeamRole] ? rawRole : "Executive";
     const basePerms = TEAM_ROLE_PERMISSIONS[myRole as TeamRole] || TEAM_ROLE_PERMISSIONS["Executive"];
 
-    // Society Admins get delete/edit perms regardless of team role
+    // Unified permission logic
+    const isSocietyAdmin = userData?.isSocietyAdmin || false;
+    const isManagementRole = ['Director', 'Deputy Director', 'HR', 'Admin'].includes(myRole);
+
     const myPerms = {
         ...basePerms,
-        canDelete: basePerms.canDelete || userData?.isSocietyAdmin || false,
-        canAddToBoard: basePerms.canAddToBoard || userData?.isSocietyAdmin || false,
-        canAssign: basePerms.canAssign || userData?.isSocietyAdmin || false
+        canDelete: basePerms.canDelete || isSocietyAdmin || isManagementRole,
+        canAddToBoard: basePerms.canAddToBoard || isSocietyAdmin || isManagementRole,
+        canAssign: basePerms.canAssign || isSocietyAdmin || isManagementRole
     };
+
+    if (mounted) {
+        console.log("Permission Check:", {
+            userId: userData?.id,
+            teamRole: myRole,
+            isSocietyAdmin,
+            finalCanAssign: myPerms.canAssign
+        });
+    }
 
     // ── Board Data Formatting ──────────────────────────────────────────────────
     console.log("Rendering Dashboard Board. Total Cards:", boardCards.length, "Lists:", boardLists.length);

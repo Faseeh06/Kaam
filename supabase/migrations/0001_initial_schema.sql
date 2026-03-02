@@ -14,12 +14,14 @@
         website TEXT,
         whatsapp TEXT,
         accent_color TEXT DEFAULT 'bg-violet-500',
+        cover_url TEXT,
         created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
     );
 
     -- Ensure missing columns exist in societies
     ALTER TABLE societies ADD COLUMN IF NOT EXISTS members INTEGER DEFAULT 0;
     ALTER TABLE societies ADD COLUMN IF NOT EXISTS join_code TEXT UNIQUE;
+    ALTER TABLE societies ADD COLUMN IF NOT EXISTS cover_url TEXT;
 
     -- 2. PROFILES (Extends Auth.Users)
     CREATE TABLE IF NOT EXISTS profiles (

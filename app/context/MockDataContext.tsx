@@ -9,6 +9,7 @@ export type Society = {
     id: string; name: string; acronym: string; members: number; status: string;
     description?: string; email?: string; website?: string; whatsapp?: string;
     logo?: string;
+    cover_url?: string;
 };
 
 export type GlobalAdmin = { id: string; name: string; email: string; role: string; scope: string };

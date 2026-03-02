@@ -43,11 +43,15 @@ export default function AdminSocietyPage() {
     const [email, setEmail] = useState("");
     const [website, setWebsite] = useState("");
     const [logo, setLogo] = useState("");
+    const [coverUrl, setCoverUrl] = useState("");
     const [isSaving, setIsSaving] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const [isLogoModalOpen, setIsLogoModalOpen] = useState(false);
+    const [isCoverModalOpen, setIsCoverModalOpen] = useState(false);
     const [tempLogoUrl, setTempLogoUrl] = useState("");
+    const [tempCoverUrl, setTempCoverUrl] = useState("");
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const coverFileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         if (society && name === "") {
@@ -56,6 +60,7 @@ export default function AdminSocietyPage() {
             setEmail(society.email || "");
             setWebsite(society.website || "");
             setLogo(society.logo || "");
+            setCoverUrl(society.cover_url || "");
         }
     }, [society]);
 
@@ -68,7 +73,8 @@ export default function AdminSocietyPage() {
                 description,
                 email,
                 website,
-                logo
+                logo,
+                cover_url: coverUrl
             });
             toast.success("Society updated successfully");
         } catch (error: any) {
@@ -77,12 +83,12 @@ export default function AdminSocietyPage() {
         setIsSaving(false);
     };
 
-    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'logos' | 'covers') => {
         const file = e.target.files?.[0];
         if (!file || !society) return;
 
         setIsUploading(true);
-        const toastId = toast.loading("Uploading logo...");
+        const toastId = toast.loading(`Uploading ${type === 'logos' ? 'logo' : 'cover'}...`);
 
         try {
             const supabase = createClient();
@@ -91,24 +97,32 @@ export default function AdminSocietyPage() {
             const filePath = `${fileName}`;
 
             const { error: uploadError } = await supabase.storage
-                .from('logos')
+                .from(type)
                 .upload(filePath, file);
 
             if (uploadError) throw uploadError;
 
             const { data: publicUrlData } = supabase.storage
-                .from('logos')
+                .from(type)
                 .getPublicUrl(filePath);
 
-            setLogo(publicUrlData.publicUrl);
-            await updateSociety(society.id, { logo: publicUrlData.publicUrl });
-            setIsLogoModalOpen(false);
-            toast.success("Logo uploaded successfully!", { id: toastId });
+            if (type === 'logos') {
+                setLogo(publicUrlData.publicUrl);
+                await updateSociety(society.id, { logo: publicUrlData.publicUrl });
+                setIsLogoModalOpen(false);
+            } else {
+                setCoverUrl(publicUrlData.publicUrl);
+                await updateSociety(society.id, { cover_url: publicUrlData.publicUrl });
+                setIsCoverModalOpen(false);
+            }
+
+            toast.success(`${type === 'logos' ? 'Logo' : 'Cover'} uploaded successfully!`, { id: toastId });
         } catch (error: any) {
             toast.error("Upload failed: " + error.message, { id: toastId });
         } finally {
             setIsUploading(false);
             if (fileInputRef.current) fileInputRef.current.value = "";
+            if (coverFileInputRef.current) coverFileInputRef.current.value = "";
         }
     };
 
@@ -118,6 +132,14 @@ export default function AdminSocietyPage() {
         await updateSociety(society.id, { logo: tempLogoUrl });
         setIsLogoModalOpen(false);
         toast.success("Logo updated successfully!");
+    };
+
+    const handleApplyCoverUrl = async () => {
+        if (!tempCoverUrl || !society) return;
+        setCoverUrl(tempCoverUrl);
+        await updateSociety(society.id, { cover_url: tempCoverUrl });
+        setIsCoverModalOpen(false);
+        toast.success("Cover photo updated successfully!");
     };
 
     if (isLoading) {
@@ -151,12 +173,22 @@ export default function AdminSocietyPage() {
                     {/* Visual Settings */}
                     <div className="md:col-span-1 space-y-6">
                         <Card className="bg-white dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800/60 shadow-sm overflow-hidden rounded-2xl">
-                            <div className="h-28 bg-gradient-to-br from-rose-500/20 to-zinc-200 dark:to-zinc-900 w-full relative group cursor-pointer transition flex items-center justify-center">
+                            <div
+                                className="h-28 bg-gradient-to-br from-rose-500/20 to-zinc-200 dark:to-zinc-900 w-full relative group cursor-pointer transition flex items-center justify-center overflow-hidden"
+                                onClick={() => setIsCoverModalOpen(true)}
+                            >
+                                {coverUrl ? (
+                                    <img src={coverUrl} alt="Cover" className="h-full w-full object-cover transition group-hover:scale-105 duration-500" />
+                                ) : (
+                                    <div className="absolute inset-0 bg-gradient-to-br from-rose-500/10 to-transparent" />
+                                )}
                                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
                                     <span className="text-white text-xs font-semibold">Change Cover</span>
                                 </div>
                             </div>
                             <CardContent className="pt-0 relative px-6 pb-6 text-center flex flex-col items-center border-t border-zinc-100 dark:border-zinc-800/50">
+                                <input type="file" ref={fileInputRef} onChange={(e) => handleImageUpload(e, 'logos')} accept="image/*" className="hidden" />
+                                <input type="file" ref={coverFileInputRef} onChange={(e) => handleImageUpload(e, 'covers')} accept="image/*" className="hidden" />
                                 <div className="h-24 w-24 rounded-2xl border-4 border-white dark:border-zinc-950 -mt-12 mb-4 bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center overflow-hidden group cursor-pointer relative" onClick={() => setIsLogoModalOpen(true)}>
                                     {logo ? (
                                         <img src={logo} alt={society.name} className="h-full w-full object-cover" />
@@ -222,7 +254,33 @@ export default function AdminSocietyPage() {
                                             Upload Logo
                                         </label>
                                         <div className="relative">
-                                            <input type="file" accept="image/*" onChange={handleFileUpload} disabled={isUploading} className="w-full opacity-0 absolute inset-0 cursor-pointer z-10" />
+                                            <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'logos')} disabled={isUploading} className="w-full opacity-0 absolute inset-0 cursor-pointer z-10" />
+                                            <div className="w-full bg-[#f4f5f7] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-zinc-400 flex items-center justify-between outline-none">
+                                                <span>{isUploading ? "Uploading..." : "Select file..."}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300 flex items-center gap-2">
+                                            Cover URL
+                                        </label>
+                                        <input
+                                            type="url"
+                                            value={coverUrl}
+                                            onChange={(e) => setCoverUrl(e.target.value)}
+                                            placeholder="https://example.com/cover.png"
+                                            className="w-full bg-[#f4f5f7] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300 flex items-center gap-2">
+                                            Upload Cover
+                                        </label>
+                                        <div className="relative">
+                                            <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'covers')} disabled={isUploading} className="w-full opacity-0 absolute inset-0 cursor-pointer z-10" />
                                             <div className="w-full bg-[#f4f5f7] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-zinc-400 flex items-center justify-between outline-none">
                                                 <span>{isUploading ? "Uploading..." : "Select file..."}</span>
                                             </div>
@@ -298,7 +356,6 @@ export default function AdminSocietyPage() {
                                 onClick={() => fileInputRef.current?.click()}
                                 disabled={isUploading}
                             >
-                                <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept="image/*" className="hidden" />
                                 {isUploading ? <Loader2 className="h-5 w-5 text-rose-500 animate-spin" /> : <UploadCloud className="h-5 w-5 text-rose-500" />}
                                 <span className="text-sm font-medium">{isUploading ? "Uploading..." : "Click to browse files"}</span>
                             </Button>
@@ -326,6 +383,59 @@ export default function AdminSocietyPage() {
                                     />
                                 </div>
                                 <Button className="bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-white" onClick={handleApplyLogoUrl} disabled={!tempLogoUrl}>
+                                    Apply
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={isCoverModalOpen} onOpenChange={setIsCoverModalOpen}>
+                <DialogContent className="max-w-md bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 p-0 overflow-hidden shadow-2xl">
+                    <DialogHeader className="p-6 pb-0">
+                        <DialogTitle className="text-xl font-semibold text-[#172b4d] dark:text-white">Update Cover Photo</DialogTitle>
+                        <DialogDescription className="text-zinc-500 dark:text-zinc-400 mt-1.5">
+                            Select a new banner image for your society profile.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="p-6 space-y-6">
+                        <div className="space-y-3">
+                            <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider block">Option 1: Upload Image</label>
+                            <Button
+                                variant="outline"
+                                className="w-full h-14 border-dashed border-2 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900 justify-start px-4 flex items-center gap-3 relative"
+                                onClick={() => coverFileInputRef.current?.click()}
+                                disabled={isUploading}
+                            >
+                                {isUploading ? <Loader2 className="h-5 w-5 text-rose-500 animate-spin" /> : <UploadCloud className="h-5 w-5 text-rose-500" />}
+                                <span className="text-sm font-medium">{isUploading ? "Uploading..." : "Click to browse files"}</span>
+                            </Button>
+                        </div>
+
+                        <div className="flex items-center">
+                            <div className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800"></div>
+                            <span className="px-3 text-xs text-zinc-400 font-medium">OR</span>
+                            <div className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800"></div>
+                        </div>
+
+                        <div className="space-y-3">
+                            <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider block">Option 2: Image URL</label>
+                            <div className="flex gap-2">
+                                <div className="relative flex-1">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <LinkIcon2 className="h-4 w-4 text-zinc-400" />
+                                    </div>
+                                    <input
+                                        type="url"
+                                        placeholder="https://example.com/cover.png"
+                                        value={tempCoverUrl}
+                                        onChange={(e) => setTempCoverUrl(e.target.value)}
+                                        className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 pl-9 text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
+                                    />
+                                </div>
+                                <Button className="bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-white" onClick={handleApplyCoverUrl} disabled={!tempCoverUrl}>
                                     Apply
                                 </Button>
                             </div>

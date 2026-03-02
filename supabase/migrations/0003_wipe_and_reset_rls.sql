@@ -95,6 +95,7 @@ CREATE POLICY "Global admins can delete profiles" ON profiles FOR DELETE USING (
 CREATE POLICY "Societies viewable by all" ON societies FOR SELECT USING (true);
 CREATE POLICY "Global admins can insert societies" ON societies FOR INSERT WITH CHECK (check_is_global_admin());
 CREATE POLICY "Global admins can update societies" ON societies FOR UPDATE USING (check_is_global_admin());
+CREATE POLICY "Society admins can update their society" ON societies FOR UPDATE USING (check_is_society_admin(id));
 CREATE POLICY "Global admins can delete societies" ON societies FOR DELETE USING (check_is_global_admin());
 
 -- USER SOCIETIES

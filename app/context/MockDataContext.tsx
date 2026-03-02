@@ -309,7 +309,8 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
 
     const updateSociety = async (id: string, updates: Partial<Society>) => {
         const { error } = await supabase.from('societies').update(updates).eq('id', id);
-        if (!error) setSocieties(societies.map(s => s.id === id ? { ...s, ...updates } : s));
+        if (error) throw error;
+        setSocieties(societies.map(s => s.id === id ? { ...s, ...updates } : s));
     };
 
     const addGlobalAdmin = async (admin: GlobalAdmin) => {

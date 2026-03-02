@@ -178,6 +178,8 @@
     CREATE POLICY "Global admins can insert societies" ON societies FOR INSERT WITH CHECK (check_is_global_admin());
     DROP POLICY IF EXISTS "Global admins can update societies" ON societies;
     CREATE POLICY "Global admins can update societies" ON societies FOR UPDATE USING (check_is_global_admin());
+    DROP POLICY IF EXISTS "Society admins can update their society" ON societies;
+    CREATE POLICY "Society admins can update their society" ON societies FOR UPDATE USING (check_is_society_admin(id));
     DROP POLICY IF EXISTS "Global admins can delete societies" ON societies;
     CREATE POLICY "Global admins can delete societies" ON societies FOR DELETE USING (check_is_global_admin());
 

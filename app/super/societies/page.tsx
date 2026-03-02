@@ -100,7 +100,7 @@ function LogoUpload({ value, onChange }: { value: string; onChange: (v: string) 
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function SuperSocietiesPage() {
-    const { societies, addSociety, updateSociety, teams, boardLists, boardCards } = useMockData();
+    const { societies, addSociety, updateSociety, teams, boardLists, boardCards, users } = useMockData();
     const [registerOpen, setRegisterOpen] = useState(false);
     const [editTarget, setEditTarget] = useState<Society | null>(null);
     const [search, setSearch] = useState("");
@@ -115,8 +115,12 @@ export default function SuperSocietiesPage() {
 
         const societyCards = boardCards.filter(c => listIds.includes(c.list_id));
 
+        // Real-time member count for this society
+        const memberCount = users.filter(u => u.societyIds.includes(societyId)).length;
+
         return {
-            boards: societyLists.length,
+            members: memberCount,
+            boards: societyTeams.length,
             tasks: societyCards.length,
             activity: societyCards.length > 20 ? "High" : (societyCards.length > 5 ? "Medium" : "Low")
         };
@@ -375,7 +379,7 @@ export default function SuperSocietiesPage() {
                                 )}
 
                                 <div className="grid grid-cols-3 gap-3 mb-5">
-                                    {[{ label: "Members", val: soc.members.toLocaleString() }, { label: "Boards", val: metrics.boards }, { label: "Tasks", val: metrics.tasks }].map(s => (
+                                    {[{ label: "Members", val: metrics.members.toLocaleString() }, { label: "Boards", val: metrics.boards }, { label: "Tasks", val: metrics.tasks }].map(s => (
                                         <div key={s.label} className="bg-[#f4f5f7] dark:bg-zinc-950/50 rounded-xl p-3 text-center">
                                             <p className="text-xl font-bold text-[#172b4d] dark:text-white">{s.val}</p>
                                             <p className="text-[10px] text-zinc-500 uppercase tracking-wider mt-0.5">{s.label}</p>

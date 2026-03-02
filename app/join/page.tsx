@@ -55,6 +55,13 @@ export default function JoinSocietyPage() {
                 throw linkError;
             }
 
+            // 4. Update profile with the code to track "Joined" state
+            await supabase
+                .from('profiles')
+                .update({ society_code: code.trim().toUpperCase() })
+                .eq('id', user.id);
+
+
             setSuccess(true);
             setTimeout(() => {
                 router.push("/dashboard");

@@ -24,7 +24,7 @@ export default function AdminDashboardPage() {
                     .single();
 
                 if (profile) {
-                    const managementRoles = ['Admin', 'Director', 'Deputy Director', 'HR'];
+                    const managementRoles = ['Admin', 'Director', 'Deputy Director', 'HR', 'Society President', 'Vice President', 'Secretary', 'Treasurer', 'General Admin'];
                     const managed = (profile.user_societies as any[])?.find(us => managementRoles.includes(us.role));
                     setManagedSocietyId(managed?.society_id);
                 }

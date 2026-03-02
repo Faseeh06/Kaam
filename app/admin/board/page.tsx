@@ -55,7 +55,7 @@ type ListProps = {
 export default function BoardPage() {
     const {
         teams, boardLists, boardCards,
-        addBoardList, addBoardCard, updateCardStatus, moveCard
+        addBoardList, updateBoardList, addBoardCard, updateBoardCard, updateCardStatus, moveCard
     } = useMockData();
 
     const [managedSocietyId, setManagedSocietyId] = useState<string | null>(null);
@@ -76,7 +76,7 @@ export default function BoardPage() {
                     .single();
 
                 if (profile) {
-                    const managementRoles = ['Admin', 'Director', 'Deputy Director', 'HR'];
+                    const managementRoles = ['Admin', 'Director', 'Deputy Director', 'HR', 'Society President', 'Vice President', 'Secretary', 'Treasurer', 'General Admin'];
                     const managed = (profile.user_societies as any[])?.find(us => managementRoles.includes(us.role));
                     setManagedSocietyId(managed?.society_id);
                 }
@@ -128,6 +128,25 @@ export default function BoardPage() {
 
     // Detailed Modal state
     const [selectedCard, setSelectedCard] = useState<{ card: CardProps; listTitle: string } | null>(null);
+    const [editCardField, setEditCardField] = useState<"title" | "description" | null>(null);
+    const [editCardText, setEditCardText] = useState("");
+
+    const handleSaveCardField = async () => {
+        if (!selectedCard || !editCardField) return;
+        const updates = { [editCardField]: editCardText };
+
+        // Optimistic local update of selectedCard state so modal doesn't flash
+        setSelectedCard({
+            ...selectedCard,
+            card: {
+                ...selectedCard.card,
+                [editCardField]: editCardText
+            }
+        });
+
+        await updateBoardCard(selectedCard.card.id, updates);
+        setEditCardField(null);
+    };
 
     // Handlers
     const handleAddList = async () => {
@@ -150,8 +169,10 @@ export default function BoardPage() {
         setAddingCardToList(null);
     };
 
-    const handleRenameList = (listId: string) => {
-        // Option to implement server-side rename
+    const handleRenameList = async (listId: string) => {
+        if (editListTitle.trim()) {
+            await updateBoardList(listId, editListTitle);
+        }
         setEditingListId(null);
     };
 
@@ -441,7 +462,27 @@ export default function BoardPage() {
                             <div className="flex items-start gap-4">
                                 <Circle className="h-6 w-6 text-zinc-500 dark:text-zinc-400 mt-1 shrink-0" />
                                 <div className="flex-1 min-w-0 pr-8 md:pr-0">
-                                    <h2 className="text-xl md:text-2xl font-semibold text-[#172b4d] dark:text-zinc-100 leading-tight mb-1.5">{selectedCard.card.title}</h2>
+                                    {editCardField === "title" ? (
+                                        <div className="mb-1.5 flex flex-col gap-2">
+                                            <input
+                                                autoFocus
+                                                value={editCardText}
+                                                onChange={e => setEditCardText(e.target.value)}
+                                                className="text-xl md:text-2xl font-semibold bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700/80 rounded px-2 py-1 text-[#172b4d] dark:text-white w-full outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500"
+                                            />
+                                            <div className="flex items-center gap-2">
+                                                <Button size="sm" onClick={handleSaveCardField} className="bg-rose-500 text-white hover:bg-rose-600 h-8 px-3">Save</Button>
+                                                <Button size="icon" variant="ghost" onClick={() => setEditCardField(null)} className="h-8 w-8 text-zinc-500 hover:text-zinc-800"><X className="h-4 w-4" /></Button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <h2
+                                            onClick={() => { setEditCardField("title"); setEditCardText(selectedCard.card.title); }}
+                                            className="text-xl md:text-2xl font-semibold text-[#172b4d] dark:text-zinc-100 leading-tight mb-1.5 cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800 px-1 -ml-1 rounded transition-colors"
+                                        >
+                                            {selectedCard.card.title}
+                                        </h2>
+                                    )}
                                     <p className="text-sm text-zinc-500 dark:text-zinc-400">
                                         in list <span className="underline decoration-zinc-500 underline-offset-4 cursor-pointer hover:text-zinc-800 dark:text-zinc-300">{selectedCard.listTitle}</span>
                                     </p>
@@ -474,17 +515,31 @@ export default function BoardPage() {
                                         <AlignLeft className="h-5 w-5 text-zinc-500 dark:text-zinc-400 shrink-0" />
                                         <h3 className="text-base font-semibold text-[#172b4d] dark:text-zinc-100">Description</h3>
                                     </div>
-                                    <Button variant="secondary" size="sm" className="h-7 px-3 text-xs bg-zinc-100 dark:bg-zinc-800/80 text-zinc-800 dark:text-zinc-300 hover:bg-zinc-700 border border-zinc-300 dark:border-zinc-700">
+                                    <Button onClick={() => { setEditCardField("description"); setEditCardText(selectedCard.card.description || ""); }} variant="secondary" size="sm" className="h-7 px-3 text-xs bg-zinc-100 dark:bg-zinc-800/80 text-zinc-800 dark:text-zinc-300 hover:bg-zinc-700 border border-zinc-300 dark:border-zinc-700">
                                         Edit
                                     </Button>
                                 </div>
                                 <div className="ml-0 md:ml-8">
-                                    {selectedCard.card.description ? (
-                                        <div className="text-sm text-zinc-800 dark:text-zinc-300 whitespace-pre-line leading-relaxed">
+                                    {editCardField === "description" ? (
+                                        <div className="space-y-3">
+                                            <textarea
+                                                autoFocus
+                                                value={editCardText}
+                                                onChange={e => setEditCardText(e.target.value)}
+                                                className="w-full bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700/80 rounded-lg p-3 text-sm text-[#172b4d] dark:text-zinc-100 placeholder:text-zinc-600 outline-none resize-y min-h-[100px] focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 shadow-sm custom-scrollbar"
+                                                placeholder="Add a more detailed description..."
+                                            />
+                                            <div className="flex items-center gap-2">
+                                                <Button size="sm" onClick={handleSaveCardField} className="bg-rose-500 text-white hover:bg-rose-600 px-4">Save</Button>
+                                                <Button size="sm" variant="ghost" onClick={() => setEditCardField(null)} className="text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200">Cancel</Button>
+                                            </div>
+                                        </div>
+                                    ) : selectedCard.card.description ? (
+                                        <div onClick={() => { setEditCardField("description"); setEditCardText(selectedCard.card.description || ""); }} className="text-sm text-zinc-800 dark:text-zinc-300 whitespace-pre-line leading-relaxed cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800/50 p-2 -my-2 -mx-2 rounded transition-colors">
                                             {selectedCard.card.description}
                                         </div>
                                     ) : (
-                                        <div className="bg-zinc-100 dark:bg-zinc-800/30 border border-zinc-200 dark:border-zinc-800/60 rounded-lg p-5 text-zinc-500 cursor-pointer hover:bg-zinc-200/50 dark:hover:bg-zinc-800 dark:bg-zinc-800/50 transition text-sm">
+                                        <div onClick={() => { setEditCardField("description"); setEditCardText(""); }} className="bg-zinc-100 dark:bg-zinc-800/30 border border-zinc-200 dark:border-zinc-800/60 rounded-lg p-5 text-zinc-500 cursor-pointer hover:bg-zinc-200/50 dark:hover:bg-zinc-800 dark:bg-zinc-800/50 transition text-sm">
                                             Add a more detailed description...
                                         </div>
                                     )}

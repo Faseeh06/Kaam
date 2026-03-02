@@ -28,7 +28,7 @@ export default function AdminUsersPage() {
                     .single();
 
                 if (profile) {
-                    const managementRoles = ['Admin', 'Director', 'Deputy Director', 'HR'];
+                    const managementRoles = ['Admin', 'Director', 'Deputy Director', 'HR', 'Society President', 'Vice President', 'Secretary', 'Treasurer', 'General Admin'];
                     const managed = (profile.user_societies as any[])?.find(us => managementRoles.includes(us.role));
                     setManagedSocietyId(managed?.society_id);
                 }
@@ -245,9 +245,12 @@ export default function AdminUsersPage() {
                                             <td className="px-6 py-4">
                                                 <div className="flex flex-col gap-1">
                                                     <span className="text-sm text-zinc-700 dark:text-zinc-300 font-medium">{user.role}</span>
-                                                    <span className="text-xs text-zinc-500 dark:text-zinc-500">{user.team} Team</span>
+                                                    <span className={`text-xs ${user.team === 'Unassigned' ? 'text-zinc-400' : 'text-rose-500 font-medium'}`}>
+                                                        {user.team === 'Unassigned' ? 'Unassigned' : `${user.team} Team`}
+                                                    </span>
                                                 </div>
                                             </td>
+
                                             <td className="px-6 py-4">
                                                 <Badge variant="outline" className={user.status === 'Active' ? 'text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/10' : 'text-zinc-500 dark:text-zinc-400 border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/50'}>
                                                     {user.status}

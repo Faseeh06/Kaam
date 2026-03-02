@@ -30,31 +30,36 @@ export default function DashboardLayout({
             const supabase = createClient();
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
-                const { data: profile } = await supabase
+                const { data: profile, error: profileError } = await supabase
                     .from('profiles')
-                    .select('full_name, email, is_global_admin, user_societies(*)')
+                    .select('full_name, email, is_global_admin, society_code, user_societies(*)')
                     .eq('id', user.id)
                     .single();
 
+                if (profileError) {
+                    console.error("Critical error fetching profile data:", profileError);
+                }
 
-                // If not a global admin, check memberships
+
+                // If not a global admin, check if they have a code or active membership
                 if (!profile?.is_global_admin) {
-                    const memberships = (profile?.user_societies as any[]) || [];
-
-                    // If absolutely NO record exists, go to join page
-                    if (memberships.length === 0) {
+                    // 1. If NO code ever set, they MUST join
+                    if (!profileError && !profile?.society_code) {
                         router.push("/join");
                         return;
                     }
 
-                    // If a record exists but none are Active, show the Pending screen
+                    // 2. Check memberships (fetched from profile)
+                    const memberships = (profile?.user_societies as any[]) || [];
                     const hasActive = memberships.some(m => m.status === 'Active');
+
                     if (!hasActive) {
                         setIsPending(true);
                     } else {
                         setIsPending(false);
                     }
                 }
+
 
 
                 setUserData({

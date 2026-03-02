@@ -1,11 +1,12 @@
 "use client";
 
-import { Users, Plus, Star, MoreVertical, LayoutGrid, Settings, ShieldAlert, Search, Check } from "lucide-react";
+import { Users, Plus, Star, MoreVertical, LayoutGrid, Settings, ShieldAlert, Search, Check, Trash2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMockData } from "@/app/context/MockDataContext";
 import { createClient } from "@/lib/supabase/client";
@@ -22,7 +23,7 @@ const COLORS = [
 ];
 
 export default function AdminTeamsPage() {
-    const { teams, addTeam, users, teamMembers, addTeamMember, removeTeamMember } = useMockData();
+    const { teams, addTeam, removeTeam, users, teamMembers, addTeamMember, removeTeamMember } = useMockData();
     const [managedSocietyId, setManagedSocietyId] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedTeam, setSelectedTeam] = useState<any>(null);
@@ -48,7 +49,7 @@ export default function AdminTeamsPage() {
                     .single();
 
                 if (profile) {
-                    const managementRoles = ['Admin', 'Director', 'Deputy Director', 'HR'];
+                    const managementRoles = ['Admin', 'Director', 'Deputy Director', 'HR', 'Society President', 'Vice President', 'Secretary', 'Treasurer', 'General Admin'];
                     const managed = (profile.user_societies as any[])?.find(us => managementRoles.includes(us.role));
                     setManagedSocietyId(managed?.society_id);
                 }
@@ -123,6 +124,15 @@ export default function AdminTeamsPage() {
         // reset
         setNewName(""); setNewType("Core"); setNewColor("bg-rose-500"); setNewLeads([]); setNewLeadInput("");
         setIsCreateOpen(false);
+    };
+
+    const handleDeleteTeam = async (teamId: string) => {
+        if (!confirm("Are you sure you want to permanently delete this team? This action cannot be undone.")) return;
+        try {
+            await removeTeam(teamId);
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     if (isLoading) {
@@ -261,9 +271,18 @@ export default function AdminTeamsPage() {
                                     </Badge>
                                 </div>
                             </div>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-[#172b4d] dark:hover:text-white shrink-0 -mr-2">
-                                <MoreVertical className="h-4 w-4" />
-                            </Button>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-[#172b4d] dark:hover:text-white shrink-0 -mr-2">
+                                        <MoreVertical className="h-4 w-4" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-40 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 shadow-xl rounded-xl">
+                                    <DropdownMenuItem onClick={() => handleDeleteTeam(team.id)} className="flex items-center gap-2 text-rose-600 dark:text-rose-400 focus:text-rose-600 dark:focus:text-rose-400 cursor-pointer hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg text-sm">
+                                        <Trash2 className="h-3.5 w-3.5" /> Delete Team
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         </div>
 
                         <div className="space-y-4">

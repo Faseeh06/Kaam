@@ -209,11 +209,19 @@ export default function DashboardPage() {
 }
 
 function UserTeamCard({ userId }: { userId?: string }) {
-    const { teams, users } = useMockData();
-    const user = users.find(u => u.id === userId);
+    const { teams, teamMembers } = useMockData();
 
-    // Find the team assigned to user in their profile
-    const myTeam = teams.find(t => t.name === user?.team);
+    if (!userId) {
+        return (
+            <div className="p-6 h-32 flex items-center justify-center">
+                <Loader2 className="h-5 w-5 animate-spin text-amber-500" />
+            </div>
+        );
+    }
+
+    // Find the team by checking teamMembers associations (Source of Truth)
+    const myTeam = teams.find(t => (teamMembers[t.id] || []).some(m => m.userId === userId));
+
 
     if (!myTeam) {
         return (

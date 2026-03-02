@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
-import { useMockData, TeamRole, TEAM_ROLE_PERMISSIONS } from "@/app/context/MockDataContext";
+import { useMockData, TEAM_ROLE_PERMISSIONS, TeamRole, Team } from "@/app/context/MockDataContext";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 
@@ -58,10 +58,12 @@ const formatDeadline = (d?: string) => {
 
 export default function BoardPage() {
     const {
-        boardLists, boardCards, teams,
-        addBoardList, addBoardCard, updateCardStatus, moveCard
+        teams, boardLists, boardCards, teamMembers,
+        addBoardList, updateBoardList, addBoardCard, updateBoardCard, updateCardStatus, moveCard
     } = useMockData();
-    const [userData, setUserData] = useState<{ id: string; primary_team: string; role: TeamRole } | null>(null);
+
+    // ── Current User Logic ────────────────────────────────────────────────────
+    const [userData, setUserData] = useState<{ id: string; primary_team: string } | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [mounted, setMounted] = useState(false);
 
@@ -70,37 +72,34 @@ export default function BoardPage() {
         const fetchUserData = async () => {
             const supabase = createClient();
             const { data: { user } } = await supabase.auth.getUser();
+
             if (user) {
-                const { data: profile } = await supabase
-                    .from('profiles')
-                    .select('id, primary_team')
-                    .eq('id', user.id)
-                    .single();
-
-                const { data: userSoc } = await supabase
-                    .from('user_societies')
-                    .select('role')
-                    .eq('id', user.id)
-                    .single();
-
-                if (profile) {
-                    setUserData({
-                        id: profile.id,
-                        primary_team: profile.primary_team || "",
-                        role: (userSoc?.role as TeamRole) || "Executive"
-                    });
-                }
+                const { data: profile } = await supabase.from('profiles').select('id, primary_team').eq('id', user.id).single();
+                setUserData({ id: user.id, primary_team: profile?.primary_team || "" });
             }
             setIsLoading(false);
         };
         fetchUserData();
     }, []);
 
-    // Find user's team
-    const myTeam = teams.find(t => t.name === userData?.primary_team);
-    const myPerms = TEAM_ROLE_PERMISSIONS[userData?.role || "Executive"];
+    // Find user's team reactively from teamMembers (Source of Truth)
+    const myTeam = userData ? teams.find(t =>
+        // 1. Check direct associations (Real-time)
+        (teamMembers[t.id] || []).some(m => m.userId === userData.id) ||
+        // 2. Fallback to profile field
+        t.name === userData.primary_team
+    ) : null;
 
-    // Filter lists and cards for this team
+    const members = myTeam ? (teamMembers[myTeam.id] || []) : [];
+
+    // Find my explicit role in THIS team. Default to Executive if not found.
+    const myTeamMemberRecord = userData ? members.find(m => m.userId === userData.id) : null;
+    const rawRole = myTeamMemberRecord?.teamRole || "Executive";
+    const myRole = TEAM_ROLE_PERMISSIONS[rawRole as TeamRole] ? rawRole : "Executive";
+    const myPerms = TEAM_ROLE_PERMISSIONS[myRole as TeamRole] || TEAM_ROLE_PERMISSIONS["Executive"];
+
+    // ── Board Data Formatting ──────────────────────────────────────────────────
+
     const displayLists: ListProps[] = boardLists
         .filter(l => l.team_id === myTeam?.id)
         .map(l => ({
@@ -132,6 +131,26 @@ export default function BoardPage() {
     const [newCardTitle, setNewCardTitle] = useState("");
     // (Other add card fields omitted for brevity, can be re-added if needed)
 
+    // Edit Card logic
+    const [editCardField, setEditCardField] = useState<"title" | "description" | null>(null);
+    const [editCardText, setEditCardText] = useState("");
+
+    const handleSaveCardField = async () => {
+        if (!selectedCard || !editCardField) return;
+        const updates = { [editCardField]: editCardText };
+
+        setSelectedCard({
+            ...selectedCard,
+            card: {
+                ...selectedCard.card,
+                [editCardField]: editCardText
+            }
+        });
+
+        await updateBoardCard(selectedCard.card.id, updates);
+        setEditCardField(null);
+    };
+
     // ── Handlers ──────────────────────────────────────────────────────────────
 
     const handleAddList = async () => {
@@ -147,9 +166,9 @@ export default function BoardPage() {
         setAddingCardToList(null);
     };
 
-    const handleRenameList = (listId: string) => {
+    const handleRenameList = async (listId: string) => {
         if (!editListTitle.trim()) { setEditingListId(null); return; }
-        // updateBoardList(listId, { title: editListTitle }); // Add this action if needed
+        await updateBoardList(listId, editListTitle);
         setEditingListId(null);
     };
 
@@ -198,7 +217,7 @@ export default function BoardPage() {
                 <div className="flex items-center gap-3">
                     <h1 className="font-medium text-lg text-[#172b4d] dark:text-white">{myTeam.name} Board</h1>
                     <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-500 border-amber-200 dark:border-amber-500/20`}>
-                        {userData?.role}
+                        {myRole}
                     </span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -371,7 +390,27 @@ export default function BoardPage() {
                             <div className="flex items-start gap-4">
                                 <Circle className="h-6 w-6 text-zinc-400 mt-1 shrink-0" />
                                 <div className="flex-1 min-w-0 pr-8 md:pr-0">
-                                    <h2 className="text-xl md:text-2xl font-semibold text-[#172b4d] dark:text-zinc-100 leading-tight mb-2">{selectedCard.card.title}</h2>
+                                    {editCardField === "title" ? (
+                                        <div className="mb-2 flex flex-col gap-2">
+                                            <input
+                                                autoFocus
+                                                value={editCardText}
+                                                onChange={e => setEditCardText(e.target.value)}
+                                                className="text-xl md:text-2xl font-semibold bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700/80 rounded px-2 py-1 text-[#172b4d] dark:text-white w-full outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500"
+                                            />
+                                            <div className="flex items-center gap-2">
+                                                <Button size="sm" onClick={handleSaveCardField} className="bg-amber-500 text-zinc-950 hover:bg-amber-600 h-8 px-3">Save</Button>
+                                                <Button size="icon" variant="ghost" onClick={() => setEditCardField(null)} className="h-8 w-8 text-zinc-500 hover:text-zinc-800"><X className="h-4 w-4" /></Button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <h2
+                                            onClick={() => { if (myPerms.canAddToBoard) { setEditCardField("title"); setEditCardText(selectedCard.card.title); } }}
+                                            className={`text-xl md:text-2xl font-semibold text-[#172b4d] dark:text-zinc-100 leading-tight mb-2 ${myPerms.canAddToBoard ? 'cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800 px-1 -ml-1 rounded transition-colors' : ''}`}
+                                        >
+                                            {selectedCard.card.title}
+                                        </h2>
+                                    )}
                                     <p className="text-sm text-zinc-500">in list <span className="underline underline-offset-4 cursor-pointer">{selectedCard.listTitle}</span></p>
 
                                     <div className="flex flex-wrap gap-2 mt-3">
@@ -395,9 +434,47 @@ export default function BoardPage() {
                                 <div className="flex items-center gap-3 mb-3">
                                     <AlignLeft className="h-5 w-5 text-zinc-400 shrink-0" />
                                     <h3 className="text-sm font-semibold text-[#172b4d] dark:text-zinc-100">Description</h3>
+                                    {myPerms.canAddToBoard && (
+                                        <Button
+                                            onClick={() => { setEditCardField("description"); setEditCardText(selectedCard.card.description || ""); }}
+                                            variant="secondary"
+                                            size="sm"
+                                            className="h-7 px-3 text-xs bg-zinc-100 dark:bg-zinc-800/80 text-zinc-800 dark:text-zinc-300 hover:bg-zinc-700 border border-zinc-300 dark:border-zinc-700 ml-auto"
+                                        >
+                                            Edit
+                                        </Button>
+                                    )}
                                 </div>
-                                <div className="ml-0 md:ml-8 text-sm text-zinc-600 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-900 rounded-lg p-4 border border-zinc-100 dark:border-zinc-800 min-h-[60px]">
-                                    {selectedCard.card.description || <span className="italic text-zinc-400">No description yet.</span>}
+                                <div className="ml-0 md:ml-8">
+                                    {editCardField === "description" ? (
+                                        <div className="space-y-3">
+                                            <textarea
+                                                autoFocus
+                                                value={editCardText}
+                                                onChange={e => setEditCardText(e.target.value)}
+                                                className="w-full bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700/80 rounded-lg p-3 text-sm text-[#172b4d] dark:text-zinc-100 placeholder:text-zinc-600 outline-none resize-y min-h-[100px] focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500 shadow-sm custom-scrollbar"
+                                                placeholder="Add a more detailed description..."
+                                            />
+                                            <div className="flex items-center gap-2">
+                                                <Button size="sm" onClick={handleSaveCardField} className="bg-amber-500 text-zinc-950 hover:bg-amber-600 px-4">Save</Button>
+                                                <Button size="sm" variant="ghost" onClick={() => setEditCardField(null)} className="text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200">Cancel</Button>
+                                            </div>
+                                        </div>
+                                    ) : selectedCard.card.description ? (
+                                        <div
+                                            onClick={() => { if (myPerms.canAddToBoard) { setEditCardField("description"); setEditCardText(selectedCard.card.description || ""); } }}
+                                            className={`text-sm text-zinc-600 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-900 rounded-lg p-4 border border-zinc-100 dark:border-zinc-800 min-h-[60px] whitespace-pre-line leading-relaxed ${myPerms.canAddToBoard ? 'cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800/80 transition-colors' : ''}`}
+                                        >
+                                            {selectedCard.card.description}
+                                        </div>
+                                    ) : (
+                                        <div
+                                            onClick={() => { if (myPerms.canAddToBoard) { setEditCardField("description"); setEditCardText(""); } }}
+                                            className={`bg-zinc-50 dark:bg-zinc-900 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-lg p-4 text-zinc-500 min-h-[60px] text-sm flex items-center ${myPerms.canAddToBoard ? 'cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800/80 transition-colors' : ''}`}
+                                        >
+                                            <span className="italic">No description yet.</span>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>

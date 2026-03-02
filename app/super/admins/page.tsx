@@ -24,7 +24,7 @@ const getRoleStyle = (role: string) =>
     ROLE_OPTIONS.find(r => r.label === role) ?? { icon: "🔖", color: "text-zinc-600 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-800/50 border-zinc-200 dark:border-zinc-700" };
 
 export default function SuperAdminsPage() {
-    const { admins, users, societies, addAdmin, removeAdmin, makeSocietyAdmin, revokeSocietyAdmin } = useMockData();
+    const { admins, users, allRegisteredUsers, societies, addAdmin, removeAdmin, makeSocietyAdmin, revokeSocietyAdmin } = useMockData();
 
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState("");
@@ -92,7 +92,7 @@ export default function SuperAdminsPage() {
                                 <select value={selectedUserId} onChange={e => setSelectedUserId(e.target.value)}
                                     className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500">
                                     <option value="">Choose a registered user...</option>
-                                    {users.map(u => <option key={u.id} value={u.id}>{u.name} — {u.email}</option>)}
+                                    {allRegisteredUsers.map(u => <option key={u.id} value={u.id}>{u.name} — {u.email}</option>)}
                                 </select>
                             </div>
 

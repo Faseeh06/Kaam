@@ -59,6 +59,7 @@ type MockDataContextType = {
     societies: Society[];
     admins: GlobalAdmin[];
     users: AppUser[];
+    allRegisteredUsers: { id: string; name: string; email: string }[];
     pendingUsers: PendingUser[];
     teams: Team[];
     officeBearers: OfficeBearerRole[];
@@ -79,6 +80,7 @@ type MockDataContextType = {
     rejectPendingUser: (id: string) => void;
 
     addTeam: (team: Omit<Team, "id"> & { society_id: string }) => Promise<void>;
+    removeTeam: (id: string) => Promise<void>;
     addOfficeBearerRole: (ob: OfficeBearerRole) => void;
     updateOfficeBearerRole: (id: string, updates: Partial<OfficeBearerRole>) => void;
     removeOfficeBearerRole: (id: string) => void;
@@ -89,7 +91,9 @@ type MockDataContextType = {
 
     // Board Actions
     addBoardList: (teamId: string, title: string) => Promise<void>;
+    updateBoardList: (listId: string, title: string) => Promise<void>;
     addBoardCard: (listId: string, title: string) => Promise<void>;
+    updateBoardCard: (cardId: string, updates: any) => Promise<void>;
     updateCardStatus: (cardId: string, isCompleted: boolean) => Promise<void>;
     moveCard: (cardId: string, newListId: string) => Promise<void>;
 };
@@ -102,6 +106,7 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
     const [societies, setSocieties] = useState<Society[]>([]);
     const [admins, setAdmins] = useState<GlobalAdmin[]>([]);
     const [users, setUsers] = useState<AppUser[]>([]);
+    const [allRegisteredUsers, setAllRegisteredUsers] = useState<{ id: string; name: string; email: string }[]>([]);
     const [pendingUsers, setPendingUsers] = useState<PendingUser[]>([]);
     const [teams, setTeams] = useState<Team[]>([]);
     const [officeBearers, setOfficeBearers] = useState<OfficeBearerRole[]>([]);
@@ -124,6 +129,12 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
 
             // Fetch Global Admins
             const { data: globalAdminData } = await supabase.from('profiles').select('*').eq('is_global_admin', true);
+
+            // Fetch All Registered Profiles
+            const { data: allProfilesData } = await supabase.from('profiles').select('id, full_name, email');
+            if (allProfilesData) {
+                setAllRegisteredUsers(allProfilesData.map(p => ({ id: p.id, name: p.full_name || "Unknown", email: p.email || "No Email" })));
+            }
 
             // Fetch Society Admins
             const { data: societyAdminData } = await supabase
@@ -160,6 +171,29 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
             }
             setAdmins(allAdmins);
 
+            // Fetch Team Members
+            const { data: memberData } = await supabase
+                .from('team_members')
+                .select('*, profiles(full_name, email)');
+
+            const grouped: Record<string, TeamMember[]> = {};
+            if (memberData) {
+                memberData.forEach((m: any) => {
+                    const tId = m.team_id;
+                    if (!grouped[tId]) grouped[tId] = [];
+                    grouped[tId].push({
+                        id: m.id,
+                        userId: m.user_id,
+                        name: m.profiles?.full_name || "Unknown",
+                        email: m.profiles?.email || "N/A",
+                        teamRole: m.role as TeamRole,
+                        joinedAt: m.joined_at
+                    });
+                });
+                setTeamMembers(grouped);
+            }
+
+
             // Fetch User Societies
             const { data: membershipData } = await supabase
                 .from('user_societies')
@@ -174,6 +208,17 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
                     const society = m.societies;
                     if (!profile) return;
 
+                    // Find if user is in any team
+                    let teamName = profile.primary_team;
+                    if (!teamName || teamName === "Unassigned") {
+                        const userAssignment = memberData?.find((assignment: any) => assignment.user_id === m.user_id);
+                        if (userAssignment) {
+                            const team = teamData?.find(t => t.id === userAssignment.team_id);
+                            if (team) teamName = team.name;
+                        }
+                    }
+                    if (!teamName) teamName = "Unassigned";
+
                     if (m.status === 'Active') {
                         activeMembers.push({
                             id: m.user_id,
@@ -182,7 +227,7 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
                             societyIds: [m.society_id],
                             joined: profile.created_at ? new Date(profile.created_at).toLocaleDateString() : 'N/A',
                             role: m.role || "Member",
-                            team: profile.primary_team || "Unassigned",
+                            team: teamName,
                             status: "Active"
                         });
                     } else {
@@ -197,6 +242,7 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
                         });
                     }
                 });
+
 
                 setUsers(activeMembers);
                 setPendingUsers(pendingMembers);
@@ -221,27 +267,7 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
             const { data: cardData } = await supabase.from('board_cards').select('*').order('position');
             if (cardData) setBoardCards(cardData);
 
-            // Fetch Team Members
-            const { data: memberData } = await supabase
-                .from('team_members')
-                .select('*, profiles(full_name, email)');
 
-            if (memberData) {
-                const grouped: Record<string, TeamMember[]> = {};
-                memberData.forEach((m: any) => {
-                    const tId = m.team_id;
-                    if (!grouped[tId]) grouped[tId] = [];
-                    grouped[tId].push({
-                        id: m.id,
-                        userId: m.user_id,
-                        name: m.profiles?.full_name || "Unknown",
-                        email: m.profiles?.email || "N/A",
-                        teamRole: m.role as TeamRole,
-                        joinedAt: m.joined_at
-                    });
-                });
-                setTeamMembers(grouped);
-            }
 
 
         } catch (err) {
@@ -439,6 +465,16 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
         }
     };
 
+    const removeTeam = async (id: string) => {
+        const { error } = await supabase.from('teams').delete().eq('id', id);
+        if (error) {
+            console.error("Error deleting team:", error.message);
+            alert("Failed to delete team: " + error.message);
+            return;
+        }
+        setTeams(prev => prev.filter(t => t.id !== id));
+    };
+
     const addOfficeBearerRole = async (ob: OfficeBearerRole) => {
         // Requires looking up profile ID by email/name usually
         setOfficeBearers([...officeBearers, ob]);
@@ -464,10 +500,12 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
             return;
         }
 
-        // 3. Sync to profiles.primary_team (for existing dashboard logic)
+        // 3. Sync to profiles.primary_team (Always sync even if assignment already existed)
         if (teamInfo) {
+            console.log(`Syncing user ${userId} to team ${teamInfo.name}`);
             await supabase.from('profiles').update({ primary_team: teamInfo.name }).eq('id', userId);
         }
+
 
         // 4. Increment team count (optional but good for consistency if we use team.members)
         await supabase.rpc('increment_team_members', { t_id: teamId });
@@ -515,6 +553,11 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
         if (!error && data) setBoardLists([...boardLists, data]);
     };
 
+    const updateBoardList = async (listId: string, title: string) => {
+        const { error } = await supabase.from('board_lists').update({ title }).eq('id', listId);
+        if (!error) setBoardLists(boardLists.map(l => l.id === listId ? { ...l, title } : l));
+    };
+
     const addBoardCard = async (listId: string, title: string) => {
         const { data, error } = await supabase.from('board_cards').insert([{
             list_id: listId,
@@ -522,6 +565,11 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
             position: boardCards.filter(c => c.list_id === listId).length
         }]).select().single();
         if (!error && data) setBoardCards([...boardCards, data]);
+    };
+
+    const updateBoardCard = async (cardId: string, updates: any) => {
+        const { error } = await supabase.from('board_cards').update(updates).eq('id', cardId);
+        if (!error) setBoardCards(boardCards.map(c => c.id === cardId ? { ...c, ...updates } : c));
     };
 
     const updateCardStatus = async (cardId: string, isCompleted: boolean) => {
@@ -536,16 +584,16 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
 
     return (
         <MockDataContext.Provider value={{
-            societies, admins, users, pendingUsers, teams, officeBearers, teamMembers, boardLists, boardCards, isLoading,
+            societies, admins, users, allRegisteredUsers, pendingUsers, teams, officeBearers, teamMembers, boardLists, boardCards, isLoading,
             addSociety, updateSociety,
             addAdmin: addGlobalAdmin,
             removeAdmin: removeGlobalAdmin,
             makeSocietyAdmin, revokeSocietyAdmin,
             addUser, removeUser,
-            approvePendingUser, rejectPendingUser, addTeam,
+            approvePendingUser, rejectPendingUser, addTeam, removeTeam,
             addOfficeBearerRole, updateOfficeBearerRole, removeOfficeBearerRole,
             addTeamMember, removeTeamMember, updateTeamMemberRole,
-            addBoardList, addBoardCard, updateCardStatus, moveCard,
+            addBoardList, updateBoardList, addBoardCard, updateBoardCard, updateCardStatus, moveCard,
         }}>
             {children}
         </MockDataContext.Provider>

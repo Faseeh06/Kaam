@@ -21,7 +21,7 @@ const RECENT_ACTIVITY = [
 
 export default function DashboardTeamPage() {
     const { teams, teamMembers } = useMockData();
-    const [userData, setUserData] = useState<{ id: string; email: string; primary_team: string; role: TeamRole } | null>(null);
+    const [userData, setUserData] = useState<{ id: string; email: string; primary_team: string } | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -35,18 +35,11 @@ export default function DashboardTeamPage() {
                     .eq('id', user.id)
                     .single();
 
-                const { data: userSoc } = await supabase
-                    .from('user_societies')
-                    .select('role')
-                    .eq('id', user.id)
-                    .single();
-
                 if (profile) {
                     setUserData({
                         id: profile.id,
                         email: profile.email || "",
-                        primary_team: profile.primary_team || "",
-                        role: (userSoc?.role as TeamRole) || "Executive"
+                        primary_team: profile.primary_team || ""
                     });
                 }
             }
@@ -55,10 +48,23 @@ export default function DashboardTeamPage() {
         fetchUserData();
     }, []);
 
-    const myTeam = teams.find(t => t.name === userData?.primary_team);
+    // Find user's team reactively from teamMembers (Source of Truth)
+    const myTeam = userData ? teams.find(t =>
+        // 1. Check direct associations (Real-time)
+        (teamMembers[t.id] || []).some(m => m.userId === userData.id) ||
+        // 2. Fallback to profile field
+        t.name === userData.primary_team
+    ) : null;
+
+
     const members = myTeam ? (teamMembers[myTeam.id] || []) : [];
-    const myRole = userData?.role || "Executive";
-    const myPerms = TEAM_ROLE_PERMISSIONS[myRole];
+
+    // Find my explicit role in THIS team. Default to Executive if not found.
+    const myTeamMemberRecord = userData ? members.find(m => m.userId === userData.id) : null;
+    const rawRole = myTeamMemberRecord?.teamRole || "Executive";
+    const myRole = ROLE_CONFIG[rawRole] ? rawRole : "Executive";
+
+    const myPerms = TEAM_ROLE_PERMISSIONS[myRole as TeamRole];
 
     const directors = members.filter(m => m.teamRole === "Director");
     const dds = members.filter(m => m.teamRole === "Deputy Director");

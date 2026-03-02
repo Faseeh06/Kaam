@@ -59,14 +59,11 @@ export default function LoginPage() {
 
             router.refresh();
 
-            // 2. Route based on most powerful role
+            // 2. Route based on role
             if (isSuperAdmin) {
                 router.push("/super");
-            } else if (isSocietyAdmin) {
-                router.push("/admin");
             } else {
-                // All other authenticated users go to dashboard
-                // They can join a society from there if needed
+                // All other users (Members, Directors, Society Admins) go to dashboard
                 router.push("/dashboard");
             }
         }

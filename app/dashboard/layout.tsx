@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
-import { Shield, LayoutDashboard, KanbanSquare, Settings, User, Users2, ChevronLeft, ChevronRight, Sun, Moon, LogOut } from "lucide-react";
+import { Shield, LayoutDashboard, KanbanSquare, Settings, User, Users2, ChevronLeft, ChevronRight, Sun, Moon, LogOut, ShieldAlert } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
@@ -18,7 +18,7 @@ export default function DashboardLayout({
     children: React.ReactNode;
 }) {
     const [isCollapsed, setIsCollapsed] = useState(false);
-    const [userData, setUserData] = useState<{ name: string; email: string } | null>(null);
+    const [userData, setUserData] = useState<{ name: string; email: string; isSocietyAdmin?: boolean } | null>(null);
     const [isPending, setIsPending] = useState(false);
     const pathname = usePathname();
     const router = useRouter();
@@ -94,9 +94,13 @@ export default function DashboardLayout({
 
 
 
+                const managementRoles = ['Admin', 'Director', 'Deputy Director', 'HR', 'Society President', 'Vice President', 'Secretary', 'Treasurer', 'General Admin'];
+                const isSocietyAdmin = (profile?.user_societies as any[])?.some(us => managementRoles.includes(us.role));
+
                 setUserData({
                     name: profile?.full_name || "User",
-                    email: user.email || ""
+                    email: user.email || "",
+                    isSocietyAdmin
                 });
             } else {
                 router.push("/login");
@@ -210,6 +214,20 @@ export default function DashboardLayout({
                         {!isCollapsed && <span className="text-sm font-medium">Settings</span>}
                     </Link>
 
+                    {userData?.isSocietyAdmin && (
+                        <>
+                            <div className="h-px bg-zinc-200 dark:bg-zinc-800 my-4 mx-3" />
+                            {!isCollapsed && <div className="text-xs font-semibold text-rose-500 uppercase tracking-wider mb-4 px-3">Administration</div>}
+                            <Link
+                                href="/admin"
+                                className={`flex items-center ${isCollapsed ? 'justify-center px-0' : 'gap-3 px-3'} py-2.5 rounded-lg transition-colors group relative text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10`}
+                                title="Admin Panel"
+                            >
+                                <ShieldAlert className={`h-5 w-5 shrink-0 transition-colors group-hover:text-rose-600`} />
+                                {!isCollapsed && <span className="text-sm font-semibold">Admin Panel</span>}
+                            </Link>
+                        </>
+                    )}
                 </div>
 
                 <div className={`p-4 border-t border-zinc-200 dark:border-zinc-800/50 transition-all flex flex-col gap-2`}>

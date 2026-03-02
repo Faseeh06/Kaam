@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { useEffect, useState } from "react";
 import { useMockData } from "@/app/context/MockDataContext";
 import { createClient } from "@/lib/supabase/client";
+import { toast } from "sonner";
 
 export default function AdminSocietyPage() {
     const { societies, updateSociety } = useMockData();
@@ -35,6 +36,41 @@ export default function AdminSocietyPage() {
     }, []);
 
     const society = societies.find(s => s.id === managedSocietyId);
+
+    const [name, setName] = useState("");
+    const [description, setDescription] = useState("");
+    const [email, setEmail] = useState("");
+    const [website, setWebsite] = useState("");
+    const [logo, setLogo] = useState("");
+    const [isSaving, setIsSaving] = useState(false);
+
+    useEffect(() => {
+        if (society && name === "") {
+            setName(society.name || "");
+            setDescription(society.description || "");
+            setEmail(society.email || "");
+            setWebsite(society.website || "");
+            setLogo(society.logo || "");
+        }
+    }, [society]);
+
+    const handleSave = async () => {
+        if (!society) return;
+        setIsSaving(true);
+        try {
+            await updateSociety(society.id, {
+                name,
+                description,
+                email,
+                website,
+                logo
+            });
+            toast.success("Society updated successfully");
+        } catch (error: any) {
+            toast.error("Failed to update society: " + error.message);
+        }
+        setIsSaving(false);
+    };
 
     if (isLoading) {
         return (
@@ -73,7 +109,11 @@ export default function AdminSocietyPage() {
                         </div>
                         <CardContent className="pt-0 relative px-6 pb-6 text-center flex flex-col items-center border-t border-zinc-100 dark:border-zinc-800/50">
                             <div className="h-24 w-24 rounded-2xl border-4 border-white dark:border-zinc-950 -mt-12 mb-4 bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center overflow-hidden group cursor-pointer relative">
-                                <Building2 className="h-10 w-10 text-rose-500" />
+                                {logo ? (
+                                    <img src={logo} alt={society.name} className="h-full w-full object-cover" />
+                                ) : (
+                                    <Building2 className="h-10 w-10 text-rose-500" />
+                                )}
                                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
                                     <span className="text-white text-xs font-semibold">Edit Logo</span>
                                 </div>
@@ -99,7 +139,8 @@ export default function AdminSocietyPage() {
                                 <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Society Name</label>
                                 <input
                                     type="text"
-                                    defaultValue={society.name}
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
                                     className="w-full bg-[#f4f5f7] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
                                 />
                             </div>
@@ -107,10 +148,38 @@ export default function AdminSocietyPage() {
                             <div className="space-y-2">
                                 <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Description</label>
                                 <textarea
-                                    defaultValue={society.description || ""}
+                                    value={description}
+                                    onChange={(e) => setDescription(e.target.value)}
                                     rows={4}
                                     className="w-full bg-[#f4f5f7] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-3 text-sm text-[#172b4d] dark:text-zinc-100 outline-none resize-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
                                 />
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300 flex items-center gap-2">
+                                        Logo URL
+                                    </label>
+                                    <input
+                                        type="url"
+                                        value={logo}
+                                        onChange={(e) => setLogo(e.target.value)}
+                                        placeholder="https://example.com/logo.png"
+                                        className="w-full bg-[#f4f5f7] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300 flex items-center gap-2">
+                                        Upload Logo
+                                    </label>
+                                    <div className="relative">
+                                        <input type="file" disabled className="w-full opacity-0 absolute inset-0 cursor-not-allowed z-10" />
+                                        <div className="w-full bg-[#f4f5f7] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-zinc-400 flex items-center justify-between outline-none">
+                                            <span>Select file...</span>
+                                            <span className="text-[10px] bg-zinc-200 dark:bg-zinc-800 px-2 py-0.5 rounded font-semibold">Coming Soon</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -120,7 +189,8 @@ export default function AdminSocietyPage() {
                                     </label>
                                     <input
                                         type="email"
-                                        defaultValue={society.email || ""}
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
                                         className="w-full bg-[#f4f5f7] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
                                     />
                                 </div>
@@ -130,16 +200,17 @@ export default function AdminSocietyPage() {
                                     </label>
                                     <input
                                         type="url"
-                                        defaultValue={society.website || ""}
+                                        value={website}
+                                        onChange={(e) => setWebsite(e.target.value)}
                                         className="w-full bg-[#f4f5f7] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
                                     />
                                 </div>
                             </div>
 
                             <div className="pt-4 flex justify-end">
-                                <Button className="bg-rose-500 text-white hover:bg-rose-600 font-medium px-6 shadow-sm">
-                                    <Save className="h-4 w-4 mr-2" />
-                                    Save Changes
+                                <Button disabled={isSaving} onClick={handleSave} className="bg-rose-500 text-white hover:bg-rose-600 font-medium px-6 shadow-sm disabled:opacity-50">
+                                    {isSaving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
+                                    {isSaving ? "Saving..." : "Save Changes"}
                                 </Button>
                             </div>
                         </CardContent>

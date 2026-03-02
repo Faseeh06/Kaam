@@ -20,9 +20,9 @@ const RECENT_ACTIVITY = [
 ];
 
 export default function DashboardTeamPage() {
-    const { teams, teamMembers } = useMockData();
+    const { teams, teamMembers, isLoading: isContextLoading } = useMockData();
     const [userData, setUserData] = useState<{ id: string; email: string; primary_team: string } | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLocalLoading, setIsLocalLoading] = useState(true);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -43,7 +43,7 @@ export default function DashboardTeamPage() {
                     });
                 }
             }
-            setIsLoading(false);
+            setIsLocalLoading(false);
         };
         fetchUserData();
     }, []);
@@ -73,7 +73,7 @@ export default function DashboardTeamPage() {
 
     const accentText = myTeam?.color?.replace("bg-", "text-") || "text-amber-500";
 
-    if (isLoading) {
+    if (isLocalLoading || isContextLoading) {
         return (
             <div className="h-full flex items-center justify-center">
                 <Loader2 className="h-8 w-8 animate-spin text-amber-500" />
@@ -245,7 +245,7 @@ export default function DashboardTeamPage() {
                                                     </div>
                                                     <p className="text-xs text-zinc-500 font-mono mt-0.5">{member.email}</p>
                                                 </div>
-                                                <span className="text-[11px] text-zinc-400 shrink-0">Member</span>
+                                                <span className="text-[11px] text-zinc-400 shrink-0">{member.teamRole}</span>
                                             </div>
                                         );
                                     })}

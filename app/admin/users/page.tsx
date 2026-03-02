@@ -7,14 +7,17 @@ import { Badge } from "@/components/ui/badge";
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { useMockData } from "@/app/context/MockDataContext";
+import { useMockData, AppUser } from "@/app/context/MockDataContext";
 import { createClient } from "@/lib/supabase/client";
 import { Loader2 } from "lucide-react";
 
 export default function AdminUsersPage() {
-    const { users, pendingUsers, approvePendingUser, rejectPendingUser, removeUser, societies } = useMockData();
+    const { users, pendingUsers, approvePendingUser, rejectPendingUser, removeUser, updateUserRole, societies } = useMockData();
     const [managedSocietyId, setManagedSocietyId] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+
+    const [editingUserRole, setEditingUserRole] = useState<AppUser | null>(null);
+    const [newRole, setNewRole] = useState("");
 
     useEffect(() => {
         const getManagedSociety = async () => {
@@ -194,7 +197,7 @@ export default function AdminUsersPage() {
                                             </td>
                                             <td className="px-6 py-4 text-right">
                                                 <div className="flex items-center justify-end gap-2">
-                                                    <Button onClick={() => approvePendingUser(user.id, "Member", "General")} size="sm" variant="outline" className="border-emerald-200 dark:border-emerald-500/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:border-emerald-300 dark:hover:border-emerald-500/50 h-8 px-2.5">
+                                                    <Button onClick={() => approvePendingUser(user.id, "Executive", "General")} size="sm" variant="outline" className="border-emerald-200 dark:border-emerald-500/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:border-emerald-300 dark:hover:border-emerald-500/50 h-8 px-2.5">
                                                         <Check className="h-4 w-4 mr-1.5" /> Accept
                                                     </Button>
                                                     <Button onClick={() => rejectPendingUser(user.id)} size="sm" variant="outline" className="border-rose-200 dark:border-rose-500/30 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:border-rose-300 dark:hover:border-rose-500/50 h-8 px-2.5">
@@ -264,12 +267,14 @@ export default function AdminUsersPage() {
                                                         </Button>
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="end" className="w-44 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 shadow-xl rounded-xl">
-                                                        <DropdownMenuItem className="flex items-center gap-2 text-zinc-700 dark:text-zinc-300 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-900 rounded-lg text-sm">
+                                                        <DropdownMenuItem
+                                                            onClick={() => { setEditingUserRole(user); setNewRole(user.role); }}
+                                                            className="flex items-center gap-2 text-zinc-700 dark:text-zinc-300 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-900 rounded-lg text-sm">
                                                             <UserCog className="h-3.5 w-3.5" /> Edit Role
                                                         </DropdownMenuItem>
                                                         <DropdownMenuSeparator className="bg-zinc-100 dark:bg-zinc-800 my-1" />
                                                         <DropdownMenuItem
-                                                            onClick={() => removeUser(user.id)}
+                                                            onClick={async () => managedSocietyId && await removeUser(user.id, managedSocietyId)}
                                                             className="flex items-center gap-2 text-rose-600 dark:text-rose-400 cursor-pointer hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg text-sm"
                                                         >
                                                             <Trash2 className="h-3.5 w-3.5" /> Delete User
@@ -285,6 +290,50 @@ export default function AdminUsersPage() {
                     </div>
                 </div>
             </div>
+
+            <Dialog open={!!editingUserRole} onOpenChange={(open) => !open && setEditingUserRole(null)}>
+                <DialogContent className="sm:max-w-md border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
+                    <DialogHeader>
+                        <DialogTitle className="text-[#172b4d] dark:text-white">Edit User Role</DialogTitle>
+                        <DialogDescription className="text-zinc-500 dark:text-zinc-400">
+                            Update the society-level role for {editingUserRole?.name}.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="flex flex-col space-y-4 mt-4">
+                        <div>
+                            <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2 block">Role</label>
+                            <select
+                                value={newRole}
+                                onChange={(e) => setNewRole(e.target.value)}
+                                className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-[#172b4d] dark:text-zinc-300 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition appearance-none"
+                            >
+                                <option value="Executive">Executive</option>
+                                <option value="HR">HR</option>
+                                <option value="Deputy Director">Deputy Director</option>
+                                <option value="Director">Director</option>
+                                <option value="Admin">Admin</option>
+                            </select>
+                        </div>
+                        <div className="flex justify-end gap-3 mt-4">
+                            <Button variant="ghost" onClick={() => setEditingUserRole(null)} className="text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200">
+                                Cancel
+                            </Button>
+                            <Button
+                                onClick={async () => {
+                                    if (editingUserRole && managedSocietyId) {
+                                        await updateUserRole(editingUserRole.id, managedSocietyId, newRole);
+                                        setEditingUserRole(null);
+                                    }
+                                }}
+                                className="bg-rose-500 text-white hover:bg-rose-600"
+                            >
+                                Save Changes
+                            </Button>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
         </div>
     );
 }

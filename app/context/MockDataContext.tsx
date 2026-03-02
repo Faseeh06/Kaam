@@ -75,7 +75,8 @@ type MockDataContextType = {
     makeSocietyAdmin: (userId: string, societyId: string, role: string) => Promise<void>;
     revokeSocietyAdmin: (userId: string, societyId: string) => Promise<void>;
     addUser: (user: AppUser) => void;
-    removeUser: (id: string) => void;
+    removeUser: (userId: string, societyId: string) => Promise<void>;
+    updateUserRole: (userId: string, societyId: string, role: string) => Promise<void>;
     approvePendingUser: (id: string, role: string, team: string) => void;
     rejectPendingUser: (id: string) => void;
 
@@ -226,7 +227,7 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
                             email: profile.email || "No Email",
                             societyIds: [m.society_id],
                             joined: profile.created_at ? new Date(profile.created_at).toLocaleDateString() : 'N/A',
-                            role: m.role || "Member",
+                            role: m.role || "Executive",
                             team: teamName,
                             status: "Active"
                         });
@@ -356,7 +357,7 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
         // We can either delete the membership or demote to Member
         const { error } = await supabase
             .from('user_societies')
-            .update({ role: 'Member' })
+            .update({ role: 'Executive' })
             .eq('user_id', userId)
             .eq('society_id', societyId);
 
@@ -370,7 +371,61 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
 
 
     const addUser = (user: AppUser) => setUsers([...users, user]);
-    const removeUser = (id: string) => setUsers(users.filter(u => u.id !== id));
+
+    const removeUser = async (userId: string, societyId: string) => {
+        const { error } = await supabase
+            .from('user_societies')
+            .delete()
+            .eq('user_id', userId)
+            .eq('society_id', societyId);
+
+        if (error) {
+            console.error("Failed to remove user:", error.message);
+            alert("Failed to remove user: " + error.message);
+            return;
+        }
+
+        setUsers(prev => prev.filter(u => !(u.id === userId && u.societyIds.includes(societyId))));
+    };
+
+    const updateUserRole = async (userId: string, societyId: string, role: string) => {
+        const { error } = await supabase
+            .from('user_societies')
+            .update({ role })
+            .eq('user_id', userId)
+            .eq('society_id', societyId);
+
+        if (error) {
+            console.error("Failed to update user role:", error.message);
+            alert("Failed to update user role: " + error.message);
+            return;
+        }
+
+        const { error: teamErr } = await supabase
+            .from('team_members')
+            .update({ role })
+            .eq('user_id', userId);
+
+        if (teamErr) {
+            console.warn("Failed to propagate role to team_members:", teamErr.message);
+        }
+
+        setTeamMembers(prev => {
+            const next = { ...prev };
+            Object.keys(next).forEach(tId => {
+                next[tId] = next[tId].map(member =>
+                    member.userId === userId ? { ...member, teamRole: role as TeamRole } : member
+                );
+            });
+            return next;
+        });
+
+        setUsers(prev => prev.map(u =>
+            (u.id === userId && u.societyIds.includes(societyId))
+                ? { ...u, role }
+                : u
+        ));
+    };
 
     const approvePendingUser = async (id: string, role: string, team: string) => {
         const pending = pendingUsers.find(p => p.id === id);
@@ -415,6 +470,26 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
 
         if (team !== "Unassigned") {
             await supabase.from('profiles').update({ primary_team: team }).eq('id', id);
+
+            // Also insert them explicitly into the requested team_members group
+            const matchTeam = teams.find(t => t.name === team);
+            if (matchTeam) {
+                await supabase.from('team_members').insert([{ team_id: matchTeam.id, user_id: id, role: role }]);
+                setTeamMembers(prev => {
+                    const existing = prev[matchTeam.id] || [];
+                    return {
+                        ...prev,
+                        [matchTeam.id]: [...existing, {
+                            id: crypto.randomUUID(),
+                            userId: id,
+                            name: pending.name,
+                            email: pending.email,
+                            teamRole: role as TeamRole,
+                            joinedAt: new Date().toISOString()
+                        }]
+                    };
+                });
+            }
         }
     };
 
@@ -589,7 +664,7 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
             addAdmin: addGlobalAdmin,
             removeAdmin: removeGlobalAdmin,
             makeSocietyAdmin, revokeSocietyAdmin,
-            addUser, removeUser,
+            addUser, removeUser, updateUserRole,
             approvePendingUser, rejectPendingUser, addTeam, removeTeam,
             addOfficeBearerRole, updateOfficeBearerRole, removeOfficeBearerRole,
             addTeamMember, removeTeamMember, updateTeamMemberRole,

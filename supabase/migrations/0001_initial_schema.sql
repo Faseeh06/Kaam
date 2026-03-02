@@ -46,7 +46,7 @@
     CREATE TABLE IF NOT EXISTS user_societies (
         user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
         society_id UUID REFERENCES societies(id) ON DELETE CASCADE,
-        role TEXT DEFAULT 'Member', -- 'Admin', 'Member'
+        role TEXT DEFAULT 'Executive', -- 'Admin', 'Executive'
         status TEXT DEFAULT 'Pending', -- 'Pending', 'Active'
         PRIMARY KEY (user_id, society_id)
     );
@@ -128,7 +128,7 @@
         SELECT 1 FROM public.user_societies 
         WHERE user_id = auth.uid() 
         AND society_id = s_id 
-        AND role NOT IN ('Member', 'User', 'Pending', 'Guest')
+        AND role NOT IN ('Executive', 'User', 'Pending', 'Guest')
         AND status = 'Active'
     );
     END;

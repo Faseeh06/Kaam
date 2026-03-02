@@ -42,7 +42,7 @@ BEGIN
     SELECT 1 FROM public.user_societies 
     WHERE user_id = auth.uid() 
     AND society_id = s_id 
-    AND role NOT IN ('Member', 'User', 'Pending', 'Guest')
+    AND role NOT IN ('Executive', 'User', 'Pending', 'Guest')
     AND status = 'Active'
   );
 END;

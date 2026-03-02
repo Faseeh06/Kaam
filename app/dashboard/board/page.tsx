@@ -58,13 +58,13 @@ const formatDeadline = (d?: string) => {
 
 export default function BoardPage() {
     const {
-        teams, boardLists, boardCards, teamMembers,
+        teams, boardLists, boardCards, teamMembers, isLoading: isContextLoading,
         addBoardList, updateBoardList, addBoardCard, updateBoardCard, updateCardStatus, moveCard
     } = useMockData();
 
     // ── Current User Logic ────────────────────────────────────────────────────
     const [userData, setUserData] = useState<{ id: string; primary_team: string } | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLocalLoading, setIsLocalLoading] = useState(true);
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
@@ -77,7 +77,7 @@ export default function BoardPage() {
                 const { data: profile } = await supabase.from('profiles').select('id, primary_team').eq('id', user.id).single();
                 setUserData({ id: user.id, primary_team: profile?.primary_team || "" });
             }
-            setIsLoading(false);
+            setIsLocalLoading(false);
         };
         fetchUserData();
     }, []);
@@ -146,7 +146,6 @@ export default function BoardPage() {
                 [editCardField]: editCardText
             }
         });
-
         await updateBoardCard(selectedCard.card.id, updates);
         setEditCardField(null);
     };
@@ -182,7 +181,7 @@ export default function BoardPage() {
         }
     };
 
-    if (isLoading || !mounted) {
+    if (isLocalLoading || isContextLoading || !mounted) {
         return (
             <div className="h-full flex items-center justify-center">
                 <Loader2 className="h-8 w-8 animate-spin text-amber-500" />
@@ -249,8 +248,8 @@ export default function BoardPage() {
                                             onKeyDown={e => { if (e.key === 'Enter') handleRenameList(list.id); if (e.key === 'Escape') setEditingListId(null); }}
                                             className="bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700 rounded px-2 py-1 text-sm w-full outline-none focus:border-amber-500/50" />
                                     ) : (
-                                        <h2 className="font-medium cursor-pointer py-1 px-1 -ml-1 border border-transparent rounded hover:border-zinc-300 dark:border-zinc-700 flex-1 transition"
-                                            onClick={() => { setEditingListId(list.id); setEditListTitle(list.title); }}>
+                                        <h2 className={`font-medium py-1 px-1 -ml-1 border border-transparent rounded flex-1 transition ${myPerms.canAddToBoard ? 'cursor-pointer hover:border-zinc-300 dark:hover:border-zinc-700' : ''}`}
+                                            onClick={() => { if (myPerms.canAddToBoard) { setEditingListId(list.id); setEditListTitle(list.title); } }}>
                                             {list.title}
                                             <span className="ml-2 text-xs text-zinc-400 font-normal">({list.cards.length})</span>
                                         </h2>

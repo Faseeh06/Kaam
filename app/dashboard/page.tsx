@@ -76,7 +76,7 @@ export default function DashboardPage() {
 
             <div className="max-w-4xl mx-auto w-full space-y-12">
                 <header>
-                    <h1 className="text-3xl sm:text-4xl font-light tracking-tight text-[#172b4d] dark:text-white mb-2">Welcome back, {userData?.name?.split(' ')[0] || "Member"}.</h1>
+                    <h1 className="text-3xl sm:text-4xl font-light tracking-tight text-[#172b4d] dark:text-white mb-2">Welcome back, {userData?.name?.split(' ')[0] || "User"}.</h1>
                     <p className="text-zinc-500 dark:text-zinc-400 text-base sm:text-lg">
                         You have <span className="text-amber-600 dark:text-amber-500 font-medium">{inProgressCount} tasks assigned</span> to you {urgentTasks.length > 0 && <>and <span className="text-rose-500 font-medium">{urgentTasks.length} approaching deadlines</span></>}.
                     </p>

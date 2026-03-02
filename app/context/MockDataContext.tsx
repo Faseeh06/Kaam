@@ -670,7 +670,29 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
 
     const updateBoardCard = async (cardId: string, updates: any) => {
         const { error } = await supabase.from('board_cards').update(updates).eq('id', cardId);
-        if (!error) setBoardCards(boardCards.map(c => c.id === cardId ? { ...c, ...updates } : c));
+        if (!error) {
+            let finalUpdates = { ...updates };
+            if (updates.hasOwnProperty('assigned_to')) {
+                const newId = updates.assigned_to;
+                if (!newId) {
+                    finalUpdates.assigned_to_name = null;
+                } else {
+                    // Try to find name in teamMembers or allRegisteredUsers
+                    let foundName = null;
+                    Object.values(teamMembers).some(list => {
+                        const m = list.find(mem => mem.userId === newId);
+                        if (m) { foundName = m.name; return true; }
+                        return false;
+                    });
+                    if (!foundName) {
+                        const u = allRegisteredUsers.find(au => au.id === newId);
+                        if (u) foundName = u.name;
+                    }
+                    if (foundName) finalUpdates.assigned_to_name = foundName;
+                }
+            }
+            setBoardCards(boardCards.map(c => c.id === cardId ? { ...c, ...finalUpdates } : c));
+        }
     };
 
     const updateCardStatus = async (cardId: string, isCompleted: boolean) => {

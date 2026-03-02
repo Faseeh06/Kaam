@@ -94,12 +94,17 @@ export default function BoardPage() {
     }, []);
 
     // Find user's team reactively from teamMembers (Source of Truth)
-    const myTeam = userData ? teams.find(t =>
+    let myTeam = userData ? teams.find(t =>
         // 1. Check direct associations (Real-time)
         (teamMembers[t.id] || []).some(m => m.userId === userData.id) ||
         // 2. Fallback to profile field
         t.name === userData.primary_team
     ) : null;
+
+    // Fallback for Society Admins/Management who might not be in a specific team
+    if (!myTeam && userData?.isSocietyAdmin && teams.length > 0) {
+        myTeam = teams[0];
+    }
 
     const members = myTeam ? (teamMembers[myTeam.id] || []) : [];
 

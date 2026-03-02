@@ -112,10 +112,12 @@ export default function AdminSocietyPage() {
         }
     };
 
-    const handleApplyLogoUrl = () => {
-        if (!tempLogoUrl) return;
+    const handleApplyLogoUrl = async () => {
+        if (!tempLogoUrl || !society) return;
         setLogo(tempLogoUrl);
+        await updateSociety(society.id, { logo: tempLogoUrl });
         setIsLogoModalOpen(false);
+        toast.success("Logo updated successfully!");
     };
 
     if (isLoading) {

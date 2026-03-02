@@ -553,14 +553,16 @@ export default function BoardPage() {
                                         {canDelete ? (
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
-                                                    <button className={`flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full border transition hover:opacity-80 active:scale-95 ${selectedCard.card.severity ? SEVERITY_CONFIG[selectedCard.card.severity as Severity].badge : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border-zinc-200 dark:border-zinc-700'}`}>
-                                                        <Flag className="h-3.5 w-3.5" /> {selectedCard.card.severity ? `${selectedCard.card.severity} Priority` : 'Set Priority'}
-                                                    </button>
+                                                    <Button variant="outline" size="sm" className={`h-8 rounded-full border transition hover:opacity-80 px-3 ${selectedCard.card.severity ? SEVERITY_CONFIG[selectedCard.card.severity as Severity].badge : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border-zinc-200 dark:border-zinc-700'}`}>
+                                                        <Flag className="h-3.5 w-3.5 mr-1.5" />
+                                                        {selectedCard.card.severity ? `${selectedCard.card.severity} Priority` : 'Set Priority'}
+                                                        <ChevronDown className="h-3 w-3 ml-1.5 opacity-50" />
+                                                    </Button>
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="start" className="w-40 bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800">
                                                     {(["High", "Medium", "Low"] as Severity[]).map(s => (
-                                                        <DropdownMenuItem key={s} onClick={() => {
-                                                            updateBoardCard(selectedCard.card.id, { severity: s });
+                                                        <DropdownMenuItem key={s} onClick={async () => {
+                                                            await updateBoardCard(selectedCard.card.id, { severity: s });
                                                             setSelectedCard({
                                                                 ...selectedCard,
                                                                 card: { ...selectedCard.card, severity: s }
@@ -587,19 +589,20 @@ export default function BoardPage() {
                                                     </Button>
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="start" className="w-56 bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800">
-                                                    <DropdownMenuItem onClick={() => {
-                                                        updateBoardCard(selectedCard.card.id, { assigned_to: null });
+                                                    <DropdownMenuItem onClick={async () => {
+                                                        await updateBoardCard(selectedCard.card.id, { assigned_to: null });
                                                         setSelectedCard({
                                                             ...selectedCard,
                                                             card: { ...selectedCard.card, assigned_to: undefined, assigned_to_name: undefined } as any
                                                         });
-                                                    }} className="cursor-pointer text-zinc-500 font-medium">
-                                                        <UserCircle2 className="h-4 w-4 mr-2" /> Unassign
+                                                    }} className="cursor-pointer text-zinc-500 font-medium text-xs">
+                                                        <UserCircle2 className="h-4 w-4 mr-2" /> Unassign Card
                                                     </DropdownMenuItem>
                                                     <div className="h-px bg-zinc-100 dark:bg-zinc-800 my-1" />
+                                                    <div className="px-2 py-1.5 text-[10px] uppercase font-bold text-zinc-400 tracking-tight">Team Members</div>
                                                     {selectedTeamMembers.map(m => (
-                                                        <DropdownMenuItem key={m.id} onClick={() => {
-                                                            updateBoardCard(selectedCard.card.id, { assigned_to: m.userId });
+                                                        <DropdownMenuItem key={m.id} onClick={async () => {
+                                                            await updateBoardCard(selectedCard.card.id, { assigned_to: m.userId });
                                                             setSelectedCard({
                                                                 ...selectedCard,
                                                                 card: { ...selectedCard.card, assigned_to: m.userId, assigned_to_name: m.name } as any
@@ -609,8 +612,8 @@ export default function BoardPage() {
                                                                 <AvatarFallback className="text-[10px] bg-amber-100 text-amber-600 font-bold">{m.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                                                             </Avatar>
                                                             <div className="flex flex-col text-left">
-                                                                <span className="text-sm font-medium">{m.name}</span>
-                                                                <span className="text-[10px] text-zinc-500 lowercase">{m.teamRole}</span>
+                                                                <span className="text-sm font-medium leading-tight">{m.name}</span>
+                                                                <span className="text-[10px] text-zinc-500 lowercase leading-tight">{m.teamRole}</span>
                                                             </div>
                                                         </DropdownMenuItem>
                                                     ))}

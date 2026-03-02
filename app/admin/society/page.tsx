@@ -3,7 +3,7 @@
 import { Building2, Save, Mail, LinkIcon, MapPin, Search, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useMockData } from "@/app/context/MockDataContext";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
@@ -43,6 +43,8 @@ export default function AdminSocietyPage() {
     const [website, setWebsite] = useState("");
     const [logo, setLogo] = useState("");
     const [isSaving, setIsSaving] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         if (society && name === "") {
@@ -70,6 +72,40 @@ export default function AdminSocietyPage() {
             toast.error("Failed to update society: " + error.message);
         }
         setIsSaving(false);
+    };
+
+    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file || !society) return;
+
+        setIsUploading(true);
+        const toastId = toast.loading("Uploading logo...");
+
+        try {
+            const supabase = createClient();
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${society.id}-${Math.random()}.${fileExt}`;
+            const filePath = `${fileName}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from('logos')
+                .upload(filePath, file);
+
+            if (uploadError) throw uploadError;
+
+            const { data: publicUrlData } = supabase.storage
+                .from('logos')
+                .getPublicUrl(filePath);
+
+            setLogo(publicUrlData.publicUrl);
+            await updateSociety(society.id, { logo: publicUrlData.publicUrl });
+            toast.success("Logo uploaded successfully!", { id: toastId });
+        } catch (error: any) {
+            toast.error("Upload failed: " + error.message, { id: toastId });
+        } finally {
+            setIsUploading(false);
+            if (fileInputRef.current) fileInputRef.current.value = "";
+        }
     };
 
     if (isLoading) {
@@ -108,14 +144,15 @@ export default function AdminSocietyPage() {
                             </div>
                         </div>
                         <CardContent className="pt-0 relative px-6 pb-6 text-center flex flex-col items-center border-t border-zinc-100 dark:border-zinc-800/50">
-                            <div className="h-24 w-24 rounded-2xl border-4 border-white dark:border-zinc-950 -mt-12 mb-4 bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center overflow-hidden group cursor-pointer relative">
+                            <div className="h-24 w-24 rounded-2xl border-4 border-white dark:border-zinc-950 -mt-12 mb-4 bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center overflow-hidden group cursor-pointer relative" onClick={() => fileInputRef.current?.click()}>
+                                <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept="image/*" className="hidden" />
                                 {logo ? (
                                     <img src={logo} alt={society.name} className="h-full w-full object-cover" />
                                 ) : (
                                     <Building2 className="h-10 w-10 text-rose-500" />
                                 )}
                                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-                                    <span className="text-white text-xs font-semibold">Edit Logo</span>
+                                    <span className="text-white text-xs font-semibold">{isUploading ? <Loader2 className="animate-spin h-4 w-4" /> : "Edit Logo"}</span>
                                 </div>
                             </div>
 
@@ -173,10 +210,9 @@ export default function AdminSocietyPage() {
                                         Upload Logo
                                     </label>
                                     <div className="relative">
-                                        <input type="file" disabled className="w-full opacity-0 absolute inset-0 cursor-not-allowed z-10" />
+                                        <input type="file" accept="image/*" onChange={handleFileUpload} disabled={isUploading} className="w-full opacity-0 absolute inset-0 cursor-pointer z-10" />
                                         <div className="w-full bg-[#f4f5f7] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-zinc-400 flex items-center justify-between outline-none">
-                                            <span>Select file...</span>
-                                            <span className="text-[10px] bg-zinc-200 dark:bg-zinc-800 px-2 py-0.5 rounded font-semibold">Coming Soon</span>
+                                            <span>{isUploading ? "Uploading..." : "Select file..."}</span>
                                         </div>
                                     </div>
                                 </div>

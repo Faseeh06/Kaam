@@ -1,12 +1,15 @@
 "use client";
 
-import { Building2, Plus, Search, TrendingUp, MoreVertical, Settings, MessageSquare, Mail, Globe, Upload, X, ImageIcon } from "lucide-react";
+import { Building2, Plus, Search, TrendingUp, MoreVertical, Settings, MessageSquare, Mail, Globe, Upload, X, ImageIcon, Activity } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState, useRef, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useMockData, Society } from "@/app/context/MockDataContext";
+import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 const COLORS = [
     { label: "Violet", value: "bg-violet-500", bg: "bg-violet-100 dark:bg-violet-500/20", textDark: "text-violet-700 dark:text-violet-300" },
@@ -101,6 +104,7 @@ function LogoUpload({ value, onChange }: { value: string; onChange: (v: string) 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function SuperSocietiesPage() {
     const { societies, addSociety, updateSociety, teams, boardLists, boardCards, users } = useMockData();
+    const router = useRouter();
     const [registerOpen, setRegisterOpen] = useState(false);
     const [editTarget, setEditTarget] = useState<Society | null>(null);
     const [search, setSearch] = useState("");
@@ -335,71 +339,89 @@ export default function SuperSocietiesPage() {
                     const metrics = getSocietyMetrics(soc.id);
                     const cm = COLORS[idx % COLORS.length];
                     return (
-                        <div key={soc.id} className="bg-white dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800/60 rounded-2xl shadow-sm hover:shadow-md transition overflow-hidden group relative flex flex-col">
-                            <div className={`h-2 w-full ${cm.value} opacity-80`} />
+                        <Card
+                            key={soc.id}
+                            className="group bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 shadow-sm hover:shadow-xl hover:shadow-violet-500/5 transition-all duration-300 overflow-hidden cursor-pointer flex flex-col relative"
+                            onClick={() => router.push(`/super/societies/${soc.id}`)}
+                        >
+                            {/* Card Decorative Top or Cover Image */}
+                            <div className="h-24 w-full relative overflow-hidden bg-zinc-100 dark:bg-zinc-800">
+                                {soc.cover_url ? (
+                                    <img src={soc.cover_url} alt="Cover" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                                ) : (
+                                    <div className={cn("w-full h-full opacity-20", cm.value)} />
+                                )}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
+                                    <p className="text-[10px] text-white/80 font-medium">Click to view details</p>
+                                </div>
+                                <div className="absolute top-3 right-3 z-10" onClick={(e) => e.stopPropagation()}>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-md border-white/20 text-white transition-colors">
+                                                <MoreVertical className="h-4 w-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end" className="w-48 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 shadow-xl rounded-xl">
+                                            <DropdownMenuItem onClick={() => openEdit(soc)} className="flex items-center gap-2 cursor-pointer text-sm font-medium p-2.5">
+                                                <Settings className="h-4 w-4 text-violet-500" /> Edit Profile
+                                            </DropdownMenuItem>
+                                            <DropdownMenuSeparator className="bg-zinc-100 dark:bg-zinc-800 my-1" />
+                                            <DropdownMenuItem className="flex items-center gap-2 cursor-pointer text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 p-2.5 font-medium">
+                                                Archive Society
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </div>
+                            </div>
 
-                            <div className="p-6 flex flex-col flex-1">
-                                <div className="flex items-start justify-between mb-5">
-                                    <div className="flex items-center gap-3">
-                                        {/* Logo or acronym fallback */}
-                                        <Avatar className="h-12 w-12 border-2 border-white dark:border-zinc-950 shadow-sm">
-                                            {soc.logo && <AvatarImage src={soc.logo} alt={soc.name} className="object-contain p-0.5" />}
-                                            <AvatarFallback className={`${cm.bg} ${cm.textDark} font-bold text-sm`}>{soc.acronym}</AvatarFallback>
-                                        </Avatar>
-                                        <div>
-                                            <h3 className="font-semibold text-base text-[#172b4d] dark:text-zinc-100 leading-tight">{soc.name}</h3>
-                                            <p className="text-xs text-zinc-500 font-mono uppercase">{soc.acronym}</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${soc.status === 'Active' ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20' : 'bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-500/20'}`}>
-                                            {soc.status}
-                                        </span>
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" size="icon" className="h-7 w-7 text-zinc-400 hover:text-[#172b4d] dark:hover:text-white -mr-1">
-                                                    <MoreVertical className="h-4 w-4" />
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end" className="w-44 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 shadow-xl rounded-xl">
-                                                <DropdownMenuItem onClick={() => openEdit(soc)} className="flex items-center gap-2 cursor-pointer text-sm rounded-lg">
-                                                    <Settings className="h-3.5 w-3.5" /> Edit Profile
-                                                </DropdownMenuItem>
-                                                <DropdownMenuSeparator className="bg-zinc-100 dark:bg-zinc-800 my-1" />
-                                                <DropdownMenuItem className="flex items-center gap-2 cursor-pointer text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg text-sm">
-                                                    Archive Society
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    </div>
+                            <div className="px-6 pb-6 pt-0 flex flex-col flex-1 relative">
+                                {/* Logo overlapping the cover */}
+                                <div className="h-16 w-16 rounded-2xl border-4 border-white dark:border-zinc-900 bg-white dark:bg-zinc-800 shadow-md -mt-8 mb-4 overflow-hidden flex items-center justify-center transition-transform group-hover:scale-105">
+                                    {soc.logo ? (
+                                        <img src={soc.logo} alt={soc.name} className="h-full w-full object-contain p-1" />
+                                    ) : (
+                                        <Building2 className={cn("h-7 w-7", cm.textDark.split(' ')[0])} />
+                                    )}
                                 </div>
 
+                                <div className="flex items-center justify-between gap-2 mb-2">
+                                    <h3 className="font-bold text-lg text-[#172b4d] dark:text-zinc-100 leading-tight truncate flex-1 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">{soc.name}</h3>
+                                    <span className={cn(
+                                        "px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider",
+                                        soc.status === 'Active' ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400' : 'bg-rose-50 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400'
+                                    )}>
+                                        {soc.status}
+                                    </span>
+                                </div>
+                                <p className="text-xs text-zinc-500 font-medium font-mono uppercase tracking-tight mb-4">{soc.acronym}</p>
+
                                 {soc.description && (
-                                    <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-4 leading-relaxed line-clamp-2">{soc.description}</p>
+                                    <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-6 leading-relaxed line-clamp-2 min-h-[32px]">{soc.description}</p>
                                 )}
 
-                                <div className="grid grid-cols-3 gap-3 mb-5">
-                                    {[{ label: "Members", val: metrics.members.toLocaleString() }, { label: "Boards", val: metrics.boards }, { label: "Tasks", val: metrics.tasks }].map(s => (
-                                        <div key={s.label} className="bg-[#f4f5f7] dark:bg-zinc-950/50 rounded-xl p-3 text-center">
-                                            <p className="text-xl font-bold text-[#172b4d] dark:text-white">{s.val}</p>
-                                            <p className="text-[10px] text-zinc-500 uppercase tracking-wider mt-0.5">{s.label}</p>
+                                <div className="grid grid-cols-3 gap-2 mb-6">
+                                    {[{ label: "Members", val: metrics.members }, { label: "Boards", val: metrics.boards }, { label: "Tasks", val: metrics.tasks }].map(s => (
+                                        <div key={s.label} className="flex flex-col items-center p-2 rounded-xl bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-100 dark:border-zinc-800/50 group-hover:bg-violet-50/30 dark:group-hover:bg-violet-500/5 transition-colors">
+                                            <p className="text-base font-bold text-[#172b4d] dark:text-white">{s.val}</p>
+                                            <p className="text-[9px] text-zinc-400 uppercase font-bold tracking-widest">{s.label}</p>
                                         </div>
                                     ))}
                                 </div>
 
                                 <div className="flex items-center justify-between mt-auto pt-4 border-t border-zinc-100 dark:border-zinc-800/50">
                                     <div className="flex items-center gap-1.5">
-                                        <TrendingUp className="h-3.5 w-3.5 text-zinc-400" />
-                                        <span className="text-xs text-zinc-500">Activity:</span>
-                                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${getActivityColor(metrics.activity)}`}>{metrics.activity}</span>
+                                        <Activity className="h-3.5 w-3.5 text-zinc-400" />
+                                        <span className={cn(
+                                            "px-2 py-0.5 rounded-full text-[10px] font-bold border",
+                                            getActivityColor(metrics.activity)
+                                        )}>
+                                            {metrics.activity} ACTIVITY
+                                        </span>
                                     </div>
-                                    <Button onClick={() => openEdit(soc)} variant="outline" size="sm"
-                                        className="h-7 text-xs border-zinc-200 dark:border-zinc-700 hover:border-violet-400 dark:hover:border-violet-500/50 hover:text-violet-600 dark:hover:text-violet-400 transition">
-                                        Edit Profile
-                                    </Button>
+                                    <TrendingUp className="h-4 w-4 text-zinc-300 group-hover:text-violet-500 transition-colors" />
                                 </div>
                             </div>
-                        </div>
+                        </Card>
                     );
                 })}
 

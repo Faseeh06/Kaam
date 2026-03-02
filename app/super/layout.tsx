@@ -90,28 +90,28 @@ export default function SuperLayout({
 
                     <Link
                         href="/super/societies"
-                        className={`flex items-center ${isCollapsed ? 'justify-center px-0' : 'gap-3 px-3'} py-2.5 rounded-lg transition-colors group relative ${pathname === '/super/societies' ? 'text-violet-700 dark:text-violet-400 bg-violet-100/80 dark:bg-violet-500/10 hover:bg-violet-200/50 dark:hover:bg-violet-500/20' : 'text-zinc-500 dark:text-zinc-400 hover:text-[#172b4d] dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-900/50'}`}
+                        className={`flex items-center ${isCollapsed ? 'justify-center px-0' : 'gap-3 px-3'} py-2.5 rounded-lg transition-colors group relative ${pathname.startsWith('/super/societies') ? 'text-violet-700 dark:text-violet-400 bg-violet-100/80 dark:bg-violet-500/10 hover:bg-violet-200/50 dark:hover:bg-violet-500/20' : 'text-zinc-500 dark:text-zinc-400 hover:text-[#172b4d] dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-900/50'}`}
                         title="Societies"
                     >
-                        <Building2 className={`h-5 w-5 shrink-0 transition-colors ${pathname === '/super/societies' ? 'text-violet-700 dark:text-violet-400' : 'group-hover:!text-violet-700 dark:group-hover:!text-violet-400'}`} />
+                        <Building2 className={`h-5 w-5 shrink-0 transition-colors ${pathname.startsWith('/super/societies') ? 'text-violet-700 dark:text-violet-400' : 'group-hover:!text-violet-700 dark:group-hover:!text-violet-400'}`} />
                         {!isCollapsed && <span className="text-sm font-medium">Societies</span>}
                     </Link>
 
                     <Link
                         href="/super/admins"
-                        className={`flex items-center ${isCollapsed ? 'justify-center px-0' : 'gap-3 px-3'} py-2.5 rounded-lg transition-colors group relative ${pathname === '/super/admins' ? 'text-violet-700 dark:text-violet-400 bg-violet-100/80 dark:bg-violet-500/10 hover:bg-violet-200/50 dark:hover:bg-violet-500/20' : 'text-zinc-500 dark:text-zinc-400 hover:text-[#172b4d] dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-900/50'}`}
+                        className={`flex items-center ${isCollapsed ? 'justify-center px-0' : 'gap-3 px-3'} py-2.5 rounded-lg transition-colors group relative ${pathname.startsWith('/super/admins') ? 'text-violet-700 dark:text-violet-400 bg-violet-100/80 dark:bg-violet-500/10 hover:bg-violet-200/50 dark:hover:bg-violet-500/20' : 'text-zinc-500 dark:text-zinc-400 hover:text-[#172b4d] dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-900/50'}`}
                         title="Local Admins"
                     >
-                        <UserCog className={`h-5 w-5 shrink-0 transition-colors ${pathname === '/super/admins' ? 'text-violet-700 dark:text-violet-400' : 'group-hover:!text-violet-700 dark:group-hover:!text-violet-400'}`} />
+                        <UserCog className={`h-5 w-5 shrink-0 transition-colors ${pathname.startsWith('/super/admins') ? 'text-violet-700 dark:text-violet-400' : 'group-hover:!text-violet-700 dark:group-hover:!text-violet-400'}`} />
                         {!isCollapsed && <span className="text-sm font-medium">Local Admins</span>}
                     </Link>
 
                     <Link
                         href="/super/users"
-                        className={`flex items-center ${isCollapsed ? 'justify-center px-0' : 'gap-3 px-3'} py-2.5 rounded-lg transition-colors group relative ${pathname === '/super/users' ? 'text-violet-700 dark:text-violet-400 bg-violet-100/80 dark:bg-violet-500/10 hover:bg-violet-200/50 dark:hover:bg-violet-500/20' : 'text-zinc-500 dark:text-zinc-400 hover:text-[#172b4d] dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-900/50'}`}
+                        className={`flex items-center ${isCollapsed ? 'justify-center px-0' : 'gap-3 px-3'} py-2.5 rounded-lg transition-colors group relative ${pathname.startsWith('/super/users') ? 'text-violet-700 dark:text-violet-400 bg-violet-100/80 dark:bg-violet-500/10 hover:bg-violet-200/50 dark:hover:bg-violet-500/20' : 'text-zinc-500 dark:text-zinc-400 hover:text-[#172b4d] dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-900/50'}`}
                         title="All Users"
                     >
-                        <Users className={`h-5 w-5 shrink-0 transition-colors ${pathname === '/super/users' ? 'text-violet-700 dark:text-violet-400' : 'group-hover:!text-violet-700 dark:group-hover:!text-violet-400'}`} />
+                        <Users className={`h-5 w-5 shrink-0 transition-colors ${pathname.startsWith('/super/users') ? 'text-violet-700 dark:text-violet-400' : 'group-hover:!text-violet-700 dark:group-hover:!text-violet-400'}`} />
                         {!isCollapsed && <span className="text-sm font-medium">All Users DB</span>}
                     </Link>
 

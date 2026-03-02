@@ -49,7 +49,39 @@ export default function DashboardLayout({
                         return;
                     }
 
-                    // 2. Check memberships (fetched from profile)
+                    // 2. Verify if the code is actually valid
+                    const { data: validSoc } = await supabase
+                        .from('societies')
+                        .select('id')
+                        .eq('join_code', profile?.society_code)
+                        .single();
+
+                    if (!validSoc) {
+                        // Code might have changed. Try to sync from existing membership.
+                        const memberships = (profile?.user_societies as any[]) || [];
+                        if (memberships.length > 0) {
+                            const { data: currentSoc } = await supabase
+                                .from('societies')
+                                .select('join_code')
+                                .eq('id', memberships[0].society_id)
+                                .single();
+
+                            if (currentSoc?.join_code) {
+                                await supabase.from('profiles').update({ society_code: currentSoc.join_code }).eq('id', user.id);
+                                // Continue with currentSoc.join_code
+                            } else {
+                                await supabase.from('profiles').update({ society_code: null }).eq('id', user.id);
+                                router.push("/join");
+                                return;
+                            }
+                        } else {
+                            await supabase.from('profiles').update({ society_code: null }).eq('id', user.id);
+                            router.push("/join");
+                            return;
+                        }
+                    }
+
+                    // 3. Check memberships (fetched from profile)
                     const memberships = (profile?.user_societies as any[]) || [];
                     const hasActive = memberships.some(m => m.status === 'Active');
 

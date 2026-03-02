@@ -326,10 +326,10 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
             const oldSociety = societies.find(s => s.id === id);
             if (oldSociety?.join_code && oldSociety.join_code !== updates.join_code) {
                 console.log(`Migrating join code from ${oldSociety.join_code} to ${updates.join_code}`);
-                await supabase
-                    .from('profiles')
-                    .update({ society_code: updates.join_code })
-                    .eq('society_code', oldSociety.join_code);
+                await supabase.rpc('migrate_society_join_code', {
+                    old_code: oldSociety.join_code,
+                    new_code: updates.join_code
+                });
             }
         }
 

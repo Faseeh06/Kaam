@@ -120,6 +120,10 @@ export default function BoardPage() {
                     title: c.title,
                     description: c.description,
                     isCompleted: c.is_completed,
+                    severity: c.severity,
+                    deadline: c.deadline,
+                    assigned_to: c.assigned_to,
+                    assigned_to_name: (c as any).assigned_to_name
                 }))
         }));
 
@@ -555,7 +559,13 @@ export default function BoardPage() {
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="start" className="w-40 bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800">
                                                     {(["High", "Medium", "Low"] as Severity[]).map(s => (
-                                                        <DropdownMenuItem key={s} onClick={() => updateBoardCard(selectedCard.card.id, { severity: s })} className="cursor-pointer">
+                                                        <DropdownMenuItem key={s} onClick={() => {
+                                                            updateBoardCard(selectedCard.card.id, { severity: s });
+                                                            setSelectedCard({
+                                                                ...selectedCard,
+                                                                card: { ...selectedCard.card, severity: s }
+                                                            });
+                                                        }} className="cursor-pointer">
                                                             <span className={`w-2 h-2 rounded-full mr-2 ${SEVERITY_CONFIG[s].stripe}`} /> {s}
                                                         </DropdownMenuItem>
                                                     ))}
@@ -577,12 +587,24 @@ export default function BoardPage() {
                                                     </Button>
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="start" className="w-56 bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800">
-                                                    <DropdownMenuItem onClick={() => updateBoardCard(selectedCard.card.id, { assigned_to: null })} className="cursor-pointer text-zinc-500 font-medium">
+                                                    <DropdownMenuItem onClick={() => {
+                                                        updateBoardCard(selectedCard.card.id, { assigned_to: null });
+                                                        setSelectedCard({
+                                                            ...selectedCard,
+                                                            card: { ...selectedCard.card, assigned_to: undefined, assigned_to_name: undefined } as any
+                                                        });
+                                                    }} className="cursor-pointer text-zinc-500 font-medium">
                                                         <UserCircle2 className="h-4 w-4 mr-2" /> Unassign
                                                     </DropdownMenuItem>
                                                     <div className="h-px bg-zinc-100 dark:bg-zinc-800 my-1" />
                                                     {selectedTeamMembers.map(m => (
-                                                        <DropdownMenuItem key={m.id} onClick={() => updateBoardCard(selectedCard.card.id, { assigned_to: m.userId })} className="cursor-pointer">
+                                                        <DropdownMenuItem key={m.id} onClick={() => {
+                                                            updateBoardCard(selectedCard.card.id, { assigned_to: m.userId });
+                                                            setSelectedCard({
+                                                                ...selectedCard,
+                                                                card: { ...selectedCard.card, assigned_to: m.userId, assigned_to_name: m.name } as any
+                                                            });
+                                                        }} className="cursor-pointer">
                                                             <Avatar className="h-6 w-6 mr-2">
                                                                 <AvatarFallback className="text-[10px] bg-amber-100 text-amber-600 font-bold">{m.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                                                             </Avatar>

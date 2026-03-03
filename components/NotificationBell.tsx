@@ -1,14 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Bell, Check, Loader2 } from "lucide-react";
+import { Bell, Loader2 } from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent,
-    DropdownMenuItem,
     DropdownMenuTrigger,
-    DropdownMenuSeparator,
-    DropdownMenuLabel
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
@@ -23,11 +20,35 @@ interface Notification {
     created_at: string;
 }
 
+const showWindowsNotification = async (title: string, body: string) => {
+    if (!("Notification" in window) || Notification.permission !== "granted") return;
+    try {
+        if ("serviceWorker" in navigator) {
+            const reg = await navigator.serviceWorker.ready;
+            await reg.showNotification(title, { body, icon: "/apple-icon.png" });
+        } else {
+            new Notification(title, { body, icon: "/apple-icon.png" });
+        }
+    } catch (err) {
+        console.error("Notification failed:", err);
+    }
+};
+
 export function NotificationBell() {
     const supabase = createClient();
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [userId, setUserId] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+
+    // Register service worker for reliable native OS notifications
+    useEffect(() => {
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("/notification-sw.js").catch(() => { });
+        }
+        if ("Notification" in window && Notification.permission === "default") {
+            Notification.requestPermission();
+        }
+    }, []);
 
     useEffect(() => {
         const fetchUserAndNotifications = async () => {
@@ -58,22 +79,7 @@ export function NotificationBell() {
                         (payload) => {
                             const newNotif = payload.new as Notification;
                             setNotifications((prev) => [newNotif, ...prev]);
-
-                            // Show Browser Notification on Windows/Mac
-                            if ("Notification" in window && Notification.permission === "granted") {
-                                try {
-                                    const notification = new Notification("Kaam Alert", {
-                                        body: newNotif.message,
-                                        icon: "/favicon.ico", // An icon is often required by Windows to display correctly
-                                    });
-                                    notification.onclick = () => {
-                                        window.focus();
-                                        notification.close();
-                                    };
-                                } catch (err) {
-                                    console.error("Failed to show desktop notification:", err);
-                                }
-                            }
+                            showWindowsNotification("Kaam — New Task", newNotif.message);
                         }
                     )
                     .subscribe();
@@ -88,11 +94,6 @@ export function NotificationBell() {
         };
 
         const cleanup = fetchUserAndNotifications();
-
-        // Ask for permission for desktop notifications if not already granted/denied
-        if ("Notification" in window && Notification.permission === "default") {
-            Notification.requestPermission();
-        }
 
         return () => {
             cleanup.then(fn => { if (typeof fn === 'function') fn(); });

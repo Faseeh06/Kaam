@@ -52,8 +52,8 @@ export default function LoginPage() {
 
             const isSuperAdmin = profile?.is_global_admin;
             const memberships = (profile?.user_societies || []) as any[];
-            const managementRoles = ['Admin', 'Director', 'Deputy Director', 'HR', 'Society President', 'Vice President', 'Secretary', 'Treasurer', 'General Admin'];
-            const isSocietyAdmin = memberships.some((m: any) => managementRoles.includes(m.role));
+            // Only the 'Admin' role goes to /admin. Directors/HR/DD use /dashboard.
+            const isSocietyAdmin = memberships.some((m: any) => m.role === 'Admin');
 
             router.refresh();
 

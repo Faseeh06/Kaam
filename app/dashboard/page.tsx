@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useMockData } from "@/app/context/MockDataContext";
 import Link from "next/link";
+import { NotificationBell } from "@/components/NotificationBell";
 
 export default function DashboardPage() {
     const { boardCards, boardLists, teams } = useMockData();
@@ -67,9 +68,7 @@ export default function DashboardPage() {
                             <Plus className="h-4 w-4" /> View Board
                         </Button>
                     </Link>
-                    <Button variant="ghost" size="icon" className="text-zinc-500 dark:text-zinc-400 hover:text-[#172b4d] dark:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-800 dark:bg-zinc-800 rounded-full">
-                        <Bell className="h-5 w-5" />
-                    </Button>
+                    <NotificationBell />
                 </div>
             </header>
 

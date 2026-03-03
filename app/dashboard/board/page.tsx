@@ -14,6 +14,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { useMockData, TEAM_ROLE_PERMISSIONS, TeamRole, Team } from "@/app/context/MockDataContext";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
+import { NotificationBell } from "@/components/NotificationBell";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -276,6 +277,7 @@ export default function BoardPage() {
                             </span>
                         ))}
                     </div>
+                    <NotificationBell />
                     <Button variant="ghost" size="icon" className="text-zinc-500 dark:text-zinc-400 hover:text-[#172b4d] dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-800">
                         <Search className="h-5 w-5" />
                     </Button>

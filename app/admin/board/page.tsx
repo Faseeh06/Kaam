@@ -15,6 +15,7 @@ import { useMockData } from "@/app/context/MockDataContext";
 import { createClient } from "@/lib/supabase/client";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
+import { NotificationBell } from "@/components/NotificationBell";
 
 type CardProps = {
     id: string;
@@ -261,6 +262,7 @@ export default function BoardPage() {
                     {activeTeam ? `${activeTeam.name} Department Board` : "Select a Team"}
                 </h1>
                 <div className="flex items-center gap-2 sm:gap-4">
+                    <NotificationBell />
                     <Button variant="ghost" size="icon" className="text-zinc-500 dark:text-zinc-400 hover:text-[#172b4d] dark:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-800 dark:bg-zinc-800">
                         <Search className="h-5 w-5" />
                     </Button>

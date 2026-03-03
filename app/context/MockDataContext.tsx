@@ -689,6 +689,17 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
                         if (u) foundName = u.name;
                     }
                     if (foundName) finalUpdates.assigned_to_name = foundName;
+
+                    // Insert Notification
+                    const cardData = boardCards.find(c => c.id === cardId);
+                    const taskTitle = updates.title || cardData?.title || 'a task';
+
+                    await supabase.from('notifications').insert([{
+                        user_id: newId,
+                        type: 'assignment',
+                        message: `You've been assigned to the task: "${taskTitle}"`,
+                        related_entity_id: cardId
+                    }]);
                 }
             }
             setBoardCards(boardCards.map(c => c.id === cardId ? { ...c, ...finalUpdates } : c));

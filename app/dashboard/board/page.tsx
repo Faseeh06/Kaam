@@ -2,7 +2,7 @@
 
 import {
     MoreHorizontal, Plus, AlignLeft, MessageSquare, Paperclip,
-    CheckCircle2, Calendar, KanbanSquare, Search, X, Tag,
+    CheckCircle2, Calendar, KanbanSquare, Search, X, Tag, Check,
     Clock, CheckSquare, Users, Circle, Activity, CreditCard,
     Flag, UserCircle2, ChevronDown, Loader2, LayoutGrid, Trash2
 } from "lucide-react";
@@ -182,6 +182,7 @@ export default function BoardPage() {
     const [editCardField, setEditCardField] = useState<"title" | "description" | null>(null);
     const [editCardText, setEditCardText] = useState("");
     const [isEditingDeadline, setIsEditingDeadline] = useState(false);
+    const [pendingDeadline, setPendingDeadline] = useState("");
 
     const handleSaveCardField = async () => {
         if (!selectedCard || !editCardField) return;
@@ -555,17 +556,20 @@ export default function BoardPage() {
                                         {myPerms.canAssign && (
                                             <div className="relative">
                                                 {isEditingDeadline ? (
-                                                    <div className="flex items-center gap-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-1.5 rounded-xl shadow-sm z-50 animate-in fade-in zoom-in-95 duration-200">
+                                                    <div className="flex items-center gap-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-1.5 rounded-xl shadow-sm z-[100] animate-in fade-in zoom-in-95 duration-200">
                                                         <input
                                                             type="datetime-local"
                                                             autoFocus
                                                             className="bg-transparent text-sm outline-none focus:ring-0 text-zinc-800 dark:text-zinc-100 px-1"
-                                                            defaultValue={selectedCard.card.deadline ? new Date(selectedCard.card.deadline).toISOString().slice(0, 16) : ""}
-                                                            onBlur={() => setIsEditingDeadline(false)}
-                                                            onChange={async (e) => {
-                                                                const val = e.target.value;
-                                                                if (val) {
-                                                                    const isoDate = new Date(val).toISOString();
+                                                            value={pendingDeadline || (selectedCard.card.deadline ? new Date(selectedCard.card.deadline).toISOString().slice(0, 16) : "")}
+                                                            onChange={(e) => setPendingDeadline(e.target.value)}
+                                                        />
+                                                        <Button
+                                                            size="icon"
+                                                            className="h-7 w-7 bg-amber-500 hover:bg-amber-600 text-white rounded-lg shrink-0"
+                                                            onClick={async () => {
+                                                                if (pendingDeadline) {
+                                                                    const isoDate = new Date(pendingDeadline).toISOString();
                                                                     await updateBoardCard(selectedCard.card.id, { deadline: isoDate });
                                                                     setSelectedCard({
                                                                         ...selectedCard,
@@ -573,14 +577,31 @@ export default function BoardPage() {
                                                                     });
                                                                 }
                                                                 setIsEditingDeadline(false);
+                                                                setPendingDeadline("");
                                                             }}
-                                                        />
+                                                        >
+                                                            <Check className="h-4 w-4" />
+                                                        </Button>
+                                                        <Button
+                                                            size="icon"
+                                                            variant="ghost"
+                                                            className="h-7 w-7 text-zinc-400 hover:text-rose-500 shrink-0"
+                                                            onClick={() => {
+                                                                setIsEditingDeadline(false);
+                                                                setPendingDeadline("");
+                                                            }}
+                                                        >
+                                                            <X className="h-4 w-4" />
+                                                        </Button>
                                                     </div>
                                                 ) : (
                                                     <Button
                                                         variant="outline"
                                                         size="sm"
-                                                        onClick={() => setIsEditingDeadline(true)}
+                                                        onClick={() => {
+                                                            setIsEditingDeadline(true);
+                                                            setPendingDeadline(selectedCard.card.deadline ? new Date(selectedCard.card.deadline).toISOString().slice(0, 16) : "");
+                                                        }}
                                                         className={`h-8 rounded-full border transition hover:opacity-80 px-3 
                                                             ${selectedCard.card.deadline ? formatDeadline(selectedCard.card.deadline)?.color : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border-zinc-200 dark:border-zinc-700'}`}
                                                     >

@@ -51,19 +51,13 @@ export default function LoginPage() {
                 .single();
 
             const isSuperAdmin = profile?.is_global_admin;
-            const memberships = profile?.user_societies || [];
-
-            // Define management roles
-            const managementRoles = ['Admin', 'Director', 'Deputy Director', 'HR'];
-            const isSocietyAdmin = memberships.some((m: any) => managementRoles.includes(m.role));
 
             router.refresh();
 
-            // 2. Route based on role
+            // 2. Route based on role — super admins go to /super, everyone else to /dashboard
             if (isSuperAdmin) {
                 router.push("/super");
             } else {
-                // All other users (Members, Directors, Society Admins) go to dashboard
                 router.push("/dashboard");
             }
         }

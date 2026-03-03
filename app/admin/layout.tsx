@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
-import { Shield, LayoutDashboard, KanbanSquare, Settings, Users, Building2, UsersRound, Crown, ChevronLeft, ChevronRight, Sun, Moon, ShieldAlert, MessageCircle, LogOut } from "lucide-react";
+import { Shield, LayoutDashboard, KanbanSquare, Settings, Users, Building2, UsersRound, Crown, ChevronLeft, ChevronRight, Sun, Moon, ShieldAlert, MessageCircle, LogOut, Loader2, ShieldOff } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
@@ -19,6 +19,7 @@ export default function AdminLayout({
 }) {
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [userData, setUserData] = useState<{ name: string; email: string; managedSocietyId?: string } | null>(null);
+    const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null); // null = loading
     const pathname = usePathname();
     const router = useRouter();
     const { theme, setTheme } = useTheme();
@@ -27,24 +28,34 @@ export default function AdminLayout({
         const getUser = async () => {
             const supabase = createClient();
             const { data: { user } } = await supabase.auth.getUser();
-            if (user) {
-                // Fetch profile and managed society
-                const { data: profile } = await supabase
-                    .from('profiles')
-                    .select('full_name, email, user_societies(society_id, role)')
-                    .eq('id', user.id)
-                    .single();
+            if (!user) {
+                router.push("/login");
+                return;
+            }
 
-                if (profile) {
-                    const managementRoles = ['Admin', 'Director', 'Deputy Director', 'HR', 'Society President', 'Vice President', 'Secretary', 'Treasurer', 'General Admin'];
-                    const managedSociety = (profile.user_societies as any[])?.find(us => managementRoles.includes(us.role));
+            // Fetch profile and managed society
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('full_name, email, is_global_admin, user_societies(society_id, role)')
+                .eq('id', user.id)
+                .single();
 
-                    setUserData({
-                        name: profile.full_name || "Admin",
-                        email: user.email || "",
-                        managedSocietyId: managedSociety?.society_id
-                    });
+            if (profile) {
+                const managementRoles = ['Admin', 'Director', 'Deputy Director', 'HR', 'Society President', 'Vice President', 'Secretary', 'Treasurer', 'General Admin'];
+                const managedSociety = (profile.user_societies as any[])?.find(us => managementRoles.includes(us.role));
+
+                // Only allow: global admins OR users with a management role
+                if (!profile.is_global_admin && !managedSociety) {
+                    setIsAuthorized(false);
+                    return;
                 }
+
+                setIsAuthorized(true);
+                setUserData({
+                    name: profile.full_name || "Admin",
+                    email: user.email || "",
+                    managedSocietyId: managedSociety?.society_id
+                });
             }
         };
         getUser();
@@ -56,6 +67,38 @@ export default function AdminLayout({
         router.push("/login");
         router.refresh();
     };
+
+    // Still loading auth check
+    if (isAuthorized === null) {
+        return (
+            <div className="flex h-screen items-center justify-center bg-[#f4f5f7] dark:bg-zinc-950">
+                <Loader2 className="h-8 w-8 animate-spin text-rose-500" />
+            </div>
+        );
+    }
+
+    // Unauthorized — user is not an admin or management role
+    if (isAuthorized === false) {
+        return (
+            <div className="flex h-screen flex-col items-center justify-center gap-6 bg-[#f4f5f7] dark:bg-zinc-950 text-center px-6">
+                <div className="h-20 w-20 rounded-3xl bg-rose-500/10 flex items-center justify-center">
+                    <ShieldOff className="h-10 w-10 text-rose-500" />
+                </div>
+                <div>
+                    <h1 className="text-2xl font-bold text-[#172b4d] dark:text-white mb-2">Access Restricted</h1>
+                    <p className="text-zinc-500 dark:text-zinc-400 max-w-sm">You don't have permission to access the admin panel. This area is reserved for Directors, HR, and Society Admins.</p>
+                </div>
+                <div className="flex gap-3">
+                    <Button onClick={() => router.push("/dashboard")} className="bg-amber-500 hover:bg-amber-600 text-white">
+                        Go to Dashboard
+                    </Button>
+                    <Button variant="ghost" onClick={handleLogout} className="text-zinc-500 hover:text-rose-500">
+                        Log Out
+                    </Button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="flex h-screen bg-[#f4f5f7] dark:bg-zinc-950 text-[#172b4d] dark:text-white overflow-hidden selection:bg-rose-500/30 transition-colors">

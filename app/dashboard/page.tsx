@@ -38,11 +38,10 @@ export default function DashboardPage() {
     // KPIs calculations
     const inProgressCount = myTasks.filter(t => !t.is_completed).length;
 
-    const urgentTasks = myTasks.filter(t => {
-        if (!t.deadline || t.is_completed) return false;
-        const diff = Math.ceil((new Date(t.deadline).getTime() - Date.now()) / 86400000);
-        return diff <= 3; // Show overdue and tasks due within 3 days
-    });
+    // Filter upcoming tasks (with deadlines, not completed)
+    const upcomingTasks = myTasks
+        .filter(t => t.deadline && !t.is_completed)
+        .sort((a, b) => new Date(a.deadline!).getTime() - new Date(b.deadline!).getTime());
 
     if (isLoading) {
         return (
@@ -78,7 +77,7 @@ export default function DashboardPage() {
                 <header>
                     <h1 className="text-3xl sm:text-4xl font-light tracking-tight text-[#172b4d] dark:text-white mb-2">Welcome back, {userData?.name?.split(' ')[0] || "User"}.</h1>
                     <p className="text-zinc-500 dark:text-zinc-400 text-base sm:text-lg">
-                        You have <span className="text-amber-600 dark:text-amber-500 font-medium">{inProgressCount} tasks assigned</span> to you {urgentTasks.length > 0 && <>and <span className="text-rose-500 font-medium">{urgentTasks.length} approaching deadlines</span></>}.
+                        You have <span className="text-amber-600 dark:text-amber-500 font-medium">{inProgressCount} tasks assigned</span> to you {upcomingTasks.length > 0 && <>and <span className="text-amber-600 dark:text-amber-500 font-medium">{upcomingTasks.length} upcoming deadlines</span></>}.
                     </p>
                 </header>
 
@@ -105,8 +104,8 @@ export default function DashboardPage() {
                             <ArrowUpRight className="h-5 w-5 text-zinc-400 group-hover:text-zinc-500 transition" />
                         </div>
                         <div>
-                            <div className="text-3xl font-light text-[#172b4d] dark:text-white mb-1">{urgentTasks.length}</div>
-                            <div className="text-sm text-zinc-500 dark:text-zinc-400">Urgent Deadlines</div>
+                            <div className="text-3xl font-light text-[#172b4d] dark:text-white mb-1">{upcomingTasks.length}</div>
+                            <div className="text-sm text-zinc-500 dark:text-zinc-400">Total Deadlines</div>
                         </div>
                     </div>
 
@@ -175,14 +174,14 @@ export default function DashboardPage() {
                         <div className="flex items-center justify-between mb-6">
                             <h2 className="text-xl font-medium text-[#172b4d] dark:text-white">Upcoming Deadlines</h2>
                         </div>
-                        {urgentTasks.length > 0 ? (
+                        {upcomingTasks.length > 0 ? (
                             <div className="space-y-3">
-                                {urgentTasks.slice(0, 3).map(task => (
-                                    <div key={task.id} className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 flex items-center gap-4">
+                                {upcomingTasks.slice(0, 5).map(task => (
+                                    <div key={task.id} className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 flex items-center gap-4 transition hover:bg-white dark:hover:bg-zinc-900/60">
                                         <div className="h-8 w-8 rounded-full bg-rose-500/10 flex items-center justify-center shrink-0 text-rose-500">
                                             <Clock className="h-4 w-4" />
                                         </div>
-                                        <div className="min-w-0">
+                                        <div className="min-w-0 flex-1">
                                             <p className="text-sm font-medium text-[#172b4d] dark:text-white truncate">{task.title}</p>
                                             {(() => {
                                                 const dl = formatDl(task.deadline!);
@@ -194,7 +193,7 @@ export default function DashboardPage() {
                             </div>
                         ) : (
                             <div className="p-8 text-center bg-zinc-50 dark:bg-zinc-900/40 rounded-xl border border-zinc-100 dark:border-zinc-800">
-                                <p className="text-sm text-zinc-500 italic">No urgent deadlines.</p>
+                                <p className="text-sm text-zinc-500 italic">No upcoming deadlines.</p>
                             </div>
                         )}
                     </div>
@@ -210,6 +209,7 @@ export default function DashboardPage() {
         </div>
     );
 }
+
 
 function UserTeamCard({ userId }: { userId?: string }) {
     const { teams, teamMembers } = useMockData();

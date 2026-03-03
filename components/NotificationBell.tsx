@@ -69,6 +69,8 @@ export function NotificationBell() {
                     )
                     .subscribe();
 
+                setIsLoading(false);
+
                 return () => {
                     supabase.removeChannel(channel);
                 };

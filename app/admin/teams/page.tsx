@@ -114,6 +114,7 @@ export default function AdminTeamsPage() {
   const [newColor, setNewColor] = useState("bg-rose-500");
   const [newLeadInput, setNewLeadInput] = useState("");
   const [newLeads, setNewLeads] = useState<string[]>([]);
+  const [isCreating, setIsCreating] = useState(false);
 
   const openManageModal = (team: any) => {
     setSelectedTeam(team);
@@ -162,22 +163,27 @@ export default function AdminTeamsPage() {
   };
 
   const handleCreateTeam = async () => {
-    if (!newName.trim() || !managedSocietyId) return;
-    await addTeam({
-      name: newName.trim(),
-      members: newLeads.length || 0,
-      leads: newLeads.length > 0 ? newLeads : ["Unassigned"],
-      color: newColor,
-      type: newType,
-      society_id: managedSocietyId,
-    });
-    // reset
-    setNewName("");
-    setNewType("Core");
-    setNewColor("bg-rose-500");
-    setNewLeads([]);
-    setNewLeadInput("");
-    setIsCreateOpen(false);
+    if (!newName.trim() || !managedSocietyId || isCreating) return;
+    setIsCreating(true);
+    try {
+      await addTeam({
+        name: newName.trim(),
+        members: newLeads.length || 0,
+        leads: newLeads.length > 0 ? newLeads : ["Unassigned"],
+        color: newColor,
+        type: newType,
+        society_id: managedSocietyId,
+      });
+      // reset
+      setNewName("");
+      setNewType("Core");
+      setNewColor("bg-rose-500");
+      setNewLeads([]);
+      setNewLeadInput("");
+      setIsCreateOpen(false);
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   const handleDeleteTeam = async (teamId: string) => {
@@ -329,14 +335,18 @@ export default function AdminTeamsPage() {
                   variant="outline"
                   onClick={() => setIsCreateOpen(false)}
                   className="flex-1 border-zinc-200 dark:border-zinc-800"
+                  disabled={isCreating}
                 >
                   Cancel
                 </Button>
                 <Button
-                  disabled={!newName.trim()}
+                  disabled={!newName.trim() || isCreating}
                   onClick={handleCreateTeam}
                   className="flex-1 bg-rose-500 hover:bg-rose-600 text-white disabled:opacity-50"
                 >
+                  {isCreating && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
                   Create Team
                 </Button>
               </div>

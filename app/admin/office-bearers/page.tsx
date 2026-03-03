@@ -9,6 +9,7 @@ import {
   ChevronDown,
   X,
   Pencil,
+  Loader2,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -137,6 +138,7 @@ export default function AdminOfficeBearersPage() {
   // Edit form
   const [editTeamIds, setEditTeamIds] = useState<string[]>([]);
   const [editPosition, setEditPosition] = useState<OBPosition>("President");
+  const [isSaving, setIsSaving] = useState(false);
 
   const allPositions = [...DEFAULT_POSITIONS, ...customPositions];
   const isPresident = selPosition === "President";
@@ -150,22 +152,27 @@ export default function AdminOfficeBearersPage() {
     setter(arr.includes(id) ? arr.filter((t) => t !== id) : [...arr, id]);
   };
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     const user = users.find((u) => u.id === selUserId);
-    if (!user || !selPosition || !managedSocietyId) return;
-    addOfficeBearerRole({
-      id: `ob-${Date.now()}`, // Temporary ID, context will replace with DB UUID
-      userId: user.id,
-      societyId: managedSocietyId,
-      name: user.name,
-      email: user.email,
-      position: selPosition,
-      assignedTeamIds: isPresident ? [] : selTeamIds,
-    });
-    setSelUserId("");
-    setSelPosition("President");
-    setSelTeamIds([]);
-    setAddOpen(false);
+    if (!user || !selPosition || !managedSocietyId || isSaving) return;
+    setIsSaving(true);
+    try {
+      await addOfficeBearerRole({
+        id: `ob-${Date.now()}`, // Temporary ID, context will replace with DB UUID
+        userId: user.id,
+        societyId: managedSocietyId,
+        name: user.name,
+        email: user.email,
+        position: selPosition,
+        assignedTeamIds: isPresident ? [] : selTeamIds,
+      });
+      setSelUserId("");
+      setSelPosition("President");
+      setSelTeamIds([]);
+      setAddOpen(false);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const openEdit = (ob: OfficeBearerRole) => {
@@ -174,13 +181,18 @@ export default function AdminOfficeBearersPage() {
     setEditPosition(ob.position);
   };
 
-  const handleSaveEdit = () => {
-    if (!editTarget) return;
-    updateOfficeBearerRole(editTarget.id, {
-      position: editPosition,
-      assignedTeamIds: editIsPresident ? [] : editTeamIds,
-    });
-    setEditTarget(null);
+  const handleSaveEdit = async () => {
+    if (!editTarget || isSaving) return;
+    setIsSaving(true);
+    try {
+      await updateOfficeBearerRole(editTarget.id, {
+        position: editPosition,
+        assignedTeamIds: editIsPresident ? [] : editTeamIds,
+      });
+      setEditTarget(null);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   if (isLoading) {
@@ -336,14 +348,18 @@ export default function AdminOfficeBearersPage() {
                   variant="outline"
                   onClick={() => setAddOpen(false)}
                   className="flex-1 border-zinc-200 dark:border-zinc-800"
+                  disabled={isSaving}
                 >
                   Cancel
                 </Button>
                 <Button
-                  disabled={!selUserId}
+                  disabled={!selUserId || isSaving}
                   onClick={handleAdd}
                   className="flex-1 bg-rose-500 hover:bg-rose-600 text-white disabled:opacity-50"
                 >
+                  {isSaving && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
                   Add OB
                 </Button>
               </div>
@@ -442,13 +458,16 @@ export default function AdminOfficeBearersPage() {
                 variant="outline"
                 onClick={() => setEditTarget(null)}
                 className="flex-1 border-zinc-200 dark:border-zinc-800"
+                disabled={isSaving}
               >
                 Cancel
               </Button>
               <Button
+                disabled={isSaving}
                 onClick={handleSaveEdit}
-                className="flex-1 bg-rose-500 hover:bg-rose-600 text-white"
+                className="flex-1 bg-rose-500 hover:bg-rose-600 text-white disabled:opacity-50"
               >
+                {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Save Changes
               </Button>
             </div>

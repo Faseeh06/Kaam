@@ -50,9 +50,11 @@ export default function AdminUsersPage() {
   const [managedSocietyId, setManagedSocietyId] = useState<string | null>(null);
   const [userData, setUserData] = useState<{ id: string } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [processingUserId, setProcessingUserId] = useState<string | null>(null);
 
   const [editingUserRole, setEditingUserRole] = useState<AppUser | null>(null);
   const [newRole, setNewRole] = useState("");
+  const [isUpdatingRole, setIsUpdatingRole] = useState(false);
 
   useEffect(() => {
     const getManagedSociety = async () => {
@@ -323,26 +325,50 @@ export default function AdminUsersPage() {
                         <td className="px-6 py-4 text-right">
                           <div className="flex items-center justify-end gap-2">
                             <Button
-                              onClick={() =>
-                                approvePendingUser(
-                                  user.id,
-                                  "Executive",
-                                  "General",
-                                )
-                              }
+                              disabled={processingUserId === user.id}
+                              onClick={async () => {
+                                setProcessingUserId(user.id);
+                                try {
+                                  await approvePendingUser(
+                                    user.id,
+                                    "Executive",
+                                    "General",
+                                  );
+                                } finally {
+                                  setProcessingUserId(null);
+                                }
+                              }}
                               size="sm"
                               variant="outline"
-                              className="border-emerald-200 dark:border-emerald-500/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:border-emerald-300 dark:hover:border-emerald-500/50 h-8 px-2.5"
+                              className="border-emerald-200 dark:border-emerald-500/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:border-emerald-300 dark:hover:border-emerald-500/50 h-8 px-2.5 disabled:opacity-50"
                             >
-                              <Check className="h-4 w-4 mr-1.5" /> Accept
+                              {processingUserId === user.id ? (
+                                <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
+                              ) : (
+                                <Check className="h-4 w-4 mr-1.5" />
+                              )}{" "}
+                              Accept
                             </Button>
                             <Button
-                              onClick={() => rejectPendingUser(user.id)}
+                              disabled={processingUserId === user.id}
+                              onClick={async () => {
+                                setProcessingUserId(user.id);
+                                try {
+                                  await rejectPendingUser(user.id);
+                                } finally {
+                                  setProcessingUserId(null);
+                                }
+                              }}
                               size="sm"
                               variant="outline"
-                              className="border-rose-200 dark:border-rose-500/30 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:border-rose-300 dark:hover:border-rose-500/50 h-8 px-2.5"
+                              className="border-rose-200 dark:border-rose-500/30 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:border-rose-300 dark:hover:border-rose-500/50 h-8 px-2.5 disabled:opacity-50"
                             >
-                              <X className="h-4 w-4 mr-1.5" /> Reject
+                              {processingUserId === user.id ? (
+                                <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
+                              ) : (
+                                <X className="h-4 w-4 mr-1.5" />
+                              )}{" "}
+                              Reject
                             </Button>
                           </div>
                         </td>
@@ -521,18 +547,27 @@ export default function AdminUsersPage() {
                 Cancel
               </Button>
               <Button
+                disabled={isUpdatingRole}
                 onClick={async () => {
                   if (editingUserRole && managedSocietyId) {
-                    await updateUserRole(
-                      editingUserRole.id,
-                      managedSocietyId,
-                      newRole,
-                    );
-                    setEditingUserRole(null);
+                    setIsUpdatingRole(true);
+                    try {
+                      await updateUserRole(
+                        editingUserRole.id,
+                        managedSocietyId,
+                        newRole,
+                      );
+                      setEditingUserRole(null);
+                    } finally {
+                      setIsUpdatingRole(false);
+                    }
                   }
                 }}
-                className="bg-rose-500 text-white hover:bg-rose-600"
+                className="bg-rose-500 text-white hover:bg-rose-600 disabled:opacity-50"
               >
+                {isUpdatingRole && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
                 Save Changes
               </Button>
             </div>

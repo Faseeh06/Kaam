@@ -61,9 +61,18 @@ export function NotificationBell() {
 
                             // Show Browser Notification on Windows/Mac
                             if ("Notification" in window && Notification.permission === "granted") {
-                                new window.Notification("New Notification from Kaam", {
-                                    body: newNotif.message,
-                                });
+                                try {
+                                    const notification = new Notification("Kaam Alert", {
+                                        body: newNotif.message,
+                                        icon: "/favicon.ico", // An icon is often required by Windows to display correctly
+                                    });
+                                    notification.onclick = () => {
+                                        window.focus();
+                                        notification.close();
+                                    };
+                                } catch (err) {
+                                    console.error("Failed to show desktop notification:", err);
+                                }
                             }
                         }
                     )

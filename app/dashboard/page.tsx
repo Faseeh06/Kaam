@@ -41,7 +41,7 @@ export default function DashboardPage() {
     const urgentTasks = myTasks.filter(t => {
         if (!t.deadline || t.is_completed) return false;
         const diff = Math.ceil((new Date(t.deadline).getTime() - Date.now()) / 86400000);
-        return diff >= 0 && diff <= 3;
+        return diff <= 3; // Show overdue and tasks due within 3 days
     });
 
     if (isLoading) {
@@ -184,7 +184,10 @@ export default function DashboardPage() {
                                         </div>
                                         <div className="min-w-0">
                                             <p className="text-sm font-medium text-[#172b4d] dark:text-white truncate">{task.title}</p>
-                                            <p className="text-xs text-rose-500 font-medium">Due {new Date(task.deadline!).toLocaleDateString()}</p>
+                                            {(() => {
+                                                const dl = formatDl(task.deadline!);
+                                                return dl ? <p className={`text-xs font-semibold ${dl.color}`}>{dl.label}</p> : null;
+                                            })()}
                                         </div>
                                     </div>
                                 ))}

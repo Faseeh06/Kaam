@@ -53,6 +53,24 @@ const SEVERITY_CONFIG: Record<Severity, { stripe: string; badge: string; icon: s
     }
 };
 
+const formatDeadline = (d?: string) => {
+    if (!d) return null;
+    const date = new Date(d);
+    const now = new Date();
+    const diff = date.getTime() - now.getTime();
+    const isOverdue = diff < 0;
+    const daysDiff = Math.ceil(diff / (1000 * 60 * 60 * 24));
+
+    // Formatting label
+    const dateLabel = date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    const timeLabel = date.toLocaleTimeString("en-US", { hour: 'numeric', minute: '2-digit', hour12: true });
+    const label = `${dateLabel} ${timeLabel}`;
+
+    if (isOverdue) return { label: `Overdue (${label})`, color: "text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-500/20 font-bold" };
+    if (daysDiff <= 2) return { label: `Soon (${label})`, color: "text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-500/10 border-orange-200 dark:border-orange-500/20" };
+    return { label, color: "text-zinc-500 bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700" };
+};
+
 type ListProps = {
     id: string;
     title: string;
@@ -147,6 +165,7 @@ export default function BoardPage() {
     const [selectedCard, setSelectedCard] = useState<{ card: CardProps; listTitle: string } | null>(null);
     const [editCardField, setEditCardField] = useState<"title" | "description" | null>(null);
     const [editCardText, setEditCardText] = useState("");
+    const [isEditingDeadline, setIsEditingDeadline] = useState(false);
 
     const handleSaveCardField = async () => {
         if (!selectedCard || !editCardField) return;
@@ -587,6 +606,52 @@ export default function BoardPage() {
                                             </span>
                                         )}
 
+                                        {canDelete && (
+                                            <div className="relative">
+                                                {isEditingDeadline ? (
+                                                    <div className="flex items-center gap-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-1.5 rounded-xl shadow-sm z-50 animate-in fade-in zoom-in-95 duration-200">
+                                                        <input
+                                                            type="datetime-local"
+                                                            autoFocus
+                                                            className="bg-transparent text-sm outline-none focus:ring-0 text-zinc-800 dark:text-zinc-100 px-1"
+                                                            defaultValue={selectedCard.card.deadline ? new Date(selectedCard.card.deadline).toISOString().slice(0, 16) : ""}
+                                                            onBlur={() => setIsEditingDeadline(false)}
+                                                            onChange={async (e) => {
+                                                                const val = e.target.value;
+                                                                if (val) {
+                                                                    const isoDate = new Date(val).toISOString();
+                                                                    await updateBoardCard(selectedCard.card.id, { deadline: isoDate });
+                                                                    setSelectedCard({
+                                                                        ...selectedCard,
+                                                                        card: { ...selectedCard.card, deadline: isoDate }
+                                                                    });
+                                                                }
+                                                                setIsEditingDeadline(false);
+                                                            }}
+                                                        />
+                                                    </div>
+                                                ) : (
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() => setIsEditingDeadline(true)}
+                                                        className={`h-8 rounded-full border transition hover:opacity-80 px-3 
+                                                            ${selectedCard.card.deadline ? formatDeadline(selectedCard.card.deadline)?.color : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border-zinc-200 dark:border-zinc-700'}`}
+                                                    >
+                                                        <Calendar className="h-3.5 w-3.5 mr-1.5" />
+                                                        {selectedCard.card.deadline ? formatDeadline(selectedCard.card.deadline)?.label : 'Set Deadline'}
+                                                    </Button>
+                                                )}
+                                            </div>
+                                        )}
+                                        {!canDelete && selectedCard.card.deadline && (() => {
+                                            const d = formatDeadline(selectedCard.card.deadline); return d ? (
+                                                <span className={`flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full border ${d.color}`}>
+                                                    <Calendar className="h-3.5 w-3.5" /> Due {d.label}
+                                                </span>
+                                            ) : null;
+                                        })()}
+
                                         {canDelete ? (
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
@@ -771,7 +836,8 @@ export default function BoardPage() {
                         </div>
                     </div>
                 </div>
-            )}
-        </div>
+            )
+            }
+        </div >
     );
 }

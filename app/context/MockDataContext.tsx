@@ -30,6 +30,8 @@ export type OBPosition = "President" | "General Secretary" | "Press Secretary" |
 
 export type OfficeBearerRole = {
     id: string;
+    userId: string;
+    societyId: string;
     name: string;
     email: string;
     position: OBPosition;
@@ -258,6 +260,8 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
             if (obData) {
                 setOfficeBearers(obData.map(ob => ({
                     id: ob.id,
+                    userId: ob.user_id,
+                    societyId: ob.society_id,
                     name: ob.profiles.full_name,
                     email: ob.profiles.email,
                     position: ob.position,
@@ -302,6 +306,7 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
             .on('postgres_changes', { event: '*', schema: 'public', table: 'team_members' }, () => fetchData())
             .on('postgres_changes', { event: '*', schema: 'public', table: 'board_lists' }, () => fetchData())
             .on('postgres_changes', { event: '*', schema: 'public', table: 'board_cards' }, () => fetchData())
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'office_bearers' }, () => fetchData())
             .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => fetchData())
             .on('postgres_changes', { event: '*', schema: 'public', table: 'societies' }, () => fetchData())
 
@@ -577,14 +582,93 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
     };
 
     const addOfficeBearerRole = async (ob: OfficeBearerRole) => {
-        // Requires looking up profile ID by email/name usually
-        setOfficeBearers([...officeBearers, ob]);
+        // 1. Insert into office_bearers table
+        const { data: newOB, error } = await supabase
+            .from('office_bearers')
+            .insert({
+                user_id: ob.userId,
+                society_id: ob.societyId,
+                position: ob.position,
+                assigned_team_ids: ob.assignedTeamIds
+            })
+            .select()
+            .single();
+
+        if (error) {
+            console.error("Error adding office bearer:", error.message);
+            alert("Failed to add office bearer: " + error.message);
+            return;
+        }
+
+        // 2. Update user_societies role to 'Office Bearer'
+        const { error: roleError } = await supabase
+            .from('user_societies')
+            .update({ role: 'Office Bearer' })
+            .eq('user_id', ob.userId)
+            .eq('society_id', ob.societyId);
+
+        if (roleError) {
+            console.warn("Failed to update society role:", roleError.message);
+        }
+
+        // 3. Local state update (handled by realtime, but we can do it optimistically)
+        if (newOB) {
+            setOfficeBearers(prev => [...prev, {
+                ...ob,
+                id: (newOB as any).id
+            }]);
+        }
     };
 
-    const updateOfficeBearerRole = (id: string, updates: Partial<OfficeBearerRole>) =>
-        setOfficeBearers(officeBearers.map(ob => ob.id === id ? { ...ob, ...updates } : ob));
+    const updateOfficeBearerRole = async (id: string, updates: Partial<OfficeBearerRole>) => {
+        const dbUpdates: any = {};
+        if (updates.position) dbUpdates.position = updates.position;
+        if (updates.assignedTeamIds) dbUpdates.assigned_team_ids = updates.assignedTeamIds;
 
-    const removeOfficeBearerRole = (id: string) => setOfficeBearers(officeBearers.filter(ob => ob.id !== id));
+        const { error } = await supabase
+            .from('office_bearers')
+            .update(dbUpdates)
+            .eq('id', id);
+
+        if (error) {
+            console.error("Error updating office bearer:", error.message);
+            alert("Failed to update office bearer: " + error.message);
+            return;
+        }
+
+        setOfficeBearers(prev => prev.map(ob => ob.id === id ? { ...ob, ...updates } : ob));
+    };
+
+    const removeOfficeBearerRole = async (id: string) => {
+        // 1. Get info before delete for role revert
+        const ob = officeBearers.find(o => o.id === id);
+        if (!ob) return;
+
+        // 2. Delete from DB
+        const { error } = await supabase
+            .from('office_bearers')
+            .delete()
+            .eq('id', id);
+
+        if (error) {
+            console.error("Error removing office bearer:", error.message);
+            alert("Failed to remove office bearer: " + error.message);
+            return;
+        }
+
+        // 3. Revert user_societies role if no other OB assignments exist (simplified: revert to Executive)
+        const { error: roleError } = await supabase
+            .from('user_societies')
+            .update({ role: 'Executive' })
+            .eq('user_id', ob.userId)
+            .eq('society_id', ob.societyId);
+
+        if (roleError) {
+            console.warn("Failed to revert society role:", roleError.message);
+        }
+
+        setOfficeBearers(prev => prev.filter(ob => ob.id !== id));
+    };
 
     const addTeamMember = async (teamId: string, userId: string, role: TeamRole = "Executive") => {
         // 1. Get Team Name for primary_team sync

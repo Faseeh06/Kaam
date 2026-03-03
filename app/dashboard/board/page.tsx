@@ -67,7 +67,7 @@ const formatDeadline = (d?: string) => {
 
 export default function BoardPage() {
     const {
-        teams, boardLists, boardCards, teamMembers, isLoading: isContextLoading,
+        teams, boardLists, boardCards, teamMembers, officeBearers, isLoading: isContextLoading,
         addBoardList, updateBoardList, removeBoardList, addBoardCard, updateBoardCard, removeBoardCard, updateCardStatus, moveCard
     } = useMockData();
 
@@ -75,6 +75,8 @@ export default function BoardPage() {
     const [userData, setUserData] = useState<{ id: string; primary_team: string; isSocietyAdmin: boolean } | null>(null);
     const [isLocalLoading, setIsLocalLoading] = useState(true);
     const [mounted, setMounted] = useState(false);
+
+    const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
 
     useEffect(() => {
         setMounted(true);
@@ -85,9 +87,9 @@ export default function BoardPage() {
             if (user) {
                 const { data: profile } = await supabase.from('profiles').select('id, primary_team').eq('id', user.id).single();
 
-                // Also check if they are a society admin/mgmt
+                // Check for society-level management roles
                 const { data: societyRoles } = await supabase.from('user_societies').select('role').eq('user_id', user.id);
-                const managementRoles = ['Admin', 'Director', 'Deputy Director', 'HR', 'Society President', 'Vice President', 'Secretary', 'Treasurer', 'General Admin'];
+                const managementRoles = ['Admin', 'Director', 'Deputy Director', 'HR', 'Society President', 'Vice President', 'Secretary', 'Treasurer', 'General Admin', 'Office Bearer'];
                 const isSocietyAdmin = societyRoles?.some(sr => managementRoles.includes(sr.role)) || false;
 
                 setUserData({
@@ -101,18 +103,34 @@ export default function BoardPage() {
         fetchUserData();
     }, []);
 
-    // Find user's team reactively from teamMembers (Source of Truth)
-    let myTeam = userData ? teams.find(t =>
-        // 1. Check direct associations (Real-time)
-        (teamMembers[t.id] || []).some(m => m.userId === userData.id) ||
-        // 2. Fallback to profile field
-        t.name === userData.primary_team
-    ) : null;
+    // ── Team Access Logic ────────────────────────────────────────────────────
 
-    // Fallback for Society Admins/Management who might not be in a specific team
-    if (!myTeam && userData?.isSocietyAdmin && teams.length > 0) {
-        myTeam = teams[0];
-    }
+    // 1. Identify all teams this user has access to
+    const myOBRecord = userData ? officeBearers.find(ob => ob.userId === userData.id) : null;
+    const isPresident = myOBRecord?.position === "President";
+
+    const accessibleTeams = teams.filter(t => {
+        if (!userData) return false;
+        // Super/Society Admins & Presidents get all teams
+        if (isSocietyAdmin || isPresident) return true;
+        // Office Bearers get their assigned teams
+        if (myOBRecord?.assignedTeamIds.includes(t.id)) return true;
+        // Regular members get teams they are explicitly in
+        const membersInTeam = teamMembers[t.id] || [];
+        return membersInTeam.some(m => m.userId === userData.id) || t.name === userData.primary_team;
+    });
+
+    // 2. Determine which team to display
+    let myTeam = selectedTeamId
+        ? accessibleTeams.find(t => t.id === selectedTeamId)
+        : accessibleTeams[0];
+
+    // Auto-select first accessible team if none selected
+    useEffect(() => {
+        if (!selectedTeamId && accessibleTeams.length > 0) {
+            setSelectedTeamId(accessibleTeams[0].id);
+        }
+    }, [accessibleTeams, selectedTeamId]);
 
     const members = myTeam ? (teamMembers[myTeam.id] || []) : [];
 
@@ -264,7 +282,34 @@ export default function BoardPage() {
             {/* Nav */}
             <nav className="flex items-center justify-between px-6 py-4 shrink-0">
                 <div className="flex items-center gap-3">
-                    <h1 className="font-medium text-lg text-[#172b4d] dark:text-white">{myTeam.name} Board</h1>
+                    {accessibleTeams.length > 1 ? (
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" className="p-0 h-auto hover:bg-transparent flex items-center gap-2 group">
+                                    <h1 className="font-medium text-lg text-[#172b4d] dark:text-white group-hover:text-amber-500 transition-colors">
+                                        {myTeam?.name} Board
+                                    </h1>
+                                    <ChevronDown className="h-4 w-4 text-zinc-400 group-hover:text-amber-500 transition-colors" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="start" className="w-56 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 rounded-xl shadow-xl">
+                                <div className="p-2 text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-3 py-1">Switch Board</div>
+                                {accessibleTeams.map(t => (
+                                    <DropdownMenuItem
+                                        key={t.id}
+                                        onClick={() => setSelectedTeamId(t.id)}
+                                        className={`flex items-center gap-2 cursor-pointer p-3 rounded-lg ${selectedTeamId === t.id ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-600' : ''}`}
+                                    >
+                                        <span className={`h-2 w-2 rounded-full ${t.color}`} />
+                                        <span className="text-sm font-medium">{t.name}</span>
+                                        {selectedTeamId === t.id && <Check className="h-4 w-4 ml-auto" />}
+                                    </DropdownMenuItem>
+                                ))}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    ) : (
+                        <h1 className="font-medium text-lg text-[#172b4d] dark:text-white">{myTeam?.name} Board</h1>
+                    )}
                     <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-500 border-amber-200 dark:border-amber-500/20`}>
                         {myRole}
                     </span>

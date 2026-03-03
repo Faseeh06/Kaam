@@ -20,7 +20,7 @@ const RECENT_ACTIVITY = [
 ];
 
 export default function DashboardTeamPage() {
-    const { teams, teamMembers, isLoading: isContextLoading } = useMockData();
+    const { teams, teamMembers, officeBearers, isLoading: isContextLoading } = useMockData();
     const [userData, setUserData] = useState<{ id: string; email: string; primary_team: string } | null>(null);
     const [isLocalLoading, setIsLocalLoading] = useState(true);
 
@@ -66,10 +66,33 @@ export default function DashboardTeamPage() {
 
     const myPerms = TEAM_ROLE_PERMISSIONS[myRole as TeamRole];
 
-    const directors = members.filter(m => m.teamRole === "Director");
-    const dds = members.filter(m => m.teamRole === "Deputy Director");
-    const hrs = members.filter(m => m.teamRole === "HR");
-    const execs = members.filter(m => m.teamRole === "Executive");
+    // Separate Office Bearers from regular team members
+    const obsList = members.filter(m => officeBearers.some(ob => ob.userId === m.userId)).map(m => {
+        const obInfo = officeBearers.find(ob => ob.userId === m.userId);
+        return {
+            ...m,
+            displayRole: obInfo?.position || "Office Bearer",
+            isOb: true
+        };
+    });
+
+    const nonObs = members.filter(m => !officeBearers.some(ob => ob.userId === m.userId));
+    const directors = nonObs.filter(m => m.teamRole === "Director");
+    const dds = nonObs.filter(m => m.teamRole === "Deputy Director");
+    const hrs = nonObs.filter(m => m.teamRole === "HR");
+    const execs = nonObs.filter(m => m.teamRole === "Executive");
+
+    // Fix myRole for header if I am an OB
+    const myOBInfo = officeBearers.find(ob => ob.userId === userData?.id);
+    const displayHeaderRole = myOBInfo ? myOBInfo.position : myRole;
+    const headerConfig = myOBInfo ? {
+        label: myOBInfo.position,
+        color: "bg-rose-500",
+        textColor: "text-rose-700 dark:text-rose-400",
+        borderColor: "border-rose-200 dark:border-rose-500/30",
+        bgColor: "bg-rose-50 dark:bg-rose-500/10",
+        icon: "👑"
+    } : ROLE_CONFIG[myRole];
 
     const accentText = myTeam?.color?.replace("bg-", "text-") || "text-amber-500";
 
@@ -109,10 +132,10 @@ export default function DashboardTeamPage() {
                         <p className="text-zinc-500 dark:text-zinc-400 text-sm">Your team details, members, and your role permissions.</p>
                     </div>
                     {userData && (
-                        <div className={`inline-flex items-center gap-2.5 px-4 py-2.5 rounded-xl border shadow-sm text-sm ${ROLE_CONFIG[myRole].bgColor} ${ROLE_CONFIG[myRole].textColor} ${ROLE_CONFIG[myRole].borderColor}`}>
-                            <span className="text-base">{ROLE_CONFIG[myRole].icon}</span>
+                        <div className={`inline-flex items-center gap-2.5 px-4 py-2.5 rounded-xl border shadow-sm text-sm ${headerConfig.bgColor} ${headerConfig.textColor} ${headerConfig.borderColor}`}>
+                            <span className="text-base">{headerConfig.icon}</span>
                             <div>
-                                <p className="font-bold leading-none">{myRole}</p>
+                                <p className="font-bold leading-none">{displayHeaderRole}</p>
                                 <p className="text-[11px] opacity-70 mt-0.5">{myTeam?.name}</p>
                             </div>
                         </div>
@@ -196,6 +219,13 @@ export default function DashboardTeamPage() {
                 <div className="lg:col-span-2 space-y-5">
                     {/* Role hierarchy legend */}
                     <div className="bg-white dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800/60 rounded-xl px-5 py-4 shadow-sm flex flex-wrap gap-3">
+                        {obsList.length > 0 && (
+                            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-500/30">
+                                <span>👑</span>
+                                <span className="font-semibold">Office Bearer</span>
+                                <span className="opacity-60 text-[10px]">Society-level</span>
+                            </div>
+                        )}
                         {(Object.keys(ROLE_CONFIG) as TeamRole[]).map(role => {
                             const cfg = ROLE_CONFIG[role];
                             const perms = TEAM_ROLE_PERMISSIONS[role];
@@ -213,12 +243,15 @@ export default function DashboardTeamPage() {
 
                     {/* Group by role */}
                     {([
-                        { role: "Director" as TeamRole, list: directors },
-                        { role: "Deputy Director" as TeamRole, list: dds },
-                        { role: "HR" as TeamRole, list: hrs },
-                        { role: "Executive" as TeamRole, list: execs },
+                        { role: "Office Bearer" as string, list: obsList },
+                        { role: "Director" as string, list: directors },
+                        { role: "Deputy Director" as string, list: dds },
+                        { role: "HR" as string, list: hrs },
+                        { role: "Executive" as string, list: execs },
                     ]).filter(g => g.list.length > 0).map(({ role, list }) => {
-                        const cfg = ROLE_CONFIG[role];
+                        const cfg = role === "Office Bearer" ? {
+                            icon: "👑", textColor: "text-rose-700 dark:text-rose-400", bgColor: "bg-rose-50 dark:bg-rose-500/10", borderColor: "border-rose-200 dark:border-rose-500/30"
+                        } : ROLE_CONFIG[role as TeamRole];
                         return (
                             <div key={role} className="bg-white dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800/60 rounded-2xl shadow-sm overflow-hidden">
                                 <div className="px-6 py-3.5 border-b border-zinc-100 dark:border-zinc-800/50 flex items-center gap-2">
@@ -227,7 +260,7 @@ export default function DashboardTeamPage() {
                                     <span className="ml-auto text-xs text-zinc-400">{list.length}</span>
                                 </div>
                                 <div className="divide-y divide-zinc-100 dark:divide-zinc-800/50">
-                                    {list.map(member => {
+                                    {list.map((member: any) => {
                                         const isMe = member.email === userData?.email;
                                         return (
                                             <div key={member.id} className={`flex items-center gap-4 px-6 py-4 hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20 transition-colors ${isMe ? "bg-amber-50/30 dark:bg-amber-500/5" : ""}`}>
@@ -245,7 +278,9 @@ export default function DashboardTeamPage() {
                                                     </div>
                                                     <p className="text-xs text-zinc-500 font-mono mt-0.5">{member.email}</p>
                                                 </div>
-                                                <span className="text-[11px] text-zinc-400 shrink-0">{member.teamRole}</span>
+                                                <span className={`text-[11px] font-medium shrink-0 ${member.isOb ? 'text-rose-500' : 'text-zinc-400'}`}>
+                                                    {member.displayRole || member.teamRole}
+                                                </span>
                                             </div>
                                         );
                                     })}

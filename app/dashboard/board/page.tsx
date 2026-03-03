@@ -394,11 +394,16 @@ export default function BoardPage() {
                                                                             </span>
                                                                         )}
                                                                         {card.assignedTo && (
-                                                                            <Avatar className="h-5 w-5 ml-auto border border-zinc-200 dark:border-zinc-700">
-                                                                                <AvatarFallback className="text-[9px] bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300 font-bold">
-                                                                                    {card.assignedTo.split(' ').map(n => n[0]).join('')}
-                                                                                </AvatarFallback>
-                                                                            </Avatar>
+                                                                            <div className="flex items-center gap-1.5 ml-auto bg-zinc-50 dark:bg-zinc-900/50 px-2 py-0.5 rounded-full border border-zinc-200 dark:border-zinc-800 transition-all group-hover:border-zinc-300 dark:group-hover:border-zinc-700">
+                                                                                <Avatar className="h-4 w-4 border-none shrink-0 shadow-none">
+                                                                                    <AvatarFallback className="text-[7px] bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300 font-bold">
+                                                                                        {card.assignedTo.split(' ').map((n: string) => n[0]).join('')}
+                                                                                    </AvatarFallback>
+                                                                                </Avatar>
+                                                                                <span className="text-[10px] font-semibold text-zinc-600 dark:text-zinc-300 truncate max-w-[100px] tracking-tight">
+                                                                                    {card.assignedTo}
+                                                                                </span>
+                                                                            </div>
                                                                         )}
                                                                     </div>
                                                                 </div>
@@ -563,7 +568,7 @@ export default function BoardPage() {
                                                             {selectedCard.card.assignedTo ? (
                                                                 <div className="flex items-center gap-2">
                                                                     <Avatar className="h-5 w-5">
-                                                                        <AvatarFallback className="text-[9px] bg-rose-500/10 text-rose-500 font-bold">{selectedCard.card.assignedTo.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                                                                        <AvatarFallback className="text-[9px] bg-rose-500/10 text-rose-500 font-bold">{selectedCard.card.assignedTo.split(' ').map((n: string) => n[0]).join('')}</AvatarFallback>
                                                                     </Avatar>
                                                                     <span className="text-sm font-medium">{selectedCard.card.assignedTo}</span>
                                                                 </div>
@@ -594,7 +599,7 @@ export default function BoardPage() {
                                                                 });
                                                             }} className="cursor-pointer">
                                                                 <Avatar className="h-6 w-6 mr-2">
-                                                                    <AvatarFallback className="text-[10px] bg-blue-100 dark:bg-blue-500/20 text-blue-600 font-bold">{m.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                                                                    <AvatarFallback className="text-[10px] bg-blue-100 dark:bg-blue-500/20 text-blue-600 font-bold">{m.name.split(' ').map((n: string) => n[0]).join('')}</AvatarFallback>
                                                                 </Avatar>
                                                                 <div className="flex flex-col">
                                                                     <span className="text-sm font-medium leading-tight">{m.name}</span>

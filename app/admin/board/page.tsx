@@ -28,6 +28,7 @@ type CardProps = {
     hasAvatar?: boolean;
     severity?: string;
     assigned_to?: string;
+    assigned_to_name?: string;
     deadline?: string;
     activity?: { user: string; action: string; time: string; avatar: string }[];
 };
@@ -378,10 +379,17 @@ export default function BoardPage() {
                                                                             <span>{card.attachments}</span>
                                                                         </div>
                                                                     )}
-                                                                    {card.hasAvatar && (
-                                                                        <Avatar className="h-6 w-6 ml-auto border border-zinc-200 dark:border-zinc-800">
-                                                                            <AvatarFallback className="bg-zinc-100 dark:bg-zinc-800 text-[10px] text-zinc-800 dark:text-zinc-300">AN</AvatarFallback>
-                                                                        </Avatar>
+                                                                    {card.assigned_to_name && (
+                                                                        <div className="flex items-center gap-1.5 ml-auto bg-zinc-50 dark:bg-zinc-900/50 px-2 py-0.5 rounded-full border border-zinc-200 dark:border-zinc-800 transition-all group-hover:border-zinc-300 dark:group-hover:border-zinc-700">
+                                                                            <Avatar className="h-4 w-4 border-none shrink-0 shadow-none">
+                                                                                <AvatarFallback className="text-[7px] bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-500 font-bold">
+                                                                                    {card.assigned_to_name.split(' ').map((n: string) => n[0]).join('')}
+                                                                                </AvatarFallback>
+                                                                            </Avatar>
+                                                                            <span className="text-[10px] font-semibold text-zinc-600 dark:text-zinc-300 truncate max-w-[100px] tracking-tight">
+                                                                                {card.assigned_to_name}
+                                                                            </span>
+                                                                        </div>
                                                                     )}
                                                                 </div>
                                                             )}

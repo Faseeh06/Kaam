@@ -44,11 +44,48 @@ export function NotificationBell() {
                 if (data) {
                     setNotifications(data as Notification[]);
                 }
+
+                // Subscribe to real-time notifications
+                const channel = supabase.channel('realtime:notifications')
+                    .on(
+                        'postgres_changes',
+                        {
+                            event: 'INSERT',
+                            schema: 'public',
+                            table: 'notifications',
+                            filter: `user_id=eq.${user.id}`,
+                        },
+                        (payload) => {
+                            const newNotif = payload.new as Notification;
+                            setNotifications((prev) => [newNotif, ...prev]);
+
+                            // Show Browser Notification on Windows/Mac
+                            if ("Notification" in window && Notification.permission === "granted") {
+                                new window.Notification("New Notification from Kaam", {
+                                    body: newNotif.message,
+                                });
+                            }
+                        }
+                    )
+                    .subscribe();
+
+                return () => {
+                    supabase.removeChannel(channel);
+                };
             }
             setIsLoading(false);
         };
 
-        fetchUserAndNotifications();
+        const cleanup = fetchUserAndNotifications();
+
+        // Ask for permission for desktop notifications if not already granted/denied
+        if ("Notification" in window && Notification.permission === "default") {
+            Notification.requestPermission();
+        }
+
+        return () => {
+            cleanup.then(fn => { if (typeof fn === 'function') fn(); });
+        };
     }, [supabase]);
 
     const unreadCount = notifications.filter(n => !n.is_read).length;

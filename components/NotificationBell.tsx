@@ -21,16 +21,36 @@ interface Notification {
 }
 
 const showWindowsNotification = async (title: string, body: string) => {
-    if (!("Notification" in window) || Notification.permission !== "granted") return;
-    try {
-        if ("serviceWorker" in navigator) {
+    console.log("[Kaam] Attempting notification. Permission:", Notification.permission);
+    if (!("Notification" in window)) {
+        console.warn("[Kaam] Notification API not available.");
+        return;
+    }
+    if (Notification.permission !== "granted") {
+        console.warn("[Kaam] Permission not granted:", Notification.permission);
+        return;
+    }
+
+    // Try Service Worker approach first (most reliable cross-browser)
+    if ("serviceWorker" in navigator) {
+        try {
             const reg = await navigator.serviceWorker.ready;
+            console.log("[Kaam] SW ready, showing notification via SW:", reg.scope);
             await reg.showNotification(title, { body, icon: "/apple-icon.png" });
-        } else {
-            new Notification(title, { body, icon: "/apple-icon.png" });
+            console.log("[Kaam] SW notification shown.");
+            return;
+        } catch (err) {
+            console.error("[Kaam] SW notification failed, falling back:", err);
         }
+    }
+
+    // Fallback: direct Notification (works on localhost)
+    try {
+        console.log("[Kaam] Using direct Notification API.");
+        const n = new Notification(title, { body, icon: "/apple-icon.png" });
+        n.onclick = () => { window.focus(); n.close(); };
     } catch (err) {
-        console.error("Notification failed:", err);
+        console.error("[Kaam] Direct Notification failed:", err);
     }
 };
 

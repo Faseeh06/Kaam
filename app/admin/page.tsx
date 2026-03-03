@@ -8,7 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useMockData } from "@/app/context/MockDataContext";
 
 export default function AdminDashboardPage() {
-    const { users, teams, boardCards, boardLists, pendingUsers, societies } = useMockData();
+    const { users, teams, boardCards, boardLists, pendingUsers, societies, teamMembers } = useMockData();
     const [managedSocietyId, setManagedSocietyId] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -125,40 +125,52 @@ export default function AdminDashboardPage() {
             </div>
 
             <div className="grid md:grid-cols-3 gap-6">
-                {/* Recent Activity */}
+                {/* Teams Overview */}
                 <Card className="md:col-span-2 bg-white dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800/60 rounded-2xl shadow-sm">
                     <CardHeader className="border-b border-zinc-100 dark:border-zinc-800/50 pb-4">
-                        <CardTitle className="text-lg font-medium text-[#172b4d] dark:text-white">System Activity</CardTitle>
-                        <CardDescription className="text-zinc-500 dark:text-zinc-400">Latest actions across all societies.</CardDescription>
+                        <CardTitle className="text-lg font-medium text-[#172b4d] dark:text-white">Society Teams</CardTitle>
+                        <CardDescription className="text-zinc-500 dark:text-zinc-400">
+                            All teams registered under {adminSociety?.name || "your society"}.
+                        </CardDescription>
                     </CardHeader>
-                    <CardContent className="pt-6 space-y-6">
-                        <div className="flex gap-4">
-                            <div className="h-8 w-8 rounded-full bg-rose-100 dark:bg-rose-500/20 flex items-center justify-center shrink-0">
-                                <ShieldAlert className="h-4 w-4 text-rose-600 dark:text-rose-500" />
+                    <CardContent className="pt-4">
+                        {societyTeams.length === 0 ? (
+                            <div className="py-10 text-center text-zinc-500 dark:text-zinc-400 text-sm">
+                                No teams found. Create a team to get started.
                             </div>
-                            <div>
-                                <p className="text-sm text-[#172b4d] dark:text-zinc-200"><span className="font-semibold">Super Admin</span> created a new team: <span className="font-medium">Marketing</span> in Tech Society.</p>
-                                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">2 minutes ago</p>
+                        ) : (
+                            <div className="space-y-3">
+                                {societyTeams.map(team => {
+                                    // Count members across all teamMembers records for this team
+                                    const teamTaskLists = boardLists.filter(l => l.team_id === team.id);
+                                    const teamListIds = teamTaskLists.map(l => l.id);
+                                    const teamTaskCount = boardCards.filter(c => teamListIds.includes(c.list_id) && !c.is_completed).length;
+                                    const memberCount = (teamMembers[team.id] || []).length;
+
+                                    return (
+                                        <div key={team.id} className="flex items-center gap-4 p-3 rounded-xl border border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/30 hover:bg-white dark:hover:bg-zinc-900/60 transition">
+                                            <div className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 text-white font-bold text-sm ${(team as any).color || 'bg-rose-500'}`}>
+                                                {team.name.charAt(0).toUpperCase()}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-semibold text-[#172b4d] dark:text-white truncate">{team.name}</p>
+                                                <p className="text-xs text-zinc-500 dark:text-zinc-400">{team.type || "General"}</p>
+                                            </div>
+                                            <div className="flex gap-4 text-right shrink-0">
+                                                <div>
+                                                    <p className="text-sm font-bold text-[#172b4d] dark:text-white">{memberCount}</p>
+                                                    <p className="text-[10px] text-zinc-400 uppercase tracking-wide">Members</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-bold text-[#172b4d] dark:text-white">{teamTaskCount}</p>
+                                                    <p className="text-[10px] text-zinc-400 uppercase tracking-wide">Tasks</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
                             </div>
-                        </div>
-                        <div className="flex gap-4">
-                            <Avatar className="h-8 w-8 shrink-0 border border-zinc-200 dark:border-zinc-700/50">
-                                <AvatarFallback className="bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-xs font-semibold">AS</AvatarFallback>
-                            </Avatar>
-                            <div>
-                                <p className="text-sm text-[#172b4d] dark:text-zinc-200"><span className="font-semibold">Alex Smith</span> submitted a report for <span className="font-medium text-rose-500 underline decoration-rose-500/30">Q3 Planning</span> task.</p>
-                                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">1 hour ago</p>
-                            </div>
-                        </div>
-                        <div className="flex gap-4">
-                            <div className="h-8 w-8 rounded-full bg-amber-100 dark:bg-amber-500/20 flex items-center justify-center shrink-0">
-                                <UserCheck className="h-4 w-4 text-amber-600 dark:text-amber-500" />
-                            </div>
-                            <div>
-                                <p className="text-sm text-[#172b4d] dark:text-zinc-200"><span className="font-semibold">New registration</span>: 3 users requested to join Design Society.</p>
-                                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">3 hours ago</p>
-                            </div>
-                        </div>
+                        )}
                     </CardContent>
                 </Card>
 

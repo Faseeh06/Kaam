@@ -87,14 +87,14 @@ export default function LoginPage() {
         <div className="flex justify-center mb-8">
           <Link
             href="/"
-            className="flex items-center gap-2 text-[#172b4d] dark:text-white transition-opacity hover:opacity-80"
+            className="flex items-center gap-2 text-[white] dark:text-white transition-opacity hover:opacity-80"
           >
             <Shield className="h-8 w-8 text-amber-600 dark:text-amber-500" />
             <span className="font-medium text-2xl tracking-tight">Kaam</span>
           </Link>
         </div>
 
-        <Card className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/80 backdrop-blur-xl text-[#172b4d] dark:text-white">
+        <Card className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/80 backdrop-blur-xl text-[white] dark:text-white">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-normal tracking-tight text-center">
               Welcome back
@@ -123,7 +123,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="m@example.com"
-                  className="bg-zinc-100 dark:bg-zinc-800/50 border-zinc-300 dark:border-zinc-700 text-[#172b4d] dark:text-white placeholder:text-zinc-500 focus-visible:ring-amber-500"
+                  className="bg-zinc-100 dark:bg-zinc-800/50 border-zinc-300 dark:border-zinc-700 text-[white] dark:text-white placeholder:text-zinc-500 focus-visible:ring-amber-500"
                   required
                 />
               </div>
@@ -148,7 +148,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="********"
-                  className="bg-zinc-100 dark:bg-zinc-800/50 border-zinc-300 dark:border-zinc-700 text-[#172b4d] dark:text-white placeholder:text-zinc-500 focus-visible:ring-amber-500"
+                  className="bg-zinc-100 dark:bg-zinc-800/50 border-zinc-300 dark:border-zinc-700 text-[white] dark:text-white placeholder:text-zinc-500 focus-visible:ring-amber-500"
                   required
                 />
               </div>
@@ -156,7 +156,7 @@ export default function LoginPage() {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-white text-zinc-900 hover:bg-zinc-200 transition-all active:scale-95"
+                className="w-full transition-all active:scale-95"
               >
                 {isLoading ? (
                   <>

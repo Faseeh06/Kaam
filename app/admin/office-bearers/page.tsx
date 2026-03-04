@@ -207,7 +207,7 @@ export default function AdminOfficeBearersPage() {
     return (
       <div className="h-full flex flex-col items-center justify-center p-8 text-center bg-white dark:bg-zinc-950">
         <Shield className="h-12 w-12 text-zinc-300 dark:text-zinc-700 mb-4" />
-        <h2 className="text-xl font-semibold text-[#172b4d] dark:text-white mb-2">
+        <h2 className="text-xl font-semibold text-white dark:text-white mb-2">
           Access Restricted
         </h2>
         <p className="text-zinc-500 dark:text-zinc-400 max-w-sm">
@@ -228,7 +228,7 @@ export default function AdminOfficeBearersPage() {
     <div className="h-full flex flex-col pt-4 px-4 md:px-8 pb-8 overflow-y-auto custom-scrollbar">
       <header className="mb-8 md:mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-medium tracking-tight text-[#172b4d] dark:text-white mb-2">
+          <h1 className="text-3xl font-medium tracking-tight text-white dark:text-white mb-2">
             Office Bearers
           </h1>
           <p className="text-zinc-500 dark:text-zinc-400 text-sm md:text-base">
@@ -244,7 +244,7 @@ export default function AdminOfficeBearersPage() {
           </DialogTrigger>
           <DialogContent className="sm:max-w-md bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800">
             <DialogHeader>
-              <DialogTitle className="text-[#172b4d] dark:text-white">
+              <DialogTitle className="text-white dark:text-white">
                 Add Office Bearer
               </DialogTitle>
               <DialogDescription className="text-zinc-500 dark:text-zinc-400">
@@ -260,7 +260,7 @@ export default function AdminOfficeBearersPage() {
                 <select
                   value={selUserId}
                   onChange={(e) => setSelUserId(e.target.value)}
-                  className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:ring-1 focus:ring-rose-500"
+                  className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-rose-500"
                 >
                   <option value="">Choose a registered user...</option>
                   {users.map((u) => (
@@ -375,12 +375,12 @@ export default function AdminOfficeBearersPage() {
       >
         <DialogContent className="sm:max-w-md bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800">
           <DialogHeader>
-            <DialogTitle className="text-[#172b4d] dark:text-white">
+            <DialogTitle className="text-white dark:text-white">
               Edit Office Bearer
             </DialogTitle>
             <DialogDescription className="text-zinc-500 dark:text-zinc-400">
               Update{" "}
-              <strong className="text-[#172b4d] dark:text-white">
+              <strong className="text-white dark:text-white">
                 {editTarget?.name}
               </strong>
               's position and team access.
@@ -533,7 +533,7 @@ export default function AdminOfficeBearersPage() {
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="font-semibold text-[#172b4d] dark:text-zinc-100">
+                      <p className="font-semibold text-white dark:text-zinc-100">
                         {ob.name}
                       </p>
                       <p className="text-xs text-zinc-500 mt-0.5">{ob.email}</p>
@@ -544,7 +544,7 @@ export default function AdminOfficeBearersPage() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-zinc-400 hover:text-[#172b4d] dark:hover:text-white -mr-1 -mt-1"
+                        className="h-8 w-8 text-zinc-400 hover:text-white dark:hover:text-white -mr-1 -mt-1"
                       >
                         <ChevronDown className="h-4 w-4" />
                       </Button>

@@ -65,13 +65,13 @@ export default function SignupPage() {
 
             <div className="relative z-10 w-full max-w-md px-6">
                 <div className="flex justify-center mb-8">
-                    <Link href="/" className="flex items-center gap-2 text-[#172b4d] dark:text-white">
+                    <Link href="/" className="flex items-center gap-2 text-[white] dark:text-white">
                         <Shield className="h-8 w-8 text-amber-600 dark:text-amber-500" />
                         <span className="font-medium text-2xl tracking-tight">Kaam</span>
                     </Link>
                 </div>
 
-                <Card className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/80 backdrop-blur-xl text-[#172b4d] dark:text-white">
+                <Card className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/80 backdrop-blur-xl text-[white] dark:text-white">
                     <CardHeader className="space-y-1">
                         <CardTitle className="text-2xl font-normal tracking-tight text-center">
                             Create an account
@@ -95,7 +95,7 @@ export default function SignupPage() {
                                     value={fullName}
                                     onChange={(e) => setFullName(e.target.value)}
                                     placeholder="John Doe"
-                                    className="bg-zinc-100 dark:bg-zinc-800/50 border-zinc-300 dark:border-zinc-700 text-[#172b4d] dark:text-white placeholder:text-zinc-500 focus-visible:ring-amber-500"
+                                    className="bg-zinc-100 dark:bg-zinc-800/50 border-zinc-300 dark:border-zinc-700 text-[white] dark:text-white placeholder:text-zinc-500 focus-visible:ring-amber-500"
                                     required
                                 />
                             </div>
@@ -107,7 +107,7 @@ export default function SignupPage() {
                                     value={phone}
                                     onChange={(e) => setPhone(e.target.value)}
                                     placeholder="+1 (555) 000-0000"
-                                    className="bg-zinc-100 dark:bg-zinc-800/50 border-zinc-300 dark:border-zinc-700 text-[#172b4d] dark:text-white placeholder:text-zinc-500 focus-visible:ring-amber-500"
+                                    className="bg-zinc-100 dark:bg-zinc-800/50 border-zinc-300 dark:border-zinc-700 text-[white] dark:text-white placeholder:text-zinc-500 focus-visible:ring-amber-500"
                                 />
                             </div>
                             <div className="space-y-2">
@@ -118,7 +118,7 @@ export default function SignupPage() {
                                     value={department}
                                     onChange={(e) => setDepartment(e.target.value)}
                                     placeholder="e.g. Media"
-                                    className="bg-zinc-100 dark:bg-zinc-800/50 border-zinc-300 dark:border-zinc-700 text-[#172b4d] dark:text-white placeholder:text-zinc-500 focus-visible:ring-amber-500"
+                                    className="bg-zinc-100 dark:bg-zinc-800/50 border-zinc-300 dark:border-zinc-700 text-[white] dark:text-white placeholder:text-zinc-500 focus-visible:ring-amber-500"
                                 />
                             </div>
                             <div className="space-y-2">
@@ -129,7 +129,7 @@ export default function SignupPage() {
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="m@example.com"
-                                    className="bg-zinc-100 dark:bg-zinc-800/50 border-zinc-300 dark:border-zinc-700 text-[#172b4d] dark:text-white placeholder:text-zinc-500 focus-visible:ring-amber-500"
+                                    className="bg-zinc-100 dark:bg-zinc-800/50 border-zinc-300 dark:border-zinc-700 text-[white] dark:text-white placeholder:text-zinc-500 focus-visible:ring-amber-500"
                                     required
                                 />
                             </div>
@@ -141,11 +141,11 @@ export default function SignupPage() {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="********"
-                                    className="bg-zinc-100 dark:bg-zinc-800/50 border-zinc-300 dark:border-zinc-700 text-[#172b4d] dark:text-white placeholder:text-zinc-500 focus-visible:ring-amber-500"
+                                    className="bg-zinc-100 dark:bg-zinc-800/50 border-zinc-300 dark:border-zinc-700 text-[white] dark:text-white placeholder:text-zinc-500 focus-visible:ring-amber-500"
                                     required
                                 />
                             </div>
-                            <Button type="submit" disabled={isLoading} className="w-full mt-4 bg-white text-zinc-900 hover:bg-zinc-200">
+                            <Button type="submit" disabled={isLoading} className="w-full mt-4">
                                 {isLoading ? (
                                     <>
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />

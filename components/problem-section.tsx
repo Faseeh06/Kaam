@@ -40,12 +40,12 @@ export function ProblemSection({ className }: { className?: string }) {
           </p>
 
           <div className="flex flex-col gap-4 pt-8 sm:flex-row sm:justify-center">
-            <button className="bg-white px-8 py-3 font-semibold text-slate-900 transition-all hover:bg-gray-100 active:scale-95">
+            <Button size="lg" className="px-8 text-base">
               Get Organized Now
-            </button>
-            <button className="border border-white/30 px-8 py-3 font-semibold text-white transition-all hover:bg-white/10 active:scale-95">
+            </Button>
+            <Button variant="outline" size="lg" className="border-white/30 bg-transparent px-8 text-base text-white hover:bg-white/10 hover:text-white">
               Explore Features
-            </button>
+            </Button>
           </div>
         </div>
       </div>

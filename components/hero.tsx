@@ -51,7 +51,7 @@ export function Hero() {
             <Link href="/signup">
               <Button
                 size="lg"
-                className="bg-white px-8 h-12 text-slate-900 hover:bg-white/90 text-lg"
+                className="px-8 h-12 text-lg"
               >
                 Get Started
               </Button>

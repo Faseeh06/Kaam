@@ -51,7 +51,7 @@ export default function SuperLayout({
     };
 
     return (
-        <div className="flex h-screen bg-[#f4f5f7] dark:bg-zinc-950 text-[#172b4d] dark:text-white overflow-hidden selection:bg-violet-500/30 transition-colors">
+        <div className="flex h-screen bg-[#f4f5f7] dark:bg-zinc-950 text-white dark:text-white overflow-hidden selection:bg-violet-500/30 transition-colors">
 
             {/* Super Admin Sidebar */}
             <aside
@@ -60,7 +60,7 @@ export default function SuperLayout({
                 {/* Collapse Toggle Button */}
                 <button
                     onClick={() => setIsCollapsed(!isCollapsed)}
-                    className="absolute -right-3.5 top-20 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 hover:text-[#172b4d] dark:hover:text-white rounded-full p-1 z-50 transition-colors shadow-sm"
+                    className="absolute -right-3.5 top-20 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 hover:text-white dark:hover:text-white rounded-full p-1 z-50 transition-colors shadow-sm"
                 >
                     {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
                 </button>
@@ -81,7 +81,7 @@ export default function SuperLayout({
 
                     <Link
                         href="/super"
-                        className={`flex items-center ${isCollapsed ? 'justify-center px-0' : 'gap-3 px-3'} py-2.5 rounded-lg transition-colors group relative ${pathname === '/super' ? 'text-violet-700 dark:text-violet-400 bg-violet-100/80 dark:bg-violet-500/10 hover:bg-violet-200/50 dark:hover:bg-violet-500/20' : 'text-zinc-500 dark:text-zinc-400 hover:text-[#172b4d] dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-900/50'}`}
+                        className={`flex items-center ${isCollapsed ? 'justify-center px-0' : 'gap-3 px-3'} py-2.5 rounded-lg transition-colors group relative ${pathname === '/super' ? 'text-violet-700 dark:text-violet-400 bg-violet-100/80 dark:bg-violet-500/10 hover:bg-violet-200/50 dark:hover:bg-violet-500/20' : 'text-zinc-500 dark:text-zinc-400 hover:text-white dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-900/50'}`}
                         title="Overview"
                     >
                         <LayoutDashboard className={`h-5 w-5 shrink-0 transition-colors ${pathname === '/super' ? 'text-violet-700 dark:text-violet-400' : 'group-hover:!text-violet-700 dark:group-hover:!text-violet-400'}`} />
@@ -90,7 +90,7 @@ export default function SuperLayout({
 
                     <Link
                         href="/super/societies"
-                        className={`flex items-center ${isCollapsed ? 'justify-center px-0' : 'gap-3 px-3'} py-2.5 rounded-lg transition-colors group relative ${pathname.startsWith('/super/societies') ? 'text-violet-700 dark:text-violet-400 bg-violet-100/80 dark:bg-violet-500/10 hover:bg-violet-200/50 dark:hover:bg-violet-500/20' : 'text-zinc-500 dark:text-zinc-400 hover:text-[#172b4d] dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-900/50'}`}
+                        className={`flex items-center ${isCollapsed ? 'justify-center px-0' : 'gap-3 px-3'} py-2.5 rounded-lg transition-colors group relative ${pathname.startsWith('/super/societies') ? 'text-violet-700 dark:text-violet-400 bg-violet-100/80 dark:bg-violet-500/10 hover:bg-violet-200/50 dark:hover:bg-violet-500/20' : 'text-zinc-500 dark:text-zinc-400 hover:text-white dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-900/50'}`}
                         title="Societies"
                     >
                         <Building2 className={`h-5 w-5 shrink-0 transition-colors ${pathname.startsWith('/super/societies') ? 'text-violet-700 dark:text-violet-400' : 'group-hover:!text-violet-700 dark:group-hover:!text-violet-400'}`} />
@@ -99,7 +99,7 @@ export default function SuperLayout({
 
                     <Link
                         href="/super/admins"
-                        className={`flex items-center ${isCollapsed ? 'justify-center px-0' : 'gap-3 px-3'} py-2.5 rounded-lg transition-colors group relative ${pathname.startsWith('/super/admins') ? 'text-violet-700 dark:text-violet-400 bg-violet-100/80 dark:bg-violet-500/10 hover:bg-violet-200/50 dark:hover:bg-violet-500/20' : 'text-zinc-500 dark:text-zinc-400 hover:text-[#172b4d] dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-900/50'}`}
+                        className={`flex items-center ${isCollapsed ? 'justify-center px-0' : 'gap-3 px-3'} py-2.5 rounded-lg transition-colors group relative ${pathname.startsWith('/super/admins') ? 'text-violet-700 dark:text-violet-400 bg-violet-100/80 dark:bg-violet-500/10 hover:bg-violet-200/50 dark:hover:bg-violet-500/20' : 'text-zinc-500 dark:text-zinc-400 hover:text-white dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-900/50'}`}
                         title="Local Admins"
                     >
                         <UserCog className={`h-5 w-5 shrink-0 transition-colors ${pathname.startsWith('/super/admins') ? 'text-violet-700 dark:text-violet-400' : 'group-hover:!text-violet-700 dark:group-hover:!text-violet-400'}`} />
@@ -108,7 +108,7 @@ export default function SuperLayout({
 
                     <Link
                         href="/super/users"
-                        className={`flex items-center ${isCollapsed ? 'justify-center px-0' : 'gap-3 px-3'} py-2.5 rounded-lg transition-colors group relative ${pathname.startsWith('/super/users') ? 'text-violet-700 dark:text-violet-400 bg-violet-100/80 dark:bg-violet-500/10 hover:bg-violet-200/50 dark:hover:bg-violet-500/20' : 'text-zinc-500 dark:text-zinc-400 hover:text-[#172b4d] dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-900/50'}`}
+                        className={`flex items-center ${isCollapsed ? 'justify-center px-0' : 'gap-3 px-3'} py-2.5 rounded-lg transition-colors group relative ${pathname.startsWith('/super/users') ? 'text-violet-700 dark:text-violet-400 bg-violet-100/80 dark:bg-violet-500/10 hover:bg-violet-200/50 dark:hover:bg-violet-500/20' : 'text-zinc-500 dark:text-zinc-400 hover:text-white dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-900/50'}`}
                         title="All Users"
                     >
                         <Users className={`h-5 w-5 shrink-0 transition-colors ${pathname.startsWith('/super/users') ? 'text-violet-700 dark:text-violet-400' : 'group-hover:!text-violet-700 dark:group-hover:!text-violet-400'}`} />
@@ -127,7 +127,7 @@ export default function SuperLayout({
                             </Avatar>
                             {!isCollapsed && (
                                 <div className="flex flex-col min-w-0">
-                                    <span className="text-sm font-medium leading-none text-[#172b4d] dark:text-zinc-200 truncate">{userData?.name || "Loading..."}</span>
+                                    <span className="text-sm font-medium leading-none text-white dark:text-zinc-200 truncate">{userData?.name || "Loading..."}</span>
                                 </div>
                             )}
                         </div>
@@ -135,7 +135,7 @@ export default function SuperLayout({
                             variant="ghost"
                             size="icon"
                             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                            className={`text-zinc-500 hover:text-[#172b4d] dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-800 shrink-0 ${isCollapsed ? 'mt-2' : ''}`}
+                            className={`text-zinc-500 hover:text-white dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-800 shrink-0 ${isCollapsed ? 'mt-2' : ''}`}
                             title="Toggle theme"
                         >
                             <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface PricingPlan {
   id: string;
@@ -121,13 +122,11 @@ export function PricingSection({ className }: { className?: string }) {
                 </div>
 
                 {/* CTA Button */}
-                <button
-                  className={cn(
-                    "w-full py-4 px-4 text-sm font-medium transition-all duration-200 cursor-pointer bg-white text-zinc-900 hover:bg-zinc-200"
-                  )}
+                <Button
+                  className="w-full py-6 text-base font-medium transition-all duration-200"
                 >
                   {plan.cta}
-                </button>
+                </Button>
 
                 {/* Divider */}
                 <div className="flex items-center gap-3">

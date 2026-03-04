@@ -220,7 +220,7 @@ export default function AdminTeamsPage() {
     <div className="h-full flex flex-col pt-4 px-4 md:px-8 pb-8 overflow-y-auto custom-scrollbar">
       <header className="mb-8 md:mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-medium tracking-tight text-[#172b4d] dark:text-white mb-2">
+          <h1 className="text-3xl font-medium tracking-tight text-white dark:text-white mb-2">
             Teams Management
           </h1>
           <p className="text-zinc-500 dark:text-zinc-400 text-sm md:text-base">
@@ -235,7 +235,7 @@ export default function AdminTeamsPage() {
           </DialogTrigger>
           <DialogContent className="sm:max-w-md bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800">
             <DialogHeader>
-              <DialogTitle className="text-[#172b4d] dark:text-white">
+              <DialogTitle className="text-white dark:text-white">
                 Create New Team
               </DialogTitle>
               <DialogDescription className="text-zinc-500 dark:text-zinc-400">
@@ -252,7 +252,7 @@ export default function AdminTeamsPage() {
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
                   placeholder="e.g. Marketing & Outreach"
-                  className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:ring-1 focus:ring-rose-500"
+                  className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-rose-500"
                 />
               </div>
 
@@ -263,7 +263,7 @@ export default function AdminTeamsPage() {
                 <select
                   value={newType}
                   onChange={(e) => setNewType(e.target.value)}
-                  className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:ring-1 focus:ring-rose-500"
+                  className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-rose-500"
                 >
                   <option>Core</option>
                   <option>Support</option>
@@ -281,7 +281,7 @@ export default function AdminTeamsPage() {
                       key={c.value}
                       title={c.label}
                       onClick={() => setNewColor(c.value)}
-                      className={`h-7 w-7 rounded-full cursor-pointer border-2 transition-transform hover:scale-110 ${c.value} ${newColor === c.value ? "border-[#172b4d] dark:border-white ring-2 ring-zinc-200 dark:ring-zinc-700 ring-offset-1 scale-110" : "border-transparent opacity-70 hover:opacity-100"}`}
+                      className={`h-7 w-7 rounded-full cursor-pointer border-2 transition-transform hover:scale-110 ${c.value} ${newColor === c.value ? "border-[white] dark:border-white ring-2 ring-zinc-200 dark:ring-zinc-700 ring-offset-1 scale-110" : "border-transparent opacity-70 hover:opacity-100"}`}
                     />
                   ))}
                 </div>
@@ -297,7 +297,7 @@ export default function AdminTeamsPage() {
                     onChange={(e) => setNewLeadInput(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && addLead()}
                     placeholder="Type a name and press Add or Enter"
-                    className="flex-1 bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:ring-1 focus:ring-rose-500"
+                    className="flex-1 bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-rose-500"
                   />
                   <Button
                     size="sm"
@@ -376,7 +376,7 @@ export default function AdminTeamsPage() {
                   />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-[#172b4d] dark:text-zinc-100">
+                  <h3 className="font-semibold text-white dark:text-zinc-100">
                     {team.name}
                   </h3>
                   <Badge
@@ -392,7 +392,7 @@ export default function AdminTeamsPage() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 text-zinc-400 hover:text-[#172b4d] dark:hover:text-white shrink-0 -mr-2"
+                    className="h-8 w-8 text-zinc-400 hover:text-white dark:hover:text-white shrink-0 -mr-2"
                   >
                     <MoreVertical className="h-4 w-4" />
                   </Button>
@@ -416,7 +416,7 @@ export default function AdminTeamsPage() {
                 <span className="text-zinc-600 dark:text-zinc-400 flex items-center">
                   <Users className="h-4 w-4 mr-2 opacity-70" /> Members
                 </span>
-                <span className="font-medium text-[#172b4d] dark:text-zinc-200">
+                <span className="font-medium text-white dark:text-zinc-200">
                   {teamMembers[team.id]?.length || team.members || 0}
                 </span>
               </div>
@@ -450,7 +450,7 @@ export default function AdminTeamsPage() {
               <Button
                 onClick={() => openManageModal(team)}
                 variant="outline"
-                className="w-full bg-zinc-50 dark:bg-zinc-800/40 border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-[#172b4d] dark:text-zinc-200 hover:text-rose-600 dark:hover:text-rose-400 transition"
+                className="w-full bg-zinc-50 dark:bg-zinc-800/40 border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-white dark:text-zinc-200 hover:text-rose-600 dark:hover:text-rose-400 transition"
               >
                 Manage Team
               </Button>
@@ -476,7 +476,7 @@ export default function AdminTeamsPage() {
       <Dialog open={isManageModalOpen} onOpenChange={setIsManageModalOpen}>
         <DialogContent className="sm:max-w-xl border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
           <DialogHeader>
-            <DialogTitle className="text-[#172b4d] dark:text-white">
+            <DialogTitle className="text-white dark:text-white">
               Manage Team: {selectedTeam?.name}
             </DialogTitle>
             <DialogDescription className="text-zinc-500 dark:text-zinc-400">
@@ -488,13 +488,13 @@ export default function AdminTeamsPage() {
             <TabsList className="grid w-full grid-cols-2 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg h-10 p-1 mb-4">
               <TabsTrigger
                 value="members"
-                className="data-[state=active]:bg-white dark:data-[state=active]:bg-zinc-800 rounded-md text-sm font-medium transition-all data-[state=active]:text-[#172b4d] dark:data-[state=active]:text-white data-[state=active]:shadow-sm"
+                className="data-[state=active]:bg-white dark:data-[state=active]:bg-zinc-800 rounded-md text-sm font-medium transition-all data-[state=active]:text-white dark:data-[state=active]:text-white data-[state=active]:shadow-sm"
               >
                 Members & Roles
               </TabsTrigger>
               <TabsTrigger
                 value="settings"
-                className="data-[state=active]:bg-white dark:data-[state=active]:bg-zinc-800 rounded-md text-sm font-medium transition-all data-[state=active]:text-[#172b4d] dark:data-[state=active]:text-white data-[state=active]:shadow-sm"
+                className="data-[state=active]:bg-white dark:data-[state=active]:bg-zinc-800 rounded-md text-sm font-medium transition-all data-[state=active]:text-white dark:data-[state=active]:text-white data-[state=active]:shadow-sm"
               >
                 Team Settings
               </TabsTrigger>
@@ -513,7 +513,7 @@ export default function AdminTeamsPage() {
                       }}
                       onFocus={() => setShowResults(true)}
                       placeholder="Search & add society member..."
-                      className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg pl-9 pr-4 py-2 text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:ring-1 focus:ring-rose-500"
+                      className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg pl-9 pr-4 py-2 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-rose-500"
                     />
                   </div>
                   <Button
@@ -545,7 +545,7 @@ export default function AdminTeamsPage() {
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-[#172b4d] dark:text-zinc-100 truncate">
+                            <p className="text-sm font-medium text-white dark:text-zinc-100 truncate">
                               {u.name}
                             </p>
                             <p className="text-[10px] text-zinc-500 truncate">
@@ -576,12 +576,12 @@ export default function AdminTeamsPage() {
                   >
                     <div className="flex items-center gap-2">
                       <Avatar className="h-8 w-8 border border-zinc-200 dark:border-zinc-700">
-                        <AvatarFallback className="bg-zinc-100 dark:bg-zinc-800 text-[#172b4d] dark:text-zinc-300 text-xs font-bold">
+                        <AvatarFallback className="bg-zinc-100 dark:bg-zinc-800 text-white dark:text-zinc-300 text-xs font-bold">
                           {m.name.charAt(0)}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="text-sm font-medium text-[#172b4d] dark:text-zinc-200">
+                        <p className="text-sm font-medium text-white dark:text-zinc-200">
                           {m.name}
                         </p>
                         <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold">
@@ -619,7 +619,7 @@ export default function AdminTeamsPage() {
                   </label>
                   <input
                     defaultValue={selectedTeam?.name}
-                    className="w-full bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm font-medium text-[#172b4d] dark:text-zinc-100 outline-none focus:ring-1 focus:ring-rose-500"
+                    className="w-full bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm font-medium text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-rose-500"
                   />
                 </div>
 
@@ -638,7 +638,7 @@ export default function AdminTeamsPage() {
                     ].map((color) => (
                       <div
                         key={color}
-                        className={`h-6 w-6 rounded-full cursor-pointer border-2 transition-transform hover:scale-110 ${color} ${selectedTeam?.color === color ? "border-[#172b4d] dark:border-white shadow-sm ring-2 ring-zinc-200 dark:ring-zinc-800 ring-offset-1" : "border-transparent opacity-70 hover:opacity-100"}`}
+                        className={`h-6 w-6 rounded-full cursor-pointer border-2 transition-transform hover:scale-110 ${color} ${selectedTeam?.color === color ? "border-[white] dark:border-white shadow-sm ring-2 ring-zinc-200 dark:ring-zinc-800 ring-offset-1" : "border-transparent opacity-70 hover:opacity-100"}`}
                       />
                     ))}
                   </div>
@@ -648,7 +648,7 @@ export default function AdminTeamsPage() {
                   <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider block">
                     Assign HR / Point of Contact
                   </label>
-                  <select className="w-full bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:ring-1 focus:ring-rose-500">
+                  <select className="w-full bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-rose-500">
                     <option value="">Select an active member...</option>
                     <option value="hr1">HR Representative 1</option>
                     <option value="hr2">Society Admin</option>

@@ -41,7 +41,7 @@ export function CtaSection() {
           <Link href="/signup">
             <Button
               size="lg"
-              className="mt-8 bg-white px-8 text-black hover:bg-white/90"
+              className="mt-8 px-8"
             >
               Get Started with Kaam
             </Button>

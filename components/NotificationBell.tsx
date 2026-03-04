@@ -146,7 +146,7 @@ export function NotificationBell() {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative text-zinc-500 dark:text-zinc-400 hover:text-[#172b4d] dark:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-800 dark:bg-zinc-800 rounded-full">
+                <Button variant="ghost" size="icon" className="relative text-zinc-500 dark:text-zinc-400 hover:text-white dark:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-800 dark:bg-zinc-800 rounded-full">
                     <Bell className="h-5 w-5" />
                     {!isLoading && unreadCount > 0 && (
                         <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-white dark:ring-zinc-900" />
@@ -155,7 +155,7 @@ export function NotificationBell() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-80 rounded-xl p-0">
                 <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-100 dark:border-zinc-800">
-                    <h3 className="font-semibold text-sm text-[#172b4d] dark:text-white">Notifications</h3>
+                    <h3 className="font-semibold text-sm text-white dark:text-white">Notifications</h3>
                     {unreadCount > 0 && (
                         <button
                             onClick={(e) => { e.stopPropagation(); markAllAsRead(); }}
@@ -190,7 +190,7 @@ export function NotificationBell() {
                                         <div className={`h-2 w-2 rounded-full ${notif.is_read ? 'bg-transparent' : 'bg-amber-500'}`} />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className={`text-sm ${notif.is_read ? 'text-zinc-600 dark:text-zinc-400' : 'text-[#172b4d] dark:text-zinc-200 font-medium'} leading-snug`}>
+                                        <p className={`text-sm ${notif.is_read ? 'text-zinc-600 dark:text-zinc-400' : 'text-white dark:text-zinc-200 font-medium'} leading-snug`}>
                                             {notif.message}
                                         </p>
                                         <p className="text-[10px] text-zinc-400 dark:text-zinc-500 mt-1 uppercase tracking-wider font-semibold">

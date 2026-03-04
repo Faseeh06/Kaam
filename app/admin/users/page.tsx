@@ -156,7 +156,7 @@ export default function AdminUsersPage() {
     <div className="h-full flex flex-col pt-4 px-4 md:px-8 pb-8 overflow-y-auto custom-scrollbar">
       <header className="mb-8 md:mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-medium tracking-tight text-[#172b4d] dark:text-white mb-2">
+          <h1 className="text-3xl font-medium tracking-tight text-white dark:text-white mb-2">
             User Management
           </h1>
           <p className="text-zinc-500 dark:text-zinc-400 text-sm md:text-base">
@@ -169,13 +169,13 @@ export default function AdminUsersPage() {
             <input
               type="text"
               placeholder="Search users..."
-              className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg pl-9 pr-4 py-2 text-sm text-[#172b4d] dark:text-white outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition w-full md:w-64"
+              className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg pl-9 pr-4 py-2 text-sm text-white dark:text-white outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition w-full md:w-64"
             />
           </div>
           <Button
             variant="outline"
             size="icon"
-            className="border-zinc-200 dark:border-zinc-800 text-zinc-500 hover:text-[#172b4d] dark:hover:text-white shrink-0"
+            className="border-zinc-200 dark:border-zinc-800 text-zinc-500 hover:text-white dark:hover:text-white shrink-0"
           >
             <Filter className="h-4 w-4" />
           </Button>
@@ -188,7 +188,7 @@ export default function AdminUsersPage() {
               </DialogTrigger>
               <DialogContent className="sm:max-w-md border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
                 <DialogHeader>
-                  <DialogTitle className="text-[#172b4d] dark:text-white">
+                  <DialogTitle className="text-white dark:text-white">
                     Invite New Member
                   </DialogTitle>
                   <DialogDescription className="text-zinc-500 dark:text-zinc-400">
@@ -212,7 +212,7 @@ export default function AdminUsersPage() {
                       <Button
                         size="sm"
                         onClick={handleCopyInvite}
-                        className="px-3 bg-[#172b4d] dark:bg-white text-white dark:text-black"
+                        className="px-3 bg-[white] dark:bg-white text-white dark:text-black"
                       >
                         {inviteCopied ? (
                           <Check className="h-4 w-4 text-emerald-500" />
@@ -260,7 +260,7 @@ export default function AdminUsersPage() {
         {/* Pending Approvals (Hidden for scoped OBs) */}
         {!isScopedOB && filteredPending.length > 0 && (
           <div>
-            <h2 className="text-lg font-semibold text-[#172b4d] dark:text-zinc-100 mb-4 flex items-center gap-2">
+            <h2 className="text-lg font-semibold text-white dark:text-zinc-100 mb-4 flex items-center gap-2">
               Pending Approvals
               <Badge
                 variant="secondary"
@@ -303,7 +303,7 @@ export default function AdminUsersPage() {
                               </AvatarFallback>
                             </Avatar>
                             <div>
-                              <p className="text-sm font-medium text-[#172b4d] dark:text-zinc-200">
+                              <p className="text-sm font-medium text-white dark:text-zinc-200">
                                 {user.name}
                               </p>
                               <p className="text-xs text-zinc-500 dark:text-zinc-500">
@@ -383,7 +383,7 @@ export default function AdminUsersPage() {
 
         {/* Active Members */}
         <div>
-          <h2 className="text-lg font-semibold text-[#172b4d] dark:text-zinc-100 mb-4 flex items-center gap-2">
+          <h2 className="text-lg font-semibold text-white dark:text-zinc-100 mb-4 flex items-center gap-2">
             Active Members
             <Badge
               variant="outline"
@@ -426,7 +426,7 @@ export default function AdminUsersPage() {
                             </AvatarFallback>
                           </Avatar>
                           <div>
-                            <p className="text-sm font-medium text-[#172b4d] dark:text-zinc-200">
+                            <p className="text-sm font-medium text-white dark:text-zinc-200">
                               {user.name}
                             </p>
                             <p className="text-xs text-zinc-500 dark:text-zinc-500">
@@ -468,7 +468,7 @@ export default function AdminUsersPage() {
                             <Button
                               size="icon"
                               variant="ghost"
-                              className="h-8 w-8 text-zinc-400 dark:text-zinc-500 hover:text-[#172b4d] dark:hover:text-white"
+                              className="h-8 w-8 text-zinc-400 dark:text-zinc-500 hover:text-white dark:hover:text-white"
                             >
                               <MoreHorizontal className="h-4 w-4" />
                             </Button>
@@ -514,7 +514,7 @@ export default function AdminUsersPage() {
       >
         <DialogContent className="sm:max-w-md border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
           <DialogHeader>
-            <DialogTitle className="text-[#172b4d] dark:text-white">
+            <DialogTitle className="text-white dark:text-white">
               Edit User Role
             </DialogTitle>
             <DialogDescription className="text-zinc-500 dark:text-zinc-400">
@@ -529,7 +529,7 @@ export default function AdminUsersPage() {
               <select
                 value={newRole}
                 onChange={(e) => setNewRole(e.target.value)}
-                className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-[#172b4d] dark:text-zinc-300 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition appearance-none"
+                className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-300 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition appearance-none"
               >
                 <option value="Executive">Executive</option>
                 <option value="HR">HR</option>

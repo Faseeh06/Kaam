@@ -59,12 +59,12 @@ export default function DashboardPage() {
             <header className="h-16 flex items-center justify-between shrink-0 mb-8 md:mb-12">
                 <div className="flex items-center gap-4 md:hidden">
                     <Shield className="h-6 w-6 text-amber-600 dark:text-amber-500" />
-                    <span className="font-medium text-xl tracking-tight text-[#172b4d] dark:text-white">Kaam</span>
+                    <span className="font-medium text-xl tracking-tight text-white dark:text-white">Kaam</span>
                 </div>
                 <div className="hidden md:block"></div>
                 <div className="flex items-center gap-4">
                     <Link href="/dashboard/board">
-                        <Button variant="outline" className="hidden sm:flex items-center gap-2 border-dashed border-zinc-300 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 hover:text-[#172b4d] dark:text-white bg-transparent hover:bg-[#ebecf0] dark:bg-zinc-900/50">
+                        <Button variant="outline" className="hidden sm:flex items-center gap-2 border-dashed border-zinc-300 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 hover:text-white dark:text-white bg-transparent hover:bg-[#ebecf0] dark:bg-zinc-900/50">
                             <Plus className="h-4 w-4" /> View Board
                         </Button>
                     </Link>
@@ -74,7 +74,7 @@ export default function DashboardPage() {
 
             <div className="max-w-4xl mx-auto w-full space-y-12">
                 <header>
-                    <h1 className="text-3xl sm:text-4xl font-light tracking-tight text-[#172b4d] dark:text-white mb-2">Welcome back, {userData?.name?.split(' ')[0] || "User"}.</h1>
+                    <h1 className="text-3xl sm:text-4xl font-light tracking-tight text-white dark:text-white mb-2">Welcome back, {userData?.name?.split(' ')[0] || "User"}.</h1>
                     <p className="text-zinc-500 dark:text-zinc-400 text-base sm:text-lg">
                         You have <span className="text-amber-600 dark:text-amber-500 font-medium">{inProgressCount} tasks assigned</span> to you {upcomingTasks.length > 0 && <>and <span className="text-amber-600 dark:text-amber-500 font-medium">{upcomingTasks.length} upcoming deadlines</span></>}.
                     </p>
@@ -90,7 +90,7 @@ export default function DashboardPage() {
                             <ArrowUpRight className="h-5 w-5 text-zinc-400 group-hover:text-zinc-500 transition" />
                         </div>
                         <div>
-                            <div className="text-3xl font-light text-[#172b4d] dark:text-white mb-1">{inProgressCount}</div>
+                            <div className="text-3xl font-light text-white dark:text-white mb-1">{inProgressCount}</div>
                             <div className="text-sm text-zinc-500 dark:text-zinc-400">Tasks in Progress</div>
                         </div>
                     </div>
@@ -103,7 +103,7 @@ export default function DashboardPage() {
                             <ArrowUpRight className="h-5 w-5 text-zinc-400 group-hover:text-zinc-500 transition" />
                         </div>
                         <div>
-                            <div className="text-3xl font-light text-[#172b4d] dark:text-white mb-1">{upcomingTasks.length}</div>
+                            <div className="text-3xl font-light text-white dark:text-white mb-1">{upcomingTasks.length}</div>
                             <div className="text-sm text-zinc-500 dark:text-zinc-400">Total Deadlines</div>
                         </div>
                     </div>
@@ -116,7 +116,7 @@ export default function DashboardPage() {
                             <ArrowUpRight className="h-5 w-5 text-zinc-400 group-hover:text-zinc-500 transition" />
                         </div>
                         <div>
-                            <div className="text-3xl font-light text-[#172b4d] dark:text-white mb-1">92%</div>
+                            <div className="text-3xl font-light text-white dark:text-white mb-1">92%</div>
                             <div className="text-sm text-zinc-500 dark:text-zinc-400">Platform Activity</div>
                         </div>
                     </div>
@@ -125,7 +125,7 @@ export default function DashboardPage() {
                 {/* Assigned to Me Section */}
                 <div>
                     <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-xl font-medium text-[#172b4d] dark:text-white">Assigned to Me</h2>
+                        <h2 className="text-xl font-medium text-white dark:text-white">Assigned to Me</h2>
                         <Link href="/dashboard/board" className="text-xs text-amber-600 dark:text-amber-500 hover:underline flex items-center gap-1 font-medium">
                             Open full board <ArrowUpRight className="h-3.5 w-3.5" />
                         </Link>
@@ -144,7 +144,7 @@ export default function DashboardPage() {
                                         {sev && <div className={`w-1.5 shrink-0 ${SEV_STRIPE[sev] || 'bg-zinc-300'}`} />}
                                         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 sm:p-5 flex-1 min-w-0">
                                             <div className="flex flex-col gap-1.5 min-w-0">
-                                                <h3 className={`text-[#172b4d] dark:text-white font-medium text-sm leading-snug ${task.is_completed ? 'line-through text-zinc-400' : ''}`}>{task.title}</h3>
+                                                <h3 className={`text-white dark:text-white font-medium text-sm leading-snug ${task.is_completed ? 'line-through text-zinc-400' : ''}`}>{task.title}</h3>
                                                 <div className="flex flex-wrap items-center gap-2 text-xs">
                                                     <span className="bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded text-[10px] font-medium text-zinc-500">{listName}</span>
                                                     {dl && <span className={`flex items-center gap-1 font-medium ${dl.color}`}><Calendar className="h-3 w-3" /> {dl.label}</span>}
@@ -171,7 +171,7 @@ export default function DashboardPage() {
                 <div className="grid md:grid-cols-2 gap-8">
                     <div>
                         <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-xl font-medium text-[#172b4d] dark:text-white">Upcoming Deadlines</h2>
+                            <h2 className="text-xl font-medium text-white dark:text-white">Upcoming Deadlines</h2>
                         </div>
                         {upcomingTasks.length > 0 ? (
                             <div className="space-y-3">
@@ -181,7 +181,7 @@ export default function DashboardPage() {
                                             <Clock className="h-4 w-4" />
                                         </div>
                                         <div className="min-w-0 flex-1">
-                                            <p className="text-sm font-medium text-[#172b4d] dark:text-white truncate">{task.title}</p>
+                                            <p className="text-sm font-medium text-white dark:text-white truncate">{task.title}</p>
                                             {(() => {
                                                 const dl = formatDl(task.deadline!);
                                                 return dl ? <p className={`text-xs font-semibold ${dl.color}`}>{dl.label}</p> : null;
@@ -199,7 +199,7 @@ export default function DashboardPage() {
 
                     <div>
                         <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-xl font-medium text-[#172b4d] dark:text-white">My Team</h2>
+                            <h2 className="text-xl font-medium text-white dark:text-white">My Team</h2>
                         </div>
                         <UserTeamCard userId={userData?.id} />
                     </div>
@@ -231,7 +231,7 @@ function UserTeamCard({ userId }: { userId?: string }) {
                 <div className="h-12 w-12 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center mb-3 text-zinc-400">
                     <Users2 className="h-6 w-6" />
                 </div>
-                <p className="text-sm font-medium text-[#172b4d] dark:text-white uppercase tracking-wider">Not Assigned</p>
+                <p className="text-sm font-medium text-white dark:text-white uppercase tracking-wider">Not Assigned</p>
                 <p className="text-xs text-zinc-500 mt-1">You haven't been assigned to a team yet.</p>
             </div>
         );
@@ -245,7 +245,7 @@ function UserTeamCard({ userId }: { userId?: string }) {
                         <Users2 className="h-5 w-5" />
                     </div>
                     <div>
-                        <h3 className="font-semibold text-[#172b4d] dark:text-white">{myTeam.name}</h3>
+                        <h3 className="font-semibold text-white dark:text-white">{myTeam.name}</h3>
                         <p className="text-xs text-zinc-500">{myTeam.type} Team</p>
                     </div>
                 </div>

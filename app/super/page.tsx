@@ -79,7 +79,7 @@ export default function SuperDashboardPage() {
         <div className="h-full flex flex-col pt-4 px-4 md:px-8 pb-8 overflow-y-auto custom-scrollbar">
 
             <header className="mb-8 md:mb-10">
-                <h1 className="text-3xl font-medium tracking-tight text-[#172b4d] dark:text-white mb-2">Platform Overview</h1>
+                <h1 className="text-3xl font-medium tracking-tight text-[white] dark:text-white mb-2">Platform Overview</h1>
                 <p className="text-zinc-500 dark:text-zinc-400 text-sm md:text-base">
                     Master control panel for the multi-society platform.
                 </p>
@@ -94,7 +94,7 @@ export default function SuperDashboardPage() {
                         <Building2 className="h-4 w-4 text-violet-600 dark:text-violet-500" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-3xl font-bold text-[#172b4d] dark:text-white">{societies.length}</div>
+                        <div className="text-3xl font-bold text-[white] dark:text-white">{societies.length}</div>
                         <p className="text-xs text-emerald-500 mt-1 flex items-center font-medium">
                             +{newSocietiesThisMonth} onboarded this month
                         </p>
@@ -107,7 +107,7 @@ export default function SuperDashboardPage() {
                         <UserCog className="h-4 w-4 text-rose-500" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-3xl font-bold text-[#172b4d] dark:text-white">{superAdminsCount}</div>
+                        <div className="text-3xl font-bold text-[white] dark:text-white">{superAdminsCount}</div>
                         <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 flex items-center font-medium">
                             Presidents & Core ExCom
                         </p>
@@ -120,7 +120,7 @@ export default function SuperDashboardPage() {
                         <Users className="h-4 w-4 text-blue-500" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-3xl font-bold text-[#172b4d] dark:text-white">{totalUsersCount.toLocaleString()}</div>
+                        <div className="text-3xl font-bold text-[white] dark:text-white">{totalUsersCount.toLocaleString()}</div>
                         <p className="text-xs text-emerald-500 mt-1 flex items-center font-medium">
                             +{newUsersThisWeek} registrations this week
                         </p>
@@ -133,7 +133,7 @@ export default function SuperDashboardPage() {
                         <Activity className="h-4 w-4 text-emerald-500" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-3xl font-bold text-[#172b4d] dark:text-white">99.9%</div>
+                        <div className="text-3xl font-bold text-[white] dark:text-white">99.9%</div>
                         <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 flex items-center">
                             All services optimal
                         </p>
@@ -146,7 +146,7 @@ export default function SuperDashboardPage() {
             <div className="grid md:grid-cols-2 gap-6">
                 <Card className="bg-white dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800/60 rounded-2xl shadow-sm">
                     <CardHeader className="border-b border-zinc-100 dark:border-zinc-800/50 pb-4">
-                        <CardTitle className="text-lg font-medium text-[#172b4d] dark:text-white flex items-center gap-2">
+                        <CardTitle className="text-lg font-medium text-[white] dark:text-white flex items-center gap-2">
                             <ShieldCheck className="h-5 w-5 text-violet-500" /> Administrative Actions
                         </CardTitle>
                     </CardHeader>
@@ -154,7 +154,7 @@ export default function SuperDashboardPage() {
                         <Link href="/super/societies" className="block">
                             <button className="w-full flex items-center justify-between p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:border-violet-300 dark:hover:border-violet-500/50 hover:bg-violet-50 dark:hover:bg-violet-500/10 transition group text-left">
                                 <div>
-                                    <p className="text-sm font-semibold text-[#172b4d] dark:text-zinc-200 group-hover:text-violet-700 dark:group-hover:text-violet-400 transition">Register New Society</p>
+                                    <p className="text-sm font-semibold text-[white] dark:text-zinc-200 group-hover:text-violet-700 dark:group-hover:text-violet-400 transition">Register New Society</p>
                                     <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Onboard a completely new organization</p>
                                 </div>
                                 <div className="h-10 w-10 rounded-full bg-violet-100 dark:bg-violet-500/20 flex items-center justify-center shrink-0">
@@ -167,7 +167,7 @@ export default function SuperDashboardPage() {
                             <DialogTrigger asChild>
                                 <button className="w-full flex items-center justify-between p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:border-violet-300 dark:hover:border-violet-500/50 hover:bg-violet-50 dark:hover:bg-violet-500/10 transition group text-left">
                                     <div>
-                                        <p className="text-sm font-semibold text-[#172b4d] dark:text-zinc-200 group-hover:text-violet-700 dark:group-hover:text-violet-400 transition">Assign Society President</p>
+                                        <p className="text-sm font-semibold text-[white] dark:text-zinc-200 group-hover:text-violet-700 dark:group-hover:text-violet-400 transition">Assign Society President</p>
                                         <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Grant root local access to an existing user</p>
                                     </div>
                                     <div className="h-10 w-10 rounded-full bg-violet-100 dark:bg-violet-500/20 flex items-center justify-center shrink-0">
@@ -177,7 +177,7 @@ export default function SuperDashboardPage() {
                             </DialogTrigger>
                             <DialogContent className="sm:max-w-md bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 p-6 shadow-2xl rounded-2xl">
                                 <DialogHeader>
-                                    <DialogTitle className="text-xl font-semibold text-[#172b4d] dark:text-white">Assign President</DialogTitle>
+                                    <DialogTitle className="text-xl font-semibold text-[white] dark:text-white">Assign President</DialogTitle>
                                     <DialogDescription className="text-zinc-500 dark:text-zinc-400">
                                         Elevate a user to lead a specific society.
                                     </DialogDescription>
@@ -237,7 +237,7 @@ export default function SuperDashboardPage() {
                                         <select
                                             value={selectedSoc}
                                             onChange={(e) => setSelectedSoc(e.target.value)}
-                                            className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500"
+                                            className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-[white] dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500"
                                         >
                                             <option value="">Select society...</option>
                                             {societies.map((soc) => (
@@ -265,7 +265,7 @@ export default function SuperDashboardPage() {
 
                 <Card className="bg-white dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800/60 rounded-2xl shadow-sm">
                     <CardHeader className="border-b border-zinc-100 dark:border-zinc-800/50 pb-4">
-                        <CardTitle className="text-lg font-medium text-[#172b4d] dark:text-white flex items-center gap-2">
+                        <CardTitle className="text-lg font-medium text-[white] dark:text-white flex items-center gap-2">
                             <Database className="h-5 w-5 text-zinc-500" /> System Metrics
                         </CardTitle>
                     </CardHeader>
@@ -274,7 +274,7 @@ export default function SuperDashboardPage() {
                             <div>
                                 <div className="flex justify-between text-sm mb-2">
                                     <span className="text-zinc-600 dark:text-zinc-400">Database Capacity</span>
-                                    <span className="font-medium text-[#172b4d] dark:text-zinc-200">{dbMetrics.percentage}% Used ({dbMetrics.used}MB)</span>
+                                    <span className="font-medium text-[white] dark:text-zinc-200">{dbMetrics.percentage}% Used ({dbMetrics.used}MB)</span>
                                 </div>
                                 <div className="h-2.5 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden shadow-inner">
                                     <div
@@ -286,7 +286,7 @@ export default function SuperDashboardPage() {
                             <div>
                                 <div className="flex justify-between text-sm mb-2">
                                     <span className="text-zinc-600 dark:text-zinc-400">Storage API Limit</span>
-                                    <span className="font-medium text-[#172b4d] dark:text-zinc-200">{storageMetrics.used}GB / 2TB</span>
+                                    <span className="font-medium text-[white] dark:text-zinc-200">{storageMetrics.used}GB / 2TB</span>
                                 </div>
                                 <div className="h-2.5 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden shadow-inner">
                                     <div

@@ -197,7 +197,7 @@ export default function AdminSocietyPage() {
     return (
       <div className="h-full flex flex-col items-center justify-center p-8 text-center bg-[#f4f5f7] dark:bg-zinc-950">
         <Building2 className="h-12 w-12 text-zinc-300 dark:text-zinc-700 mb-4" />
-        <h2 className="text-xl font-semibold text-[#172b4d] dark:text-white mb-2">
+        <h2 className="text-xl font-semibold text-white dark:text-white mb-2">
           Access Restricted
         </h2>
         <p className="text-zinc-500 dark:text-zinc-400 max-w-sm">
@@ -218,7 +218,7 @@ export default function AdminSocietyPage() {
     <>
       <div className="h-full flex flex-col pt-4 px-4 md:px-8 pb-8 overflow-y-auto custom-scrollbar">
         <header className="mb-8 md:mb-10">
-          <h1 className="text-3xl font-medium tracking-tight text-[#172b4d] dark:text-white mb-2">
+          <h1 className="text-3xl font-medium tracking-tight text-white dark:text-white mb-2">
             Society Profile
           </h1>
           <p className="text-zinc-500 dark:text-zinc-400 text-sm md:text-base">
@@ -288,7 +288,7 @@ export default function AdminSocietyPage() {
                   </div>
                 </div>
 
-                <h2 className="text-xl font-semibold text-[#172b4d] dark:text-white mb-1">
+                <h2 className="text-xl font-semibold text-white dark:text-white mb-1">
                   {society.name}
                 </h2>
                 <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-4">
@@ -303,7 +303,7 @@ export default function AdminSocietyPage() {
             {/* General Settings */}
             <Card className="bg-white dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800/60 rounded-2xl shadow-sm">
               <CardHeader className="pb-4 border-b border-zinc-100 dark:border-zinc-800/50">
-                <CardTitle className="text-lg font-medium text-[#172b4d] dark:text-white">
+                <CardTitle className="text-lg font-medium text-white dark:text-white">
                   Organization Details
                 </CardTitle>
               </CardHeader>
@@ -316,7 +316,7 @@ export default function AdminSocietyPage() {
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full bg-[#f4f5f7] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
+                    className="w-full bg-[#f4f5f7] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
                   />
                 </div>
 
@@ -328,7 +328,7 @@ export default function AdminSocietyPage() {
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     rows={4}
-                    className="w-full bg-[#f4f5f7] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-3 text-sm text-[#172b4d] dark:text-zinc-100 outline-none resize-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
+                    className="w-full bg-[#f4f5f7] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-3 text-sm text-white dark:text-zinc-100 outline-none resize-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
                   />
                 </div>
 
@@ -342,7 +342,7 @@ export default function AdminSocietyPage() {
                       value={logo}
                       onChange={(e) => setLogo(e.target.value)}
                       placeholder="https://example.com/logo.png"
-                      className="w-full bg-[#f4f5f7] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
+                      className="w-full bg-[#f4f5f7] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
                     />
                   </div>
                   <div className="space-y-2">
@@ -376,7 +376,7 @@ export default function AdminSocietyPage() {
                       value={coverUrl}
                       onChange={(e) => setCoverUrl(e.target.value)}
                       placeholder="https://example.com/cover.png"
-                      className="w-full bg-[#f4f5f7] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
+                      className="w-full bg-[#f4f5f7] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
                     />
                   </div>
                   <div className="space-y-2">
@@ -409,7 +409,7 @@ export default function AdminSocietyPage() {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full bg-[#f4f5f7] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
+                      className="w-full bg-[#f4f5f7] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
                     />
                   </div>
                   <div className="space-y-2">
@@ -420,7 +420,7 @@ export default function AdminSocietyPage() {
                       type="url"
                       value={website}
                       onChange={(e) => setWebsite(e.target.value)}
-                      className="w-full bg-[#f4f5f7] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
+                      className="w-full bg-[#f4f5f7] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
                     />
                   </div>
                 </div>
@@ -488,7 +488,7 @@ export default function AdminSocietyPage() {
       <Dialog open={isLogoModalOpen} onOpenChange={setIsLogoModalOpen}>
         <DialogContent className="max-w-md bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 p-0 overflow-hidden shadow-2xl">
           <DialogHeader className="p-6 pb-0">
-            <DialogTitle className="text-xl font-semibold text-[#172b4d] dark:text-white">
+            <DialogTitle className="text-xl font-semibold text-white dark:text-white">
               Update Logo
             </DialogTitle>
             <DialogDescription className="text-zinc-500 dark:text-zinc-400 mt-1.5">
@@ -538,7 +538,7 @@ export default function AdminSocietyPage() {
                     placeholder="https://example.com/logo.png"
                     value={tempLogoUrl}
                     onChange={(e) => setTempLogoUrl(e.target.value)}
-                    className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 pl-9 text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
+                    className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 pl-9 text-sm text-white dark:text-zinc-100 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
                   />
                 </div>
                 <Button
@@ -557,7 +557,7 @@ export default function AdminSocietyPage() {
       <Dialog open={isCoverModalOpen} onOpenChange={setIsCoverModalOpen}>
         <DialogContent className="max-w-md bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 p-0 overflow-hidden shadow-2xl">
           <DialogHeader className="p-6 pb-0">
-            <DialogTitle className="text-xl font-semibold text-[#172b4d] dark:text-white">
+            <DialogTitle className="text-xl font-semibold text-white dark:text-white">
               Update Cover Photo
             </DialogTitle>
             <DialogDescription className="text-zinc-500 dark:text-zinc-400 mt-1.5">
@@ -607,7 +607,7 @@ export default function AdminSocietyPage() {
                     placeholder="https://example.com/cover.png"
                     value={tempCoverUrl}
                     onChange={(e) => setTempCoverUrl(e.target.value)}
-                    className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 pl-9 text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
+                    className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 pl-9 text-sm text-white dark:text-zinc-100 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
                   />
                 </div>
                 <Button

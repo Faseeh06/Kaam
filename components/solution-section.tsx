@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckSquare, Users, Bell, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface Feature {
   id: number;
@@ -196,14 +197,13 @@ export function SolutionSection({ className }: { className?: string }) {
 
         {/* Footer/CTA Area */}
         <div className="pt-12 flex justify-center border-t border-white/5">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-8 py-4 bg-white text-black font-medium flex items-center gap-2"
+          <Button
+            size="lg"
+            className="px-8 flex items-center gap-2"
           >
             Explore Kaam Workspaces
             <ChevronRight className="w-4 h-4" />
-          </motion.button>
+          </Button>
         </div>
       </div>
     </section>

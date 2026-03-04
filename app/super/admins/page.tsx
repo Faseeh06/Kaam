@@ -64,7 +64,7 @@ export default function SuperAdminsPage() {
             {/* Header */}
             <header className="mb-8 md:mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-medium tracking-tight text-[#172b4d] dark:text-white mb-2">Admin Access</h1>
+                    <h1 className="text-3xl font-medium tracking-tight text-white dark:text-white mb-2">Admin Access</h1>
                     <p className="text-zinc-500 dark:text-zinc-400 text-sm md:text-base">
                         Delegate and revoke elevated access across all societies.
                     </p>
@@ -78,7 +78,7 @@ export default function SuperAdminsPage() {
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-md bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800">
                         <DialogHeader>
-                            <DialogTitle className="text-[#172b4d] dark:text-white flex items-center gap-2">
+                            <DialogTitle className="text-white dark:text-white flex items-center gap-2">
                                 <Shield className="h-5 w-5 text-violet-500" /> Grant Admin Privileges
                             </DialogTitle>
                             <DialogDescription className="text-zinc-500 dark:text-zinc-400">
@@ -90,7 +90,7 @@ export default function SuperAdminsPage() {
                             <div className="space-y-1.5">
                                 <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider block">Select User <span className="text-rose-500">*</span></label>
                                 <select value={selectedUserId} onChange={e => setSelectedUserId(e.target.value)}
-                                    className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500">
+                                    className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500">
                                     <option value="">Choose a registered user...</option>
                                     {allRegisteredUsers.map(u => <option key={u.id} value={u.id}>{u.name} — {u.email}</option>)}
                                 </select>
@@ -113,7 +113,7 @@ export default function SuperAdminsPage() {
                             <div className="space-y-1.5">
                                 <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider block">Link to Society <span className="text-rose-500">*</span></label>
                                 <select value={selectedSociety} onChange={e => setSelectedSociety(e.target.value)}
-                                    className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500">
+                                    className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500">
                                     <option value="">Choose a society...</option>
                                     {societies.map(s => <option key={s.id} value={s.id}>{s.name} ({s.acronym})</option>)}
                                 </select>
@@ -149,7 +149,7 @@ export default function SuperAdminsPage() {
                     <div key={s.label} className="bg-white dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800/60 rounded-xl p-4 shadow-sm flex items-center gap-3">
                         <div className="h-9 w-9 rounded-xl bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center shrink-0">{s.icon}</div>
                         <div>
-                            <p className="text-xl font-bold text-[#172b4d] dark:text-white">{s.value}</p>
+                            <p className="text-xl font-bold text-white dark:text-white">{s.value}</p>
                             <p className="text-[11px] text-zinc-500 leading-none mt-0.5">{s.label}</p>
                         </div>
                     </div>
@@ -164,7 +164,7 @@ export default function SuperAdminsPage() {
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
                         <input value={search} onChange={e => setSearch(e.target.value)}
                             placeholder="Search admins..."
-                            className="w-full pl-9 pr-4 py-2 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm text-[#172b4d] dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500" />
+                            className="w-full pl-9 pr-4 py-2 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500" />
                     </div>
                     <span className="text-xs text-zinc-400 ml-auto">{filtered.length} admin{filtered.length !== 1 ? "s" : ""}</span>
                 </div>
@@ -194,7 +194,7 @@ export default function SuperAdminsPage() {
                                                     </AvatarFallback>
                                                 </Avatar>
                                                 <div>
-                                                    <p className="font-semibold text-[#172b4d] dark:text-zinc-200">{admin.name}</p>
+                                                    <p className="font-semibold text-white dark:text-zinc-200">{admin.name}</p>
                                                     <p className="text-xs text-zinc-500 font-mono">{admin.email}</p>
                                                 </div>
                                             </div>
@@ -224,7 +224,7 @@ export default function SuperAdminsPage() {
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
                                                     <Button variant="ghost" size="icon"
-                                                        className="h-8 w-8 text-zinc-400 hover:text-[#172b4d] dark:hover:text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        className="h-8 w-8 text-zinc-400 hover:text-white dark:hover:text-white opacity-0 group-hover:opacity-100 transition-opacity">
                                                         <MoreHorizontal className="h-4 w-4" />
                                                     </Button>
                                                 </DropdownMenuTrigger>

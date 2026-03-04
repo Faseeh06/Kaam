@@ -110,7 +110,7 @@ export default function DashboardTeamPage() {
                 <div className="w-20 h-20 bg-amber-50 dark:bg-amber-500/10 rounded-3xl flex items-center justify-center mb-6 shadow-sm border border-amber-100 dark:border-amber-500/20">
                     <Users2 className="h-10 w-10 text-amber-500" />
                 </div>
-                <h2 className="text-2xl font-semibold text-[#172b4d] dark:text-white mb-2">No Team Found</h2>
+                <h2 className="text-2xl font-semibold text-white dark:text-white mb-2">No Team Found</h2>
                 <p className="text-zinc-500 dark:text-zinc-400 max-w-sm mb-8 leading-relaxed">
                     You haven't been assigned to a team yet. Please contact your administrator for team assignment.
                 </p>
@@ -128,7 +128,7 @@ export default function DashboardTeamPage() {
                 </div>
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                     <div>
-                        <h1 className="text-3xl font-medium tracking-tight text-[#172b4d] dark:text-white mb-1">My Team</h1>
+                        <h1 className="text-3xl font-medium tracking-tight text-white dark:text-white mb-1">My Team</h1>
                         <p className="text-zinc-500 dark:text-zinc-400 text-sm">Your team details, members, and your role permissions.</p>
                     </div>
                     {userData && (
@@ -157,7 +157,7 @@ export default function DashboardTeamPage() {
                                     <LayoutGrid className={`h-7 w-7 ${accentText}`} />
                                 </div>
                                 <div>
-                                    <h2 className="text-lg font-bold text-[#172b4d] dark:text-white">{myTeam?.name}</h2>
+                                    <h2 className="text-lg font-bold text-white dark:text-white">{myTeam?.name}</h2>
                                     <Badge variant="secondary" className="bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-normal px-2 mt-1">
                                         {myTeam?.type} Team
                                     </Badge>
@@ -165,11 +165,11 @@ export default function DashboardTeamPage() {
                             </div>
                             <div className="grid grid-cols-2 gap-3">
                                 <div className="bg-[#f4f5f7] dark:bg-zinc-950/50 rounded-xl p-3 text-center">
-                                    <p className="text-2xl font-bold text-[#172b4d] dark:text-white">{members.length}</p>
+                                    <p className="text-2xl font-bold text-white dark:text-white">{members.length}</p>
                                     <p className="text-[10px] text-zinc-500 uppercase tracking-wider mt-0.5">Members</p>
                                 </div>
                                 <div className="bg-[#f4f5f7] dark:bg-zinc-950/50 rounded-xl p-3 text-center">
-                                    <p className="text-2xl font-bold text-[#172b4d] dark:text-white">{directors.length + dds.length}</p>
+                                    <p className="text-2xl font-bold text-white dark:text-white">{directors.length + dds.length}</p>
                                     <p className="text-[10px] text-zinc-500 uppercase tracking-wider mt-0.5">Directors</p>
                                 </div>
                             </div>
@@ -178,7 +178,7 @@ export default function DashboardTeamPage() {
 
                     {/* Your Permissions */}
                     <div className="bg-white dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800/60 rounded-2xl p-5 shadow-sm">
-                        <h3 className="font-semibold text-[#172b4d] dark:text-zinc-100 mb-4 text-sm flex items-center gap-2">
+                        <h3 className="font-semibold text-white dark:text-zinc-100 mb-4 text-sm flex items-center gap-2">
                             <Shield className="h-4 w-4 text-zinc-400" /> Your Permissions
                         </h3>
                         <div className="space-y-2.5">
@@ -200,7 +200,7 @@ export default function DashboardTeamPage() {
 
                     {/* Recent activity */}
                     <div className="bg-white dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800/60 rounded-2xl p-5 shadow-sm overflow-hidden">
-                        <h3 className="font-semibold text-[#172b4d] dark:text-zinc-100 mb-4 text-sm">Team Activity</h3>
+                        <h3 className="font-semibold text-white dark:text-zinc-100 mb-4 text-sm">Team Activity</h3>
                         <div className="space-y-3">
                             {RECENT_ACTIVITY.map((a, i) => (
                                 <div key={i} className="flex gap-3 text-sm">
@@ -271,7 +271,7 @@ export default function DashboardTeamPage() {
                                                 </Avatar>
                                                 <div className="flex-1 min-w-0">
                                                     <div className="flex items-center gap-2">
-                                                        <p className="font-semibold text-[#172b4d] dark:text-zinc-200 text-sm">{member.name}</p>
+                                                        <p className="font-semibold text-white dark:text-zinc-200 text-sm">{member.name}</p>
                                                         {isMe && (
                                                             <span className="px-1.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 text-[9px] uppercase tracking-wider font-bold border border-blue-200 dark:border-blue-500/20">You</span>
                                                         )}

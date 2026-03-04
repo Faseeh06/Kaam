@@ -123,7 +123,7 @@ export default function DashboardLayout({
                 <div className="w-24 h-24 bg-amber-50 dark:bg-amber-500/10 rounded-3xl flex items-center justify-center mb-8 shadow-sm border border-amber-100 dark:border-amber-500/20 animate-pulse">
                     <Shield className="h-12 w-12 text-amber-500" />
                 </div>
-                <h1 className="text-3xl font-bold text-[#172b4d] dark:text-white mb-3 tracking-tight">Approval Pending</h1>
+                <h1 className="text-3xl font-bold text-white dark:text-white mb-3 tracking-tight">Approval Pending</h1>
                 <p className="text-zinc-500 dark:text-zinc-400 max-w-md leading-relaxed mb-8">
                     Your request to join the society has been received. Please wait for an administrator to review and approve your membership.
                 </p>
@@ -140,7 +140,7 @@ export default function DashboardLayout({
     }
 
     return (
-        <div className="flex h-screen bg-[#f4f5f7] dark:bg-zinc-950 text-[#172b4d] dark:text-white overflow-hidden selection:bg-amber-500/30 transition-colors">
+        <div className="flex h-screen bg-[#f4f5f7] dark:bg-zinc-950 text-white dark:text-white overflow-hidden selection:bg-amber-500/30 transition-colors">
 
 
             {/* Sidebar */}

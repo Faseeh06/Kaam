@@ -293,7 +293,7 @@ export default function BoardPage() {
                 <div className="w-20 h-20 bg-amber-50 dark:bg-amber-500/10 rounded-3xl flex items-center justify-center mb-6 shadow-sm border border-amber-100 dark:border-amber-500/20">
                     <LayoutGrid className="h-10 w-10 text-amber-500" />
                 </div>
-                <h2 className="text-2xl font-semibold text-[#172b4d] dark:text-white mb-2">No Team Assigned</h2>
+                <h2 className="text-2xl font-semibold text-white dark:text-white mb-2">No Team Assigned</h2>
                 <p className="text-zinc-500 dark:text-zinc-400 max-w-sm mb-8 leading-relaxed">
                     You haven't been assigned to a team yet. Please wait for your administrator to assign you to a team board.
                 </p>
@@ -316,7 +316,7 @@ export default function BoardPage() {
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" className="p-0 h-auto hover:bg-transparent flex items-center gap-2 group">
-                                    <h1 className="font-medium text-lg text-[#172b4d] dark:text-white group-hover:text-amber-500 transition-colors">
+                                    <h1 className="font-medium text-lg text-white dark:text-white group-hover:text-amber-500 transition-colors">
                                         {myTeam?.name} Board
                                     </h1>
                                     <ChevronDown className="h-4 w-4 text-zinc-400 group-hover:text-amber-500 transition-colors" />
@@ -338,7 +338,7 @@ export default function BoardPage() {
                             </DropdownMenuContent>
                         </DropdownMenu>
                     ) : (
-                        <h1 className="font-medium text-lg text-[#172b4d] dark:text-white">{myTeam?.name} Board</h1>
+                        <h1 className="font-medium text-lg text-white dark:text-white">{myTeam?.name} Board</h1>
                     )}
                     <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-500 border-amber-200 dark:border-amber-500/20`}>
                         {myRole}
@@ -353,7 +353,7 @@ export default function BoardPage() {
                         ))}
                     </div>
                     <NotificationBell />
-                    <Button variant="ghost" size="icon" className="text-zinc-500 dark:text-zinc-400 hover:text-[#172b4d] dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-800">
+                    <Button variant="ghost" size="icon" className="text-zinc-500 dark:text-zinc-400 hover:text-white dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-800">
                         <Search className="h-5 w-5" />
                     </Button>
                 </div>
@@ -367,7 +367,7 @@ export default function BoardPage() {
                             <div key={list.id} className="w-[300px] sm:w-[320px] shrink-0 flex flex-col max-h-full bg-[#ebecf0] dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800/80 rounded-xl">
 
                                 {/* List header */}
-                                <div className="px-4 py-3 pb-2 flex justify-between items-center text-[#172b4d] dark:text-zinc-100 shrink-0">
+                                <div className="px-4 py-3 pb-2 flex justify-between items-center text-white dark:text-zinc-100 shrink-0">
                                     {editingListId === list.id ? (
                                         <input autoFocus value={editListTitle} onChange={e => setEditListTitle(e.target.value)}
                                             onBlur={() => handleRenameList(list.id)}
@@ -585,7 +585,7 @@ export default function BoardPage() {
                                                 value={editCardText}
                                                 disabled={isSavingCardField}
                                                 onChange={e => setEditCardText(e.target.value)}
-                                                className="text-xl md:text-2xl font-semibold bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700/80 rounded px-2 py-1 text-[#172b4d] dark:text-white w-full outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500 disabled:opacity-50"
+                                                className="text-xl md:text-2xl font-semibold bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700/80 rounded px-2 py-1 text-white dark:text-white w-full outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500 disabled:opacity-50"
                                             />
                                             <div className="flex items-center gap-2">
                                                 <Button size="sm" onClick={handleSaveCardField} disabled={isSavingCardField} className="bg-amber-500 text-zinc-950 hover:bg-amber-600 h-8 px-3 disabled:opacity-50">
@@ -597,7 +597,7 @@ export default function BoardPage() {
                                     ) : (
                                         <h2
                                             onClick={() => { if (myPerms.canAddToBoard) { setEditCardField("title"); setEditCardText(selectedCard.card.title); } }}
-                                            className={`text-xl md:text-2xl font-semibold text-[#172b4d] dark:text-zinc-100 leading-tight mb-2 ${myPerms.canAddToBoard ? 'cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800 px-1 -ml-1 rounded transition-colors' : ''}`}
+                                            className={`text-xl md:text-2xl font-semibold text-white dark:text-zinc-100 leading-tight mb-2 ${myPerms.canAddToBoard ? 'cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800 px-1 -ml-1 rounded transition-colors' : ''}`}
                                         >
                                             {selectedCard.card.title}
                                         </h2>
@@ -783,7 +783,7 @@ export default function BoardPage() {
                             <div className="ml-0 md:ml-10">
                                 <div className="flex items-center gap-3 mb-3">
                                     <AlignLeft className="h-5 w-5 text-zinc-400 shrink-0" />
-                                    <h3 className="text-sm font-semibold text-[#172b4d] dark:text-zinc-100">Description</h3>
+                                    <h3 className="text-sm font-semibold text-white dark:text-zinc-100">Description</h3>
                                     {myPerms.canAddToBoard && (
                                         <Button
                                             onClick={() => { setEditCardField("description"); setEditCardText(selectedCard.card.description || ""); }}
@@ -802,7 +802,7 @@ export default function BoardPage() {
                                                 autoFocus
                                                 value={editCardText}
                                                 onChange={e => setEditCardText(e.target.value)}
-                                                className="w-full bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700/80 rounded-lg p-3 text-sm text-[#172b4d] dark:text-zinc-100 placeholder:text-zinc-600 outline-none resize-y min-h-[100px] focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500 shadow-sm custom-scrollbar"
+                                                className="w-full bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700/80 rounded-lg p-3 text-sm text-white dark:text-zinc-100 placeholder:text-zinc-600 outline-none resize-y min-h-[100px] focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500 shadow-sm custom-scrollbar"
                                                 placeholder="Add a more detailed description..."
                                             />
                                             <div className="flex items-center gap-2">

@@ -180,14 +180,14 @@ export function FeaturesSection({
         >
           <Button
             size="lg"
-            className="bg-white text-zinc-900 hover:bg-zinc-200 px-8"
+            className="px-8"
           >
             Explore Full Features
           </Button>
           <Button
             size="lg"
             variant="outline"
-            className="border-zinc-600 text-white hover:bg-zinc-800 bg-transparent px-8"
+            className="px-8 bg-transparent"
           >
             View Documentation
           </Button>

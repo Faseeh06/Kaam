@@ -26,7 +26,7 @@ export default function FeaturesPage() {
                     <div className="flex flex-col items-center w-full">
                         <div className="flex gap-4 justify-center mb-16">
                             <Link href="/signup">
-                                <Button size="lg" className="bg-white px-6 text-slate-900 hover:bg-white/90">Get Started</Button>
+                                <Button size="lg" className="px-6">Get Started</Button>
                             </Link>
                         </div>
                         <div className="w-full relative z-10">

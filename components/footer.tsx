@@ -3,8 +3,18 @@ import Link from "next/link";
 
 export function Footer() {
   return (
-    <footer className="w-full bg-zinc-900 border-t border-zinc-700/30">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-8 md:px-12">
+    <footer className="relative w-full overflow-hidden bg-transparent">
+      {/* Dynamic Premium Background */}
+      <div className="absolute inset-0 bg-zinc-950 overflow-hidden pointer-events-none">
+        {/* Animated glowing orbs */}
+        <div className="absolute -top-[50%] -left-[10%] w-[60%] h-[120%] rounded-full bg-amber-500/5 blur-[100px] animate-slow-pulse" />
+        <div className="absolute -bottom-[50%] -right-[10%] w-[60%] h-[120%] rounded-full bg-orange-600/5 blur-[120px]" />
+
+        {/* Subtle grid pattern overlay */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_70%,transparent_100%)]" />
+      </div>
+
+      <div className="relative z-10 mx-auto flex max-w-7xl flex-col gap-6 px-6 py-6 md:flex-row md:items-center md:justify-between md:px-12">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
           <Shield className="h-6 w-6 text-amber-500" />

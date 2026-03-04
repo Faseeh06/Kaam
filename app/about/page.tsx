@@ -24,16 +24,20 @@ export default function AboutPage() {
                     title="About Kaam"
                     description="Learn about the problems we are solving and the solutions we provide for multi-society management."
                 >
-                    <div className="flex gap-4 justify-center mb-16">
-                        <Link href="/signup">
-                            <Button size="lg" className="bg-white px-6 text-slate-900 hover:bg-white/90">Get Started</Button>
-                        </Link>
-                    </div>
-                    <div className="w-full relative z-10 flex flex-col gap-12">
-                        <ProblemSection className="!bg-transparent !border-none !py-0" />
-                        <SolutionSection className="!bg-transparent !border-none !py-0" />
+                    <div className="flex flex-col items-center w-full">
+                        <div className="flex gap-4 justify-center mb-16">
+                            <Link href="/signup">
+                                <Button size="lg" className="bg-white px-6 text-slate-900 hover:bg-white/90">Get Started</Button>
+                            </Link>
+                        </div>
+                        <div className="w-full relative z-10">
+                            <ProblemSection className="!bg-transparent !border-none !py-0" />
+                        </div>
                     </div>
                 </PageHeader>
+                <div className="bg-zinc-900">
+                    <SolutionSection />
+                </div>
             </div>
 
             <CtaSection />

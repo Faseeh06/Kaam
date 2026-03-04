@@ -4,6 +4,7 @@ import { CtaSection } from "@/components/cta-section";
 import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { LogoSection } from "@/components/logo-section";
 
 export default function FaqPage() {
     return (
@@ -22,15 +23,20 @@ export default function FaqPage() {
                     title="Frequently Asked Questions"
                     description="Find answers to the most common questions about using Kaam for your society or organization."
                 >
-                    <div className="flex gap-4 justify-center mb-16">
-                        <Link href="/signup">
-                            <Button size="lg" className="bg-white px-6 text-slate-900 hover:bg-white/90">Get Started</Button>
-                        </Link>
-                    </div>
-                    <div className="w-full relative z-10">
-                        <FaqSection className="!bg-transparent !border-none !py-0" />
+                    <div className="flex flex-col items-center w-full">
+                        <div className="flex gap-4 justify-center mb-16">
+                            <Link href="/signup">
+                                <Button size="lg" className="bg-white px-6 text-slate-900 hover:bg-white/90">Get Started</Button>
+                            </Link>
+                        </div>
+                        <div className="w-full relative z-10">
+                            <LogoSection className="!bg-transparent !border-none !py-0" />
+                        </div>
                     </div>
                 </PageHeader>
+                <div className="bg-zinc-900">
+                    <FaqSection />
+                </div>
             </div>
 
             <CtaSection />

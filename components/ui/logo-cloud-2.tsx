@@ -12,6 +12,8 @@ type Logo = {
 type LogoCloudProps = React.ComponentProps<"div">;
 
 export function LogoCloud({ className, ...props }: LogoCloudProps) {
+  const isTransparent = className?.includes("bg-transparent");
+
   return (
     <div
       className={cn(
@@ -23,7 +25,7 @@ export function LogoCloud({ className, ...props }: LogoCloudProps) {
       <div className="-translate-x-1/2 -top-px pointer-events-none absolute left-1/2 w-screen border-t border-zinc-700/30" />
 
       <LogoCard
-        className="relative border-r border-b border-zinc-700/30 bg-zinc-900"
+        className={cn("relative border-r border-b border-zinc-700/30", isTransparent ? "bg-transparent" : "bg-zinc-900")}
         logo={{
           src: "https://svgl.app/library/nvidia-wordmark-light.svg",
           alt: "Nvidia Logo",
@@ -36,7 +38,7 @@ export function LogoCloud({ className, ...props }: LogoCloudProps) {
       </LogoCard>
 
       <LogoCard
-        className="border-b border-zinc-700/30 md:border-r bg-zinc-900"
+        className={cn("border-b border-zinc-700/30 md:border-r", isTransparent ? "bg-transparent" : "bg-zinc-900")}
         logo={{
           src: "https://svgl.app/library/supabase_wordmark_light.svg",
           alt: "Supabase Logo",
@@ -44,7 +46,7 @@ export function LogoCloud({ className, ...props }: LogoCloudProps) {
       />
 
       <LogoCard
-        className="relative border-r border-b border-zinc-700/30 bg-zinc-900"
+        className={cn("relative border-r border-b border-zinc-700/30", isTransparent ? "bg-transparent" : "bg-zinc-900")}
         logo={{
           src: "https://svgl.app/library/github_wordmark_light.svg",
           alt: "GitHub Logo",
@@ -61,7 +63,7 @@ export function LogoCloud({ className, ...props }: LogoCloudProps) {
       </LogoCard>
 
       <LogoCard
-        className="relative border-b border-zinc-700/30 bg-zinc-900"
+        className={cn("relative border-b border-zinc-700/30", isTransparent ? "bg-transparent" : "bg-zinc-900")}
         logo={{
           src: "https://svgl.app/library/openai_wordmark_light.svg",
           alt: "OpenAI Logo",
@@ -69,7 +71,7 @@ export function LogoCloud({ className, ...props }: LogoCloudProps) {
       />
 
       <LogoCard
-        className="relative border-r border-b border-zinc-700/30 bg-zinc-900 md:border-b-0"
+        className={cn("relative border-r border-b border-zinc-700/30 md:border-b-0", isTransparent ? "bg-transparent" : "bg-zinc-900")}
         logo={{
           src: "https://svgl.app/library/turso-wordmark-light.svg",
           alt: "Turso Logo",
@@ -82,7 +84,7 @@ export function LogoCloud({ className, ...props }: LogoCloudProps) {
       </LogoCard>
 
       <LogoCard
-        className="border-b border-r border-zinc-700/30 bg-zinc-900 md:border-b-0"
+        className={cn("border-b border-r border-zinc-700/30 md:border-b-0", isTransparent ? "bg-transparent" : "bg-zinc-900")}
         logo={{
           src: "https://svgl.app/library/clerk-wordmark-light.svg",
           alt: "Clerk Logo",
@@ -90,7 +92,7 @@ export function LogoCloud({ className, ...props }: LogoCloudProps) {
       />
 
       <LogoCard
-        className="border-r border-zinc-700/30 bg-zinc-900"
+        className={cn("border-r border-zinc-700/30", isTransparent ? "bg-transparent" : "bg-zinc-900")}
         logo={{
           src: "https://svgl.app/library/claude-ai-wordmark-icon_light.svg",
           alt: "Claude AI Logo",
@@ -98,7 +100,7 @@ export function LogoCloud({ className, ...props }: LogoCloudProps) {
       />
 
       <LogoCard
-        className="bg-zinc-900"
+        className={isTransparent ? "bg-transparent" : "bg-zinc-900"}
         logo={{
           src: "https://svgl.app/library/vercel_wordmark.svg",
           alt: "Vercel Logo",
@@ -118,7 +120,7 @@ function LogoCard({ logo, className, children, ...props }: LogoCardProps) {
   return (
     <div
       className={cn(
-        "flex items-center justify-center bg-zinc-900 px-4 py-8 md:p-8",
+        "flex items-center justify-center px-4 py-8 md:p-8",
         className
       )}
       {...props}

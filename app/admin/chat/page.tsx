@@ -17,7 +17,7 @@ export default function AdminChatPage() {
   const whatsappLink = activeSociety?.whatsapp || "https://web.whatsapp.com";
 
   return (
-    <div className="h-full flex flex-col items-center justify-center p-8 bg-[#f4f5f7] dark:bg-zinc-950 relative overflow-hidden">
+    <div className="h-full flex flex-col items-center justify-center p-8 bg-background dark:bg-zinc-950 relative overflow-hidden">
       {/* Background decorative blobs */}
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-rose-500/5 dark:bg-rose-500/5 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-violet-500/5 dark:bg-violet-500/5 rounded-full blur-3xl pointer-events-none" />

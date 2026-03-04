@@ -51,11 +51,11 @@ export default function SuperLayout({
     };
 
     return (
-        <div className="flex h-screen bg-[#f4f5f7] dark:bg-zinc-950 text-white dark:text-white overflow-hidden selection:bg-violet-500/30 transition-colors">
+        <div className="flex h-screen bg-background dark:bg-zinc-950 text-white dark:text-white overflow-hidden selection:bg-violet-500/30 transition-colors">
 
             {/* Super Admin Sidebar */}
             <aside
-                className={`${isCollapsed ? 'w-20' : 'w-64'} transition-all duration-300 ease-in-out border-r border-zinc-200 dark:border-zinc-800/50 bg-[#f4f5f7] dark:bg-transparent flex flex-col hidden md:flex shrink-0 z-50 relative`}
+                className={`${isCollapsed ? 'w-20' : 'w-64'} transition-all duration-300 ease-in-out border-r border-zinc-200 dark:border-zinc-800/50 bg-background dark:bg-transparent flex flex-col hidden md:flex shrink-0 z-50 relative`}
             >
                 {/* Collapse Toggle Button */}
                 <button
@@ -155,7 +155,7 @@ export default function SuperLayout({
             </aside>
 
             {/* Main Content Area */}
-            <div className="flex-1 flex flex-col min-w-0 relative h-screen bg-[#f4f5f7] dark:bg-zinc-950 transition-colors">
+            <div className="flex-1 flex flex-col min-w-0 relative h-screen bg-background dark:bg-zinc-950 transition-colors">
                 {children}
             </div>
         </div>

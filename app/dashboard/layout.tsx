@@ -119,7 +119,7 @@ export default function DashboardLayout({
 
     if (isPending) {
         return (
-            <div className="flex flex-col items-center justify-center h-screen bg-[#f4f5f7] dark:bg-zinc-950 p-6 text-center">
+            <div className="flex flex-col items-center justify-center h-screen bg-background dark:bg-zinc-950 p-6 text-center">
                 <div className="w-24 h-24 bg-amber-50 dark:bg-amber-500/10 rounded-3xl flex items-center justify-center mb-8 shadow-sm border border-amber-100 dark:border-amber-500/20 animate-pulse">
                     <Shield className="h-12 w-12 text-amber-500" />
                 </div>
@@ -140,12 +140,13 @@ export default function DashboardLayout({
     }
 
     return (
-        <div className="flex h-screen bg-[#f4f5f7] dark:bg-zinc-950 text-white dark:text-white overflow-hidden selection:bg-amber-500/30 transition-colors">
+        <div suppressHydrationWarning className="flex h-screen bg-background dark:bg-zinc-950 text-white dark:text-white overflow-hidden selection:bg-amber-500/30 transition-colors">
 
 
             {/* Sidebar */}
             <aside
-                className={`${isCollapsed ? 'w-20' : 'w-64'} transition-all duration-300 ease-in-out border-r border-zinc-200 dark:border-zinc-800/50 bg-[#f4f5f7] dark:bg-transparent flex flex-col hidden md:flex shrink-0 z-50 relative`}
+                suppressHydrationWarning
+                className={`${isCollapsed ? 'w-20' : 'w-64'} transition-all duration-300 ease-in-out border-r border-zinc-200 dark:border-zinc-800/50 bg-background dark:bg-transparent flex flex-col hidden md:flex shrink-0 z-50 relative`}
             >
                 {/* Collapse Toggle Button */}
                 <button
@@ -255,7 +256,7 @@ export default function DashboardLayout({
             </aside>
 
             {/* Main Content Area */}
-            <div className="flex-1 flex flex-col min-w-0 relative h-screen bg-[#f4f5f7] dark:bg-zinc-950 transition-colors">
+            <div className="flex-1 flex flex-col min-w-0 relative h-screen bg-background dark:bg-zinc-950 transition-colors">
                 {children}
             </div>
         </div>

@@ -252,7 +252,7 @@ export default function AdminTeamsPage() {
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
                   placeholder="e.g. Marketing & Outreach"
-                  className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-rose-500"
+                  className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-rose-500"
                 />
               </div>
 
@@ -263,7 +263,7 @@ export default function AdminTeamsPage() {
                 <select
                   value={newType}
                   onChange={(e) => setNewType(e.target.value)}
-                  className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-rose-500"
+                  className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-rose-500"
                 >
                   <option>Core</option>
                   <option>Support</option>
@@ -297,7 +297,7 @@ export default function AdminTeamsPage() {
                     onChange={(e) => setNewLeadInput(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && addLead()}
                     placeholder="Type a name and press Add or Enter"
-                    className="flex-1 bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-rose-500"
+                    className="flex-1 bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-rose-500"
                   />
                   <Button
                     size="sm"
@@ -462,7 +462,7 @@ export default function AdminTeamsPage() {
         {!isScopedOB && (
           <button
             onClick={() => setIsCreateOpen(true)}
-            className="bg-[#f4f5f7]/50 dark:bg-zinc-900/20 border-2 border-dashed border-zinc-300 dark:border-zinc-800 rounded-2xl p-6 shadow-sm hover:border-rose-400 dark:hover:border-rose-500/50 transition flex flex-col items-center justify-center gap-3 text-zinc-500 dark:text-zinc-400 hover:text-rose-600 dark:hover:text-rose-500 min-h-[250px] group"
+            className="bg-background/50 dark:bg-zinc-900/20 border-2 border-dashed border-zinc-300 dark:border-zinc-800 rounded-2xl p-6 shadow-sm hover:border-rose-400 dark:hover:border-rose-500/50 transition flex flex-col items-center justify-center gap-3 text-zinc-500 dark:text-zinc-400 hover:text-rose-600 dark:hover:text-rose-500 min-h-[250px] group"
           >
             <div className="h-12 w-12 rounded-full bg-white dark:bg-zinc-800 shadow-sm flex items-center justify-center group-hover:bg-rose-50 dark:group-hover:bg-rose-500/10 transition">
               <Plus className="h-6 w-6" />
@@ -513,7 +513,7 @@ export default function AdminTeamsPage() {
                       }}
                       onFocus={() => setShowResults(true)}
                       placeholder="Search & add society member..."
-                      className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg pl-9 pr-4 py-2 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-rose-500"
+                      className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg pl-9 pr-4 py-2 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-rose-500"
                     />
                   </div>
                   <Button
@@ -612,7 +612,7 @@ export default function AdminTeamsPage() {
             </TabsContent>
 
             <TabsContent value="settings" className="space-y-4 pt-2">
-              <div className="space-y-4 border border-zinc-200 dark:border-zinc-800 bg-[#f4f5f7]/50 dark:bg-zinc-900/30 p-5 rounded-xl">
+              <div className="space-y-4 border border-zinc-200 dark:border-zinc-800 bg-background/50 dark:bg-zinc-900/30 p-5 rounded-xl">
                 <div className="space-y-2">
                   <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider block">
                     Team Name

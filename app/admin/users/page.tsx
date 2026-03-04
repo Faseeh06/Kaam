@@ -206,7 +206,7 @@ export default function AdminUsersPage() {
                         <input
                           readOnly
                           value={invitationLink}
-                          className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-zinc-500 dark:text-zinc-400 outline-none"
+                          className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-zinc-500 dark:text-zinc-400 outline-none"
                         />
                       </div>
                       <Button
@@ -232,7 +232,7 @@ export default function AdminUsersPage() {
                         <input
                           readOnly
                           value={invitationCode}
-                          className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm font-mono text-zinc-800 dark:text-zinc-300 outline-none"
+                          className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm font-mono text-zinc-800 dark:text-zinc-300 outline-none"
                         />
                       </div>
                       <Button
@@ -529,7 +529,7 @@ export default function AdminUsersPage() {
               <select
                 value={newRole}
                 onChange={(e) => setNewRole(e.target.value)}
-                className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-300 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition appearance-none"
+                className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-300 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition appearance-none"
               >
                 <option value="Executive">Executive</option>
                 <option value="HR">HR</option>

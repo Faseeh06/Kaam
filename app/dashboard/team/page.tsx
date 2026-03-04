@@ -164,11 +164,11 @@ export default function DashboardTeamPage() {
                                 </div>
                             </div>
                             <div className="grid grid-cols-2 gap-3">
-                                <div className="bg-[#f4f5f7] dark:bg-zinc-950/50 rounded-xl p-3 text-center">
+                                <div className="bg-background dark:bg-zinc-950/50 rounded-xl p-3 text-center">
                                     <p className="text-2xl font-bold text-white dark:text-white">{members.length}</p>
                                     <p className="text-[10px] text-zinc-500 uppercase tracking-wider mt-0.5">Members</p>
                                 </div>
-                                <div className="bg-[#f4f5f7] dark:bg-zinc-950/50 rounded-xl p-3 text-center">
+                                <div className="bg-background dark:bg-zinc-950/50 rounded-xl p-3 text-center">
                                     <p className="text-2xl font-bold text-white dark:text-white">{directors.length + dds.length}</p>
                                     <p className="text-[10px] text-zinc-500 uppercase tracking-wider mt-0.5">Directors</p>
                                 </div>

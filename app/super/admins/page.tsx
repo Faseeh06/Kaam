@@ -90,7 +90,7 @@ export default function SuperAdminsPage() {
                             <div className="space-y-1.5">
                                 <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider block">Select User <span className="text-rose-500">*</span></label>
                                 <select value={selectedUserId} onChange={e => setSelectedUserId(e.target.value)}
-                                    className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500">
+                                    className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500">
                                     <option value="">Choose a registered user...</option>
                                     {allRegisteredUsers.map(u => <option key={u.id} value={u.id}>{u.name} — {u.email}</option>)}
                                 </select>
@@ -113,7 +113,7 @@ export default function SuperAdminsPage() {
                             <div className="space-y-1.5">
                                 <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider block">Link to Society <span className="text-rose-500">*</span></label>
                                 <select value={selectedSociety} onChange={e => setSelectedSociety(e.target.value)}
-                                    className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500">
+                                    className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500">
                                     <option value="">Choose a society...</option>
                                     {societies.map(s => <option key={s.id} value={s.id}>{s.name} ({s.acronym})</option>)}
                                 </select>

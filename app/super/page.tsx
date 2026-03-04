@@ -191,7 +191,7 @@ export default function SuperDashboardPage() {
                                                     variant="outline"
                                                     role="combobox"
                                                     className={cn(
-                                                        "w-full justify-between bg-[#f4f5f7] dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800",
+                                                        "w-full justify-between bg-background dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800",
                                                         !selectedUser && "text-muted-foreground"
                                                     )}
                                                 >
@@ -237,7 +237,7 @@ export default function SuperDashboardPage() {
                                         <select
                                             value={selectedSoc}
                                             onChange={(e) => setSelectedSoc(e.target.value)}
-                                            className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-[white] dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500"
+                                            className="w-full bg-background dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-[white] dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500"
                                         >
                                             <option value="">Select society...</option>
                                             {societies.map((soc) => (

@@ -260,7 +260,7 @@ export default function AdminOfficeBearersPage() {
                 <select
                   value={selUserId}
                   onChange={(e) => setSelUserId(e.target.value)}
-                  className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-rose-500"
+                  className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-rose-500"
                 >
                   <option value="">Choose a registered user...</option>
                   {users.map((u) => (

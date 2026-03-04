@@ -56,7 +56,7 @@ export default function AdminSettingsPage() {
 
   if (userData?.role !== "Admin") {
     return (
-      <div className="h-full flex flex-col items-center justify-center p-8 text-center bg-[#f4f5f7] dark:bg-zinc-950">
+      <div className="h-full flex flex-col items-center justify-center p-8 text-center bg-background dark:bg-zinc-950">
         <ShieldAlert className="h-12 w-12 text-zinc-300 dark:text-zinc-700 mb-4" />
         <h2 className="text-xl font-semibold text-white dark:text-white mb-2">
           Access Restricted
@@ -117,7 +117,7 @@ export default function AdminSettingsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-6 space-y-4">
-              <div className="flex items-center justify-between p-4 rounded-xl border border-zinc-200 dark:border-zinc-800/60 bg-[#f4f5f7] dark:bg-zinc-950/40">
+              <div className="flex items-center justify-between p-4 rounded-xl border border-zinc-200 dark:border-zinc-800/60 bg-background dark:bg-zinc-950/40">
                 <div className="pr-4">
                   <p className="font-medium text-white dark:text-zinc-200 text-sm mb-1">
                     Require Manual Approval
@@ -132,7 +132,7 @@ export default function AdminSettingsPage() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between p-4 rounded-xl border border-zinc-200 dark:border-zinc-800/60 bg-[#f4f5f7] dark:bg-zinc-950/40">
+              <div className="flex items-center justify-between p-4 rounded-xl border border-zinc-200 dark:border-zinc-800/60 bg-background dark:bg-zinc-950/40">
                 <div className="pr-4">
                   <p className="font-medium text-white dark:text-zinc-200 text-sm mb-1">
                     Domain Restriction

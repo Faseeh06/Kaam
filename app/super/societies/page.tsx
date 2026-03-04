@@ -235,17 +235,17 @@ export default function SuperSocietiesPage() {
                                     <div className="space-y-1.5 col-span-2">
                                         <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Full Name <span className="text-rose-500">*</span></label>
                                         <input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Computer Science Society"
-                                            className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500" />
+                                            className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500" />
                                     </div>
                                     <div className="space-y-1.5">
                                         <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Acronym <span className="text-rose-500">*</span></label>
                                         <input value={acronym} onChange={e => setAcronym(e.target.value)} placeholder="CSS" maxLength={6}
-                                            className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm font-mono uppercase text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500" />
+                                            className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm font-mono uppercase text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500" />
                                     </div>
                                     <div className="space-y-1.5">
                                         <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Type</label>
                                         <select value={type} onChange={e => setType(e.target.value)}
-                                            className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500">
+                                            className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500">
                                             <option>Academic</option><option>Cultural</option><option>Sports</option>
                                             <option>Professional</option><option>Community Service</option><option>Other</option>
                                         </select>
@@ -253,12 +253,12 @@ export default function SuperSocietiesPage() {
                                     <div className="space-y-1.5 col-span-2">
                                         <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">President Name</label>
                                         <input value={president} onChange={e => setPresident(e.target.value)} placeholder="Full name of the society president"
-                                            className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500" />
+                                            className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500" />
                                     </div>
                                     <div className="space-y-1.5 col-span-2">
                                         <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Contact Email</label>
                                         <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="president@university.edu"
-                                            className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500" />
+                                            className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500" />
                                     </div>
                                     <div className="space-y-2 col-span-2">
                                         <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Accent Color</label>
@@ -301,30 +301,30 @@ export default function SuperSocietiesPage() {
                         <div className="space-y-1.5">
                             <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Society Name</label>
                             <input value={editName} onChange={e => setEditName(e.target.value)}
-                                className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500" />
+                                className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500" />
                         </div>
                         <div className="space-y-1.5">
                             <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Description</label>
                             <textarea value={editDesc} onChange={e => setEditDesc(e.target.value)} rows={3}
-                                className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500 resize-none" />
+                                className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500 resize-none" />
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                             <div className="space-y-1.5">
                                 <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider flex items-center gap-1"><Mail className="h-3 w-3" /> Email</label>
                                 <input type="email" value={editEmail} onChange={e => setEditEmail(e.target.value)} placeholder="contact@society.edu"
-                                    className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500" />
+                                    className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500" />
                             </div>
                             <div className="space-y-1.5">
                                 <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider flex items-center gap-1"><Globe className="h-3 w-3" /> Website</label>
                                 <input type="url" value={editWebsite} onChange={e => setEditWebsite(e.target.value)} placeholder="https://..."
-                                    className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500" />
+                                    className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500" />
                             </div>
                             <div className="space-y-1.5 col-span-2">
                                 <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider flex items-center gap-1">
                                     <MessageSquare className="h-3 w-3 text-[#25D366]" /> WhatsApp Group Link
                                 </label>
                                 <input value={editWhatsapp} onChange={e => setEditWhatsapp(e.target.value)} placeholder="https://chat.whatsapp.com/..."
-                                    className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500" />
+                                    className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500" />
                                 <p className="text-[11px] text-zinc-400">Used on the Chat page for members to join via WhatsApp.</p>
                             </div>
                             <div className="space-y-1.5 col-span-2">
@@ -443,7 +443,7 @@ export default function SuperSocietiesPage() {
 
 
                 {/* Add new tile */}
-                <button onClick={() => setRegisterOpen(true)} className="bg-[#f4f5f7]/50 dark:bg-zinc-900/20 border-2 border-dashed border-zinc-300 dark:border-zinc-800 rounded-2xl p-6 hover:border-violet-400 dark:hover:border-violet-500/50 transition flex flex-col items-center justify-center gap-3 text-zinc-500 dark:text-zinc-400 hover:text-violet-600 dark:hover:text-violet-400 min-h-[220px] group">
+                <button onClick={() => setRegisterOpen(true)} className="bg-background/50 dark:bg-zinc-900/20 border-2 border-dashed border-zinc-300 dark:border-zinc-800 rounded-2xl p-6 hover:border-violet-400 dark:hover:border-violet-500/50 transition flex flex-col items-center justify-center gap-3 text-zinc-500 dark:text-zinc-400 hover:text-violet-600 dark:hover:text-violet-400 min-h-[220px] group">
                     <div className="h-12 w-12 rounded-full bg-white dark:bg-zinc-800 shadow-sm flex items-center justify-center group-hover:bg-violet-50 dark:group-hover:bg-violet-500/10 transition">
                         <Plus className="h-6 w-6" />
                     </div>

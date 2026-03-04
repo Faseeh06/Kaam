@@ -83,7 +83,7 @@ export default function JoinSocietyPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-[#f4f5f7] dark:bg-zinc-950 p-4">
+        <div className="min-h-screen flex items-center justify-center bg-background dark:bg-zinc-950 p-4">
             <Card className="w-full max-w-md border-zinc-200 dark:border-zinc-800 shadow-xl overflow-hidden">
                 <div className="h-2 bg-gradient-to-r from-amber-500 to-orange-600" />
                 <CardHeader className="space-y-1 pt-8">

@@ -108,6 +108,7 @@ export default function BoardPage() {
     // 1. Identify all teams this user has access to
     const myOBRecord = userData ? officeBearers.find(ob => ob.userId === userData.id) : null;
     const isPresident = myOBRecord?.position === "President";
+    const isSocietyAdmin = userData?.isSocietyAdmin || false;
 
     const accessibleTeams = teams.filter(t => {
         if (!userData) return false;
@@ -141,7 +142,6 @@ export default function BoardPage() {
     const basePerms = TEAM_ROLE_PERMISSIONS[myRole as TeamRole] || TEAM_ROLE_PERMISSIONS["Executive"];
 
     // Unified permission logic
-    const isSocietyAdmin = userData?.isSocietyAdmin || false;
     const isManagementRole = ['Director', 'Deputy Director', 'HR', 'Admin'].includes(myRole);
 
     const myPerms = {

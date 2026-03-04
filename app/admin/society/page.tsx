@@ -195,7 +195,7 @@ export default function AdminSocietyPage() {
 
   if (userData?.role !== "Admin") {
     return (
-      <div className="h-full flex flex-col items-center justify-center p-8 text-center bg-[#f4f5f7] dark:bg-zinc-950">
+      <div className="h-full flex flex-col items-center justify-center p-8 text-center bg-background dark:bg-zinc-950">
         <Building2 className="h-12 w-12 text-zinc-300 dark:text-zinc-700 mb-4" />
         <h2 className="text-xl font-semibold text-white dark:text-white mb-2">
           Access Restricted
@@ -316,7 +316,7 @@ export default function AdminSocietyPage() {
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full bg-[#f4f5f7] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
+                    className="w-full bg-background dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
                   />
                 </div>
 
@@ -328,7 +328,7 @@ export default function AdminSocietyPage() {
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     rows={4}
-                    className="w-full bg-[#f4f5f7] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-3 text-sm text-white dark:text-zinc-100 outline-none resize-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
+                    className="w-full bg-background dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-3 text-sm text-white dark:text-zinc-100 outline-none resize-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
                   />
                 </div>
 
@@ -342,7 +342,7 @@ export default function AdminSocietyPage() {
                       value={logo}
                       onChange={(e) => setLogo(e.target.value)}
                       placeholder="https://example.com/logo.png"
-                      className="w-full bg-[#f4f5f7] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
+                      className="w-full bg-background dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
                     />
                   </div>
                   <div className="space-y-2">
@@ -357,7 +357,7 @@ export default function AdminSocietyPage() {
                         disabled={isUploading}
                         className="w-full opacity-0 absolute inset-0 cursor-pointer z-10"
                       />
-                      <div className="w-full bg-[#f4f5f7] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-zinc-400 flex items-center justify-between outline-none">
+                      <div className="w-full bg-background dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-zinc-400 flex items-center justify-between outline-none">
                         <span>
                           {isUploading ? "Uploading..." : "Select file..."}
                         </span>
@@ -376,7 +376,7 @@ export default function AdminSocietyPage() {
                       value={coverUrl}
                       onChange={(e) => setCoverUrl(e.target.value)}
                       placeholder="https://example.com/cover.png"
-                      className="w-full bg-[#f4f5f7] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
+                      className="w-full bg-background dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
                     />
                   </div>
                   <div className="space-y-2">
@@ -391,7 +391,7 @@ export default function AdminSocietyPage() {
                         disabled={isUploading}
                         className="w-full opacity-0 absolute inset-0 cursor-pointer z-10"
                       />
-                      <div className="w-full bg-[#f4f5f7] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-zinc-400 flex items-center justify-between outline-none">
+                      <div className="w-full bg-background dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-zinc-400 flex items-center justify-between outline-none">
                         <span>
                           {isUploading ? "Uploading..." : "Select file..."}
                         </span>
@@ -409,7 +409,7 @@ export default function AdminSocietyPage() {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full bg-[#f4f5f7] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
+                      className="w-full bg-background dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
                     />
                   </div>
                   <div className="space-y-2">
@@ -420,7 +420,7 @@ export default function AdminSocietyPage() {
                       type="url"
                       value={website}
                       onChange={(e) => setWebsite(e.target.value)}
-                      className="w-full bg-[#f4f5f7] dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
+                      className="w-full bg-background dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
                     />
                   </div>
                 </div>
@@ -538,7 +538,7 @@ export default function AdminSocietyPage() {
                     placeholder="https://example.com/logo.png"
                     value={tempLogoUrl}
                     onChange={(e) => setTempLogoUrl(e.target.value)}
-                    className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 pl-9 text-sm text-white dark:text-zinc-100 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
+                    className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 pl-9 text-sm text-white dark:text-zinc-100 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
                   />
                 </div>
                 <Button
@@ -607,7 +607,7 @@ export default function AdminSocietyPage() {
                     placeholder="https://example.com/cover.png"
                     value={tempCoverUrl}
                     onChange={(e) => setTempCoverUrl(e.target.value)}
-                    className="w-full bg-[#f4f5f7] dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 pl-9 text-sm text-white dark:text-zinc-100 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
+                    className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 pl-9 text-sm text-white dark:text-zinc-100 outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 transition"
                   />
                 </div>
                 <Button

@@ -20,60 +20,25 @@ interface PricingPlan {
 const plans: PricingPlan[] = [
   {
     id: "basic",
-    name: "Basic",
+    name: "Free Forever",
     priceMonthly: 0,
     priceYearly: 0,
     description:
-      "Essential task management for small societies and single teams.",
+      "Full-featured task management for growing societies and student teams.",
     features: [
-      "Up to 50 members",
-      "Unlimited tasks",
-      "Single team workspace",
-      "Email support",
+      "Up to 200+ members",
+      "Unlimited sub-teams",
+      "Role-based access control",
+      "Attendance tracking",
+      "Real-time notifications",
+      "Priority email support",
     ],
     cta: "Start Free",
     type: "subscription",
   },
-  {
-    id: "pro",
-    name: "Kaam Pro",
-    priceMonthly: 19,
-    priceYearly: 15,
-    description:
-      "Advanced features for large societies with multiple sub-teams and complex workflows.",
-    features: [
-      "Up to 500 members",
-      "Unlimited sub-teams",
-      "Attendance tracking",
-      "Real-time notifications",
-      "Role-based access control",
-    ],
-    cta: "Upgrade to Pro",
-    popular: true,
-    type: "subscription",
-  },
-  {
-    id: "campus",
-    name: "Campus",
-    priceMonthly: "Custom",
-    priceYearly: "Custom",
-    description:
-      "Full deployment for student unions or multi-society campus organizations.",
-    features: [
-      "Unlimited members & societies",
-      "Dedicated account manager",
-      "Custom integrations & analytics",
-      "Priority 24/7 support",
-      "White-label options",
-    ],
-    cta: "Contact Sales",
-    type: "custom",
-  },
 ];
 
 export function PricingSection({ className }: { className?: string }) {
-  const [isYearly, setIsYearly] = useState(false);
-
   return (
     <section
       id="pricing"
@@ -81,14 +46,14 @@ export function PricingSection({ className }: { className?: string }) {
     >
       <div className="mx-auto max-w-7xl px-6 md:px-12 lg:px-16">
         {/* Header */}
-        <div className="mb-16 flex flex-col gap-4">
+        <div className="mb-16 flex flex-col items-center text-center gap-4">
           <div className="flex items-center gap-3 px-4 py-2 border border-zinc-700 w-fit">
             <div className="w-2.5 h-2.5 bg-amber-500" />
             <span className="text-sm font-medium text-zinc-400 tracking-wide">Pricing</span>
           </div>
           <h2 className="text-balance text-4xl md:text-5xl tracking-tight leading-tight font-normal text-white">
             <span className="block">
-              {"Choose the plan".split(" ").map((word, i) => (
+              {"Simple, Transparent pricing".split(" ").map((word, i) => (
                 <motion.span
                   key={i}
                   initial={{ filter: "blur(10px)", opacity: 0 }}
@@ -101,8 +66,8 @@ export function PricingSection({ className }: { className?: string }) {
                 </motion.span>
               ))}
             </span>
-            <span className="block text-zinc-500">
-              {"that matches your ambition".split(" ").map((word, i) => (
+            <span className="block text-zinc-500 text-2xl md:text-3xl mt-4">
+              {"Always free for small teams".split(" ").map((word, i) => (
                 <motion.span
                   key={i + 3}
                   initial={{ filter: "blur(10px)", opacity: 0 }}
@@ -118,65 +83,21 @@ export function PricingSection({ className }: { className?: string }) {
           </h2>
         </div>
 
-        {/* Switch and Plans Container */}
-        <div className="flex flex-col gap-10 w-full">
-          {/* Billing Toggle */}
-          <div className="flex items-center gap-4">
-            <span
-              className={cn(
-                "text-lg transition-colors duration-200",
-                !isYearly ? "text-white" : "text-zinc-500"
-              )}
-            >
-              Monthly
-            </span>
-
-            <button
-              onClick={() => setIsYearly(!isYearly)}
-              className="relative w-12 h-6 bg-zinc-800 cursor-pointer p-1"
-            >
-              <motion.div
-                animate={{
-                  x: isYearly ? 24 : 0,
-                }}
-                transition={{
-                  type: "spring",
-                  stiffness: 500,
-                  damping: 30,
-                }}
-                className="w-4 h-4 bg-white"
-              />
-            </button>
-
-            <span
-              className={cn(
-                "text-lg transition-colors duration-200",
-                isYearly ? "text-white" : "text-zinc-500"
-              )}
-            >
-              Yearly
-            </span>
-
-            <div className="bg-amber-500/10 px-3 py-1.5 border border-amber-500/20">
-              <span className="text-xs font-medium text-amber-500">
-                20% OFF
-              </span>
-            </div>
-          </div>
-
-          {/* Pricing Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
+        {/* Plan Container */}
+        <div className="flex justify-center w-full">
+          {/* Pricing Card */}
+          <div className="max-w-md w-full">
             {plans.map((plan) => (
               <motion.div
                 key={plan.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
                 whileHover={{
                   scale: 1.02,
                 }}
                 className={cn(
-                  "relative flex flex-col gap-6 p-6 transition-all duration-300",
-                  plan.popular
-                    ? "bg-zinc-800 border border-amber-500/30 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)]"
-                    : "bg-zinc-800/50 border border-zinc-700/50"
+                  "relative flex flex-col gap-6 p-8 transition-all duration-300 bg-zinc-800/50 border border-zinc-700/50 shadow-2xl"
                 )}
               >
                 {/* Card Head */}
@@ -185,24 +106,13 @@ export function PricingSection({ className }: { className?: string }) {
                     <span className="text-xl font-normal text-white">
                       {plan.name}
                     </span>
-                    {plan.popular && (
-                      <div className="bg-amber-500/10 border border-amber-500/20 px-2.5 py-1">
-                        <span className="text-xs font-medium text-amber-500">
-                          Popular
-                        </span>
-                      </div>
-                    )}
                   </div>
 
                   <div className="flex items-baseline gap-1">
-                    <h3 className="text-4xl font-normal text-white tracking-tighter">
-                      {typeof plan.priceMonthly === "number"
-                        ? `$${isYearly ? plan.priceYearly : plan.priceMonthly}`
-                        : plan.priceMonthly}
+                    <h3 className="text-5xl font-normal text-white tracking-tighter">
+                      $0
                     </h3>
-                    {plan.type === "subscription" && (
-                      <span className="text-sm text-zinc-500">/month</span>
-                    )}
+                    <span className="text-sm text-zinc-500">/forever</span>
                   </div>
 
                   <p className="text-balance text-sm leading-relaxed text-zinc-400 min-h-[40px]">
@@ -213,10 +123,7 @@ export function PricingSection({ className }: { className?: string }) {
                 {/* CTA Button */}
                 <button
                   className={cn(
-                    "w-full py-3 px-4 text-sm font-medium transition-all duration-200 cursor-pointer",
-                    plan.popular
-                      ? "bg-white text-zinc-900 hover:bg-zinc-200"
-                      : "bg-transparent text-white border border-zinc-600 hover:bg-white/5"
+                    "w-full py-4 px-4 text-sm font-medium transition-all duration-200 cursor-pointer bg-white text-zinc-900 hover:bg-zinc-200"
                   )}
                 >
                   {plan.cta}
@@ -226,17 +133,17 @@ export function PricingSection({ className }: { className?: string }) {
                 <div className="flex items-center gap-3">
                   <div className="flex-1 h-[1px] bg-zinc-700" />
                   <span className="text-xs text-zinc-500 shrink-0">
-                    Features
+                    What's Included
                   </span>
                   <div className="flex-1 h-[1px] bg-zinc-700" />
                 </div>
 
                 {/* Features List */}
-                <ul className="flex flex-col gap-3">
+                <ul className="flex flex-col gap-4">
                   {plan.features.map((feature, idx) => (
-                    <li key={idx} className="flex items-center gap-2 group">
-                      <CheckCircle2 className="w-4 h-4 text-amber-500 shrink-0" />
-                      <span className="text-sm text-zinc-400 group-hover:text-zinc-300 transition-colors">
+                    <li key={idx} className="flex items-center gap-3 group">
+                      <CheckCircle2 className="w-5 h-5 text-amber-500 shrink-0" />
+                      <span className="text-base text-zinc-400 group-hover:text-zinc-300 transition-colors">
                         {feature}
                       </span>
                     </li>

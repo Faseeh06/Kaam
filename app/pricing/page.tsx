@@ -21,7 +21,7 @@ export default function PricingPage() {
             <div className="bg-zinc-950 min-h-screen">
                 <PageHeader
                     title="Simple Pricing"
-                    description="Choose a plan that matches your organization's ambitions. Includes a free plan to get started."
+                    description="Simple, transparent pricing. Always free for small teams to manage their tasks effectively."
                 >
                     <div className="flex flex-col items-center w-full">
                         <div className="flex gap-4 justify-center mb-16">

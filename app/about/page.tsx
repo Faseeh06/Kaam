@@ -3,6 +3,8 @@ import { ProblemSection } from "@/components/problem-section";
 import { SolutionSection } from "@/components/solution-section";
 import { CtaSection } from "@/components/cta-section";
 import { Footer } from "@/components/footer";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function AboutPage() {
     return (
@@ -21,8 +23,16 @@ export default function AboutPage() {
                 <PageHeader
                     title="About Kaam"
                     description="Learn about the problems we are solving and the solutions we provide for multi-society management."
-                />
-                <ProblemSection />
+                >
+                    <div className="flex gap-4 justify-center">
+                        <Link href="/signup">
+                            <Button size="lg" className="bg-white px-6 text-slate-900 hover:bg-white/90">Get Started</Button>
+                        </Link>
+                    </div>
+                </PageHeader>
+                <div className="border-t border-zinc-700/30">
+                    <ProblemSection />
+                </div>
                 <SolutionSection />
             </div>
 

@@ -2,6 +2,8 @@ import { PageHeader } from "@/components/page-header";
 import { TestimonialsSection } from "@/components/testimonials-section";
 import { CtaSection } from "@/components/cta-section";
 import { Footer } from "@/components/footer";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function TestimonialsPage() {
     return (
@@ -19,8 +21,16 @@ export default function TestimonialsPage() {
                 <PageHeader
                     title="What Our Users Say"
                     description="Hear from societies and organizations that have transformed their management with Kaam."
-                />
-                <TestimonialsSection />
+                >
+                    <div className="flex gap-4 justify-center">
+                        <Link href="/signup">
+                            <Button size="lg" className="bg-white px-6 text-slate-900 hover:bg-white/90">Get Started</Button>
+                        </Link>
+                    </div>
+                </PageHeader>
+                <div className="border-t border-zinc-700/30">
+                    <TestimonialsSection />
+                </div>
             </div>
 
             <CtaSection />

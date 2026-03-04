@@ -25,9 +25,9 @@ export function Hero() {
         {/* Navigation */}
         <SiteHeader />
 
-        {/* Hero Content - Positioned in upper portion */}
-        <div className="flex flex-1 flex-col items-center px-6 pt-16 text-center md:pt-24">
-          <h1 className="max-w-3xl text-balance text-5xl font-normal tracking-tight text-white md:text-6xl lg:text-7xl">
+        {/* Hero Content - Centered */}
+        <div className="flex flex-1 flex-col items-center justify-center px-6 text-center -mt-16">
+          <h1 className="max-w-5xl text-balance text-6xl font-normal tracking-tight text-white md:text-7xl lg:text-8xl">
             {"Manage Societies & Teams with Ease".split(" ").map((word, i) => (
               <motion.span
                 key={i}
@@ -42,16 +42,16 @@ export function Hero() {
             ))}
           </h1>
 
-          <p className="mt-6 max-w-xl text-balance text-center text-sm leading-relaxed text-white/70 md:text-base">
+          <p className="mt-8 max-w-2xl text-balance text-center text-base leading-relaxed text-white/70 md:text-lg lg:text-xl">
             The ultimate multi-society task management platform. Assign tasks, track progress, and manage teams all in one place.
           </p>
 
           {/* CTAs - Two buttons side by side */}
-          <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row">
+          <div className="mt-12 flex flex-col items-center gap-6 sm:flex-row">
             <Link href="/signup">
               <Button
                 size="lg"
-                className="bg-white px-6 text-slate-900 hover:bg-white/90"
+                className="bg-white px-8 h-12 text-slate-900 hover:bg-white/90 text-lg"
               >
                 Get Started
               </Button>
@@ -59,7 +59,7 @@ export function Hero() {
             <Button
               variant="outline"
               size="lg"
-              className="border-white/30 bg-transparent px-6 text-white hover:bg-white/10 hover:text-white"
+              className="border-white/30 bg-transparent px-8 h-12 text-white hover:bg-white/10 hover:text-white text-lg"
             >
               Learn More
             </Button>

@@ -1,6 +1,6 @@
 "use client";
 
-import { Building2, Plus, Search, TrendingUp, MoreVertical, Settings, MessageSquare, Mail, Globe, Upload, X, ImageIcon, Activity } from "lucide-react";
+import { Building2, Plus, Search, TrendingUp, MoreVertical, Settings, MessageSquare, Mail, Globe, Upload, X, ImageIcon, Activity, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState, useRef, useCallback } from "react";
@@ -138,6 +138,7 @@ export default function SuperSocietiesPage() {
     const [color, setColor] = useState("bg-violet-500");
     const [type, setType] = useState("Academic");
     const [logo, setLogo] = useState("");
+    const [isRegistering, setIsRegistering] = useState(false);
 
     // Edit form
     const [editName, setEditName] = useState("");
@@ -147,22 +148,28 @@ export default function SuperSocietiesPage() {
     const [editWhatsapp, setEditWhatsapp] = useState("");
     const [editStatus, setEditStatus] = useState("Active");
     const [editLogo, setEditLogo] = useState("");
+    const [isSavingEdit, setIsSavingEdit] = useState(false);
 
     const filtered = societies.filter(s =>
         s.name.toLowerCase().includes(search.toLowerCase()) ||
         s.acronym.toLowerCase().includes(search.toLowerCase())
     );
 
-    const handleSubmit = () => {
-        if (!name.trim() || !acronym.trim()) return;
-        addSociety({
-            id: `soc-${Date.now()}`, name: name.trim(),
-            acronym: acronym.trim().toUpperCase(), members: 1,
-            status: "Active", email, description: "", logo: logo || undefined,
-        });
-        setName(""); setAcronym(""); setPresident(""); setEmail("");
-        setColor("bg-violet-500"); setType("Academic"); setLogo("");
-        setRegisterOpen(false);
+    const handleSubmit = async () => {
+        if (!name.trim() || !acronym.trim() || isRegistering) return;
+        setIsRegistering(true);
+        try {
+            await addSociety({
+                id: `soc-${Date.now()}`, name: name.trim(),
+                acronym: acronym.trim().toUpperCase(), members: 1,
+                status: "Active", email, description: "", logo: logo || undefined,
+            });
+            setName(""); setAcronym(""); setPresident(""); setEmail("");
+            setColor("bg-violet-500"); setType("Academic"); setLogo("");
+            setRegisterOpen(false);
+        } finally {
+            setIsRegistering(false);
+        }
     };
 
     const openEdit = (soc: Society) => {
@@ -176,14 +183,19 @@ export default function SuperSocietiesPage() {
         setEditLogo(soc.logo || "");
     };
 
-    const handleSaveEdit = () => {
-        if (!editTarget) return;
-        updateSociety(editTarget.id, {
-            name: editName, description: editDesc, email: editEmail,
-            website: editWebsite, whatsapp: editWhatsapp,
-            status: editStatus, logo: editLogo || undefined,
-        });
-        setEditTarget(null);
+    const handleSaveEdit = async () => {
+        if (!editTarget || isSavingEdit) return;
+        setIsSavingEdit(true);
+        try {
+            await updateSociety(editTarget.id, {
+                name: editName, description: editDesc, email: editEmail,
+                website: editWebsite, whatsapp: editWhatsapp,
+                status: editStatus, logo: editLogo || undefined,
+            });
+            setEditTarget(null);
+        } finally {
+            setIsSavingEdit(false);
+        }
     };
 
     return (
@@ -259,9 +271,11 @@ export default function SuperSocietiesPage() {
                                     </div>
                                 </div>
                                 <div className="flex gap-3 pt-2">
-                                    <Button variant="outline" onClick={() => setRegisterOpen(false)} className="flex-1 border-zinc-200 dark:border-zinc-800">Cancel</Button>
-                                    <Button disabled={!name.trim() || !acronym.trim()} onClick={handleSubmit}
-                                        className="flex-1 bg-violet-600 hover:bg-violet-700 text-white disabled:opacity-50">Register Society</Button>
+                                    <Button variant="outline" onClick={() => setRegisterOpen(false)} disabled={isRegistering} className="flex-1 border-zinc-200 dark:border-zinc-800">Cancel</Button>
+                                    <Button disabled={!name.trim() || !acronym.trim() || isRegistering} onClick={handleSubmit}
+                                        className="flex-1 bg-violet-600 hover:bg-violet-700 text-white disabled:opacity-50">
+                                        {isRegistering ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : ""} Register Society
+                                    </Button>
                                 </div>
                             </div>
                         </DialogContent>
@@ -326,8 +340,10 @@ export default function SuperSocietiesPage() {
                             </div>
                         </div>
                         <div className="flex gap-3 pt-2">
-                            <Button variant="outline" onClick={() => setEditTarget(null)} className="flex-1 border-zinc-200 dark:border-zinc-800">Cancel</Button>
-                            <Button onClick={handleSaveEdit} className="flex-1 bg-violet-600 hover:bg-violet-700 text-white">Save Changes</Button>
+                            <Button variant="outline" onClick={() => setEditTarget(null)} disabled={isSavingEdit} className="flex-1 border-zinc-200 dark:border-zinc-800">Cancel</Button>
+                            <Button onClick={handleSaveEdit} disabled={isSavingEdit} className="flex-1 bg-violet-600 hover:bg-violet-700 text-white disabled:opacity-50">
+                                {isSavingEdit ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : ""} Save Changes
+                            </Button>
                         </div>
                     </div>
                 </DialogContent>

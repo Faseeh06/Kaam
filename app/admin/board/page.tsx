@@ -241,14 +241,17 @@ export default function BoardPage() {
 
   // List addition state
   const [isAddingList, setIsAddingList] = useState(false);
+  const [isSavingList, setIsSavingList] = useState(false);
   const [newListTitle, setNewListTitle] = useState("");
 
   // Card addition state
   const [addingCardToList, setAddingCardToList] = useState<string | null>(null);
+  const [isSavingCard, setIsSavingCard] = useState(false);
   const [newCardTitle, setNewCardTitle] = useState("");
 
   // List renaming state
   const [editingListId, setEditingListId] = useState<string | null>(null);
+  const [isRenamingList, setIsRenamingList] = useState(false);
   const [editListTitle, setEditListTitle] = useState("");
 
   // Detailed Modal state
@@ -260,50 +263,71 @@ export default function BoardPage() {
     "title" | "description" | null
   >(null);
   const [editCardText, setEditCardText] = useState("");
+  const [isSavingCardField, setIsSavingCardField] = useState(false);
   const [isEditingDeadline, setIsEditingDeadline] = useState(false);
   const [pendingDeadline, setPendingDeadline] = useState("");
 
   const handleSaveCardField = async () => {
-    if (!selectedCard || !editCardField) return;
-    const updates = { [editCardField]: editCardText };
+    if (!selectedCard || !editCardField || isSavingCardField) return;
+    setIsSavingCardField(true);
+    try {
+      const updates = { [editCardField]: editCardText };
 
-    // Optimistic local update of selectedCard state so modal doesn't flash
-    setSelectedCard({
-      ...selectedCard,
-      card: {
-        ...selectedCard.card,
-        [editCardField]: editCardText,
-      },
-    });
+      // Optimistic local update of selectedCard state so modal doesn't flash
+      setSelectedCard({
+        ...selectedCard,
+        card: {
+          ...selectedCard.card,
+          [editCardField]: editCardText,
+        },
+      });
 
-    await updateBoardCard(selectedCard.card.id, updates);
-    setEditCardField(null);
+      await updateBoardCard(selectedCard.card.id, updates);
+      setEditCardField(null);
+    } finally {
+      setIsSavingCardField(false);
+    }
   };
 
   // Handlers
   const handleAddList = async () => {
-    if (!newListTitle.trim() || !selectedTeamId) {
-      setIsAddingList(false);
+    if (!newListTitle.trim() || !selectedTeamId || isSavingList) {
+      if (!newListTitle.trim()) setIsAddingList(false);
       return;
     }
-    await addBoardList(selectedTeamId, newListTitle);
-    setNewListTitle("");
-    setIsAddingList(false);
+    setIsSavingList(true);
+    try {
+      await addBoardList(selectedTeamId, newListTitle);
+      setNewListTitle("");
+      setIsAddingList(false);
+    } finally {
+      setIsSavingList(false);
+    }
   };
 
   const handleAddCard = async (listId: string) => {
-    if (!newCardTitle.trim()) {
-      setAddingCardToList(null);
+    if (!newCardTitle.trim() || isSavingCard) {
+      if (!newCardTitle.trim()) setAddingCardToList(null);
       return;
     }
-    await addBoardCard(listId, newCardTitle);
-    setNewCardTitle("");
-    setAddingCardToList(null);
+    setIsSavingCard(true);
+    try {
+      await addBoardCard(listId, newCardTitle);
+      setNewCardTitle("");
+      setAddingCardToList(null);
+    } finally {
+      setIsSavingCard(false);
+    }
   };
 
   const handleRenameList = async (listId: string) => {
-    if (editListTitle.trim()) {
-      await updateBoardList(listId, editListTitle);
+    if (editListTitle.trim() && !isRenamingList) {
+      setIsRenamingList(true);
+      try {
+        await updateBoardList(listId, editListTitle);
+      } finally {
+        setIsRenamingList(false);
+      }
     }
     setEditingListId(null);
   };
@@ -574,39 +598,39 @@ export default function BoardPage() {
                                 card.comments ||
                                 card.attachments ||
                                 card.hasAvatar) && (
-                                <div className="flex items-center gap-3 text-zinc-500 mt-2">
-                                  {card.hasDescription && (
-                                    <AlignLeft className="h-3.5 w-3.5" />
-                                  )}
-                                  {card.comments && (
-                                    <div className="flex items-center gap-1.5 text-xs font-medium">
-                                      <MessageSquare className="h-3.5 w-3.5" />
-                                      <span>{card.comments}</span>
-                                    </div>
-                                  )}
-                                  {card.attachments && (
-                                    <div className="flex items-center gap-1.5 text-xs font-medium">
-                                      <Paperclip className="h-3.5 w-3.5" />
-                                      <span>{card.attachments}</span>
-                                    </div>
-                                  )}
-                                  {card.assigned_to_name && (
-                                    <div className="flex items-center gap-1.5 ml-auto bg-zinc-50 dark:bg-zinc-900/50 px-2 py-0.5 rounded-full border border-zinc-200 dark:border-zinc-800 transition-all group-hover:border-zinc-300 dark:group-hover:border-zinc-700">
-                                      <Avatar className="h-4 w-4 border-none shrink-0 shadow-none">
-                                        <AvatarFallback className="text-[7px] bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-500 font-bold">
-                                          {card.assigned_to_name
-                                            .split(" ")
-                                            .map((n: string) => n[0])
-                                            .join("")}
-                                        </AvatarFallback>
-                                      </Avatar>
-                                      <span className="text-[10px] font-semibold text-zinc-600 dark:text-zinc-300 truncate max-w-[100px] tracking-tight">
-                                        {card.assigned_to_name}
-                                      </span>
-                                    </div>
-                                  )}
-                                </div>
-                              )}
+                                  <div className="flex items-center gap-3 text-zinc-500 mt-2">
+                                    {card.hasDescription && (
+                                      <AlignLeft className="h-3.5 w-3.5" />
+                                    )}
+                                    {card.comments && (
+                                      <div className="flex items-center gap-1.5 text-xs font-medium">
+                                        <MessageSquare className="h-3.5 w-3.5" />
+                                        <span>{card.comments}</span>
+                                      </div>
+                                    )}
+                                    {card.attachments && (
+                                      <div className="flex items-center gap-1.5 text-xs font-medium">
+                                        <Paperclip className="h-3.5 w-3.5" />
+                                        <span>{card.attachments}</span>
+                                      </div>
+                                    )}
+                                    {card.assigned_to_name && (
+                                      <div className="flex items-center gap-1.5 ml-auto bg-zinc-50 dark:bg-zinc-900/50 px-2 py-0.5 rounded-full border border-zinc-200 dark:border-zinc-800 transition-all group-hover:border-zinc-300 dark:group-hover:border-zinc-700">
+                                        <Avatar className="h-4 w-4 border-none shrink-0 shadow-none">
+                                          <AvatarFallback className="text-[7px] bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-500 font-bold">
+                                            {card.assigned_to_name
+                                              .split(" ")
+                                              .map((n: string) => n[0])
+                                              .join("")}
+                                          </AvatarFallback>
+                                        </Avatar>
+                                        <span className="text-[10px] font-semibold text-zinc-600 dark:text-zinc-300 truncate max-w-[100px] tracking-tight">
+                                          {card.assigned_to_name}
+                                        </span>
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
                             </div>
                           )}
                         </Draggable>
@@ -635,15 +659,17 @@ export default function BoardPage() {
                             <Button
                               size="sm"
                               onClick={() => handleAddCard(list.id)}
-                              className="bg-rose-500 text-zinc-950 hover:bg-rose-600"
+                              disabled={isSavingCard}
+                              className="bg-rose-500 text-zinc-950 hover:bg-rose-600 disabled:opacity-50"
                             >
-                              Add card
+                              {isSavingCard ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : ""} Add card
                             </Button>
                             <Button
                               size="icon"
                               variant="ghost"
+                              disabled={isSavingCard}
                               onClick={() => setAddingCardToList(null)}
-                              className="h-8 w-8 text-zinc-500 dark:text-zinc-400 hover:text-[#172b4d] dark:text-white"
+                              className="h-8 w-8 text-zinc-500 dark:text-zinc-400 hover:text-[#172b4d] dark:text-white disabled:opacity-50"
                             >
                               <X className="h-4 w-4" />
                             </Button>
@@ -676,26 +702,29 @@ export default function BoardPage() {
                     autoFocus
                     placeholder="Enter list title..."
                     value={newListTitle}
+                    disabled={isSavingList}
                     onChange={(e) => setNewListTitle(e.target.value)}
                     onKeyDown={(e) => {
                       if (e.key === "Enter") handleAddList();
                       if (e.key === "Escape") setIsAddingList(false);
                     }}
-                    className="w-full bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700/80 rounded px-3 py-2 text-sm text-[#172b4d] dark:text-white outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500"
+                    className="w-full bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700/80 rounded px-3 py-2 text-sm text-[#172b4d] dark:text-white outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 disabled:opacity-50"
                   />
                   <div className="flex items-center gap-2">
                     <Button
                       size="sm"
                       onClick={handleAddList}
-                      className="bg-rose-500 text-zinc-950 hover:bg-rose-600"
+                      disabled={isSavingList}
+                      className="bg-rose-500 text-zinc-950 hover:bg-rose-600 disabled:opacity-50"
                     >
-                      Add list
+                      {isSavingList ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : ""} Add list
                     </Button>
                     <Button
                       size="icon"
                       variant="ghost"
+                      disabled={isSavingList}
                       onClick={() => setIsAddingList(false)}
-                      className="h-8 w-8 text-zinc-500 dark:text-zinc-400 hover:text-[#172b4d] dark:text-white"
+                      className="h-8 w-8 text-zinc-500 dark:text-zinc-400 hover:text-[#172b4d] dark:text-white disabled:opacity-50"
                     >
                       <X className="h-4 w-4" />
                     </Button>
@@ -724,11 +753,10 @@ export default function BoardPage() {
           <button
             key={team.id}
             onClick={() => setSelectedTeamId(team.id)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-full transition text-sm font-medium whitespace-nowrap ${
-              selectedTeamId === team.id
-                ? "bg-rose-500/10 text-rose-600 dark:text-rose-500 border border-rose-500/20"
-                : "text-zinc-500 dark:text-zinc-400 hover:text-[#172b4d] dark:text-zinc-100 hover:bg-zinc-200/50 dark:hover:bg-zinc-800 border border-transparent"
-            }`}
+            className={`flex items-center gap-2 px-4 py-2 rounded-full transition text-sm font-medium whitespace-nowrap ${selectedTeamId === team.id
+              ? "bg-rose-500/10 text-rose-600 dark:text-rose-500 border border-rose-500/20"
+              : "text-zinc-500 dark:text-zinc-400 hover:text-[#172b4d] dark:text-zinc-100 hover:bg-zinc-200/50 dark:hover:bg-zinc-800 border border-transparent"
+              }`}
           >
             <span
               className={`h-2 w-2 rounded-full shrink-0 ${team.color || "bg-rose-500"}`}
@@ -773,22 +801,25 @@ export default function BoardPage() {
                       <input
                         autoFocus
                         value={editCardText}
+                        disabled={isSavingCardField}
                         onChange={(e) => setEditCardText(e.target.value)}
-                        className="text-xl md:text-2xl font-semibold bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700/80 rounded px-2 py-1 text-[#172b4d] dark:text-white w-full outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500"
+                        className="text-xl md:text-2xl font-semibold bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700/80 rounded px-2 py-1 text-[#172b4d] dark:text-white w-full outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 disabled:opacity-50"
                       />
                       <div className="flex items-center gap-2">
                         <Button
                           size="sm"
+                          disabled={isSavingCardField}
                           onClick={handleSaveCardField}
-                          className="bg-rose-500 text-white hover:bg-rose-600 h-8 px-3"
+                          className="bg-rose-500 text-white hover:bg-rose-600 h-8 px-3 disabled:opacity-50"
                         >
-                          Save
+                          {isSavingCardField ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : ""} Save
                         </Button>
                         <Button
                           size="icon"
                           variant="ghost"
+                          disabled={isSavingCardField}
                           onClick={() => setEditCardField(null)}
-                          className="h-8 w-8 text-zinc-500 hover:text-zinc-800"
+                          className="h-8 w-8 text-zinc-500 hover:text-zinc-800 disabled:opacity-50"
                         >
                           <X className="h-4 w-4" />
                         </Button>
@@ -878,8 +909,8 @@ export default function BoardPage() {
                                 pendingDeadline ||
                                 (selectedCard.card.deadline
                                   ? new Date(selectedCard.card.deadline)
-                                      .toISOString()
-                                      .slice(0, 16)
+                                    .toISOString()
+                                    .slice(0, 16)
                                   : "")
                               }
                               onChange={(e) =>
@@ -932,8 +963,8 @@ export default function BoardPage() {
                               setPendingDeadline(
                                 selectedCard.card.deadline
                                   ? new Date(selectedCard.card.deadline)
-                                      .toISOString()
-                                      .slice(0, 16)
+                                    .toISOString()
+                                    .slice(0, 16)
                                   : "",
                               );
                             }}
@@ -943,7 +974,7 @@ export default function BoardPage() {
                             <Calendar className="h-3.5 w-3.5 mr-1.5" />
                             {selectedCard.card.deadline
                               ? formatDeadline(selectedCard.card.deadline)
-                                  ?.label
+                                ?.label
                               : "Set Deadline"}
                           </Button>
                         )}
@@ -1264,10 +1295,10 @@ export default function BoardPage() {
                   ))}
                   {(!selectedCard.card.activity ||
                     selectedCard.card.activity.length === 0) && (
-                    <p className="text-sm text-zinc-600 italic">
-                      No activity yet.
-                    </p>
-                  )}
+                      <p className="text-sm text-zinc-600 italic">
+                        No activity yet.
+                      </p>
+                    )}
                 </div>
               </div>
             </div>

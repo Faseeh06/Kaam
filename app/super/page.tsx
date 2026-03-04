@@ -247,11 +247,11 @@ export default function SuperDashboardPage() {
                                     </div>
 
                                     <div className="pt-2 flex gap-3">
-                                        <Button variant="outline" className="flex-1" onClick={() => setIsAssignOpen(false)}>Cancel</Button>
+                                        <Button variant="outline" className="flex-1 border-zinc-200 dark:border-zinc-800" disabled={isAssigning} onClick={() => setIsAssignOpen(false)}>Cancel</Button>
                                         <Button
                                             disabled={!selectedUser || !selectedSoc || isAssigning}
                                             onClick={handleAssignPresident}
-                                            className="flex-1 bg-violet-600 hover:bg-violet-700 text-white"
+                                            className="flex-1 bg-violet-600 hover:bg-violet-700 text-white disabled:opacity-50"
                                         >
                                             {isAssigning ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <ShieldCheck className="h-4 w-4 mr-2" />}
                                             Assign President

@@ -187,9 +187,12 @@ export default function BoardPage() {
 
     // UI state
     const [isAddingList, setIsAddingList] = useState(false);
+    const [isSavingList, setIsSavingList] = useState(false);
     const [newListTitle, setNewListTitle] = useState("");
     const [addingCardToList, setAddingCardToList] = useState<string | null>(null);
+    const [isSavingCard, setIsSavingCard] = useState(false);
     const [editingListId, setEditingListId] = useState<string | null>(null);
+    const [isRenamingList, setIsRenamingList] = useState(false);
     const [editListTitle, setEditListTitle] = useState("");
     const [selectedCard, setSelectedCard] = useState<{ card: CardProps; listId: string; listTitle: string } | null>(null);
 
@@ -199,44 +202,71 @@ export default function BoardPage() {
 
     // Edit Card logic
     const [editCardField, setEditCardField] = useState<"title" | "description" | null>(null);
+    const [isSavingCardField, setIsSavingCardField] = useState(false);
     const [editCardText, setEditCardText] = useState("");
     const [isEditingDeadline, setIsEditingDeadline] = useState(false);
     const [pendingDeadline, setPendingDeadline] = useState("");
 
     const handleSaveCardField = async () => {
-        if (!selectedCard || !editCardField) return;
-        const updates = { [editCardField]: editCardText };
-
-        setSelectedCard({
-            ...selectedCard,
-            card: {
-                ...selectedCard.card,
-                [editCardField]: editCardText
-            }
-        });
-        await updateBoardCard(selectedCard.card.id, updates);
-        setEditCardField(null);
+        if (!selectedCard || !editCardField || isSavingCardField) return;
+        setIsSavingCardField(true);
+        try {
+            const updates = { [editCardField]: editCardText };
+            setSelectedCard({
+                ...selectedCard,
+                card: {
+                    ...selectedCard.card,
+                    [editCardField]: editCardText
+                }
+            });
+            await updateBoardCard(selectedCard.card.id, updates);
+            setEditCardField(null);
+        } finally {
+            setIsSavingCardField(false);
+        }
     };
 
     // ── Handlers ──────────────────────────────────────────────────────────────
 
     const handleAddList = async () => {
-        if (!newListTitle.trim() || !myTeam) { setIsAddingList(false); return; }
-        await addBoardList(myTeam.id, newListTitle);
-        setNewListTitle(""); setIsAddingList(false);
+        if (!newListTitle.trim() || !myTeam || isSavingList) return;
+        setIsSavingList(true);
+        try {
+            await addBoardList(myTeam.id, newListTitle);
+            setNewListTitle("");
+            setIsAddingList(false);
+        } finally {
+            setIsSavingList(false);
+        }
     };
 
     const handleAddCard = async (listId: string) => {
-        if (!newCardTitle.trim()) { setAddingCardToList(null); return; }
-        await addBoardCard(listId, newCardTitle);
-        setNewCardTitle("");
-        setAddingCardToList(null);
+        if (!newCardTitle.trim() || isSavingCard) {
+            if (!newCardTitle.trim()) setAddingCardToList(null);
+            return;
+        }
+        setIsSavingCard(true);
+        try {
+            await addBoardCard(listId, newCardTitle);
+            setNewCardTitle("");
+            setAddingCardToList(null);
+        } finally {
+            setIsSavingCard(false);
+        }
     };
 
     const handleRenameList = async (listId: string) => {
-        if (!editListTitle.trim()) { setEditingListId(null); return; }
-        await updateBoardList(listId, editListTitle);
-        setEditingListId(null);
+        if (!editListTitle.trim() || isRenamingList) {
+            if (!editListTitle.trim()) setEditingListId(null);
+            return;
+        }
+        setIsRenamingList(true);
+        try {
+            await updateBoardList(listId, editListTitle);
+            setEditingListId(null);
+        } finally {
+            setIsRenamingList(false);
+        }
     };
 
     const onDragEnd = async (result: DropResult) => {
@@ -479,8 +509,10 @@ export default function BoardPage() {
                                                         className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded p-2 text-sm outline-none resize-none" rows={2} />
 
                                                     <div className="flex gap-2">
-                                                        <Button size="sm" onClick={() => handleAddCard(list.id)} className="bg-amber-500 text-zinc-950 hover:bg-amber-600 text-xs h-7">Add task</Button>
-                                                        <Button size="icon" variant="ghost" onClick={() => setAddingCardToList(null)} className="h-7 w-7 text-zinc-500"><X className="h-4 w-4" /></Button>
+                                                        <Button size="sm" onClick={() => handleAddCard(list.id)} disabled={isSavingCard} className="bg-amber-500 text-zinc-950 hover:bg-amber-600 text-xs h-7 disabled:opacity-50">
+                                                            {isSavingCard ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : ""} Add task
+                                                        </Button>
+                                                        <Button size="icon" variant="ghost" onClick={() => setAddingCardToList(null)} disabled={isSavingCard} className="h-7 w-7 text-zinc-500 disabled:opacity-50"><X className="h-4 w-4" /></Button>
                                                     </div>
                                                 </div>
                                             ) : myPerms.canAddToBoard ? (
@@ -503,11 +535,14 @@ export default function BoardPage() {
                                 {isAddingList ? (
                                     <div className="bg-white dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800 rounded-xl p-3 space-y-3">
                                         <input autoFocus placeholder="Enter list title..." value={newListTitle} onChange={e => setNewListTitle(e.target.value)}
+                                            disabled={isSavingList}
                                             onKeyDown={e => { if (e.key === 'Enter') handleAddList(); if (e.key === 'Escape') setIsAddingList(false); }}
-                                            className="w-full bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700 rounded px-3 py-2 text-sm outline-none focus:border-amber-500/50" />
+                                            className="w-full bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700 rounded px-3 py-2 text-sm outline-none focus:border-amber-500/50 disabled:opacity-50" />
                                         <div className="flex gap-2">
-                                            <Button size="sm" onClick={handleAddList} className="bg-amber-500 text-zinc-950 hover:bg-amber-600">Add list</Button>
-                                            <Button size="icon" variant="ghost" onClick={() => setIsAddingList(false)} className="h-8 w-8 text-zinc-500"><X className="h-4 w-4" /></Button>
+                                            <Button size="sm" onClick={handleAddList} disabled={isSavingList} className="bg-amber-500 text-zinc-950 hover:bg-amber-600 disabled:opacity-50">
+                                                {isSavingList ? <Loader2 className="h-4 w-4 animate-spin" /> : "Add list"}
+                                            </Button>
+                                            <Button size="icon" variant="ghost" onClick={() => setIsAddingList(false)} disabled={isSavingList} className="h-8 w-8 text-zinc-500"><X className="h-4 w-4" /></Button>
                                         </div>
                                     </div>
                                 ) : (
@@ -548,12 +583,15 @@ export default function BoardPage() {
                                             <input
                                                 autoFocus
                                                 value={editCardText}
+                                                disabled={isSavingCardField}
                                                 onChange={e => setEditCardText(e.target.value)}
-                                                className="text-xl md:text-2xl font-semibold bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700/80 rounded px-2 py-1 text-[#172b4d] dark:text-white w-full outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500"
+                                                className="text-xl md:text-2xl font-semibold bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700/80 rounded px-2 py-1 text-[#172b4d] dark:text-white w-full outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500 disabled:opacity-50"
                                             />
                                             <div className="flex items-center gap-2">
-                                                <Button size="sm" onClick={handleSaveCardField} className="bg-amber-500 text-zinc-950 hover:bg-amber-600 h-8 px-3">Save</Button>
-                                                <Button size="icon" variant="ghost" onClick={() => setEditCardField(null)} className="h-8 w-8 text-zinc-500 hover:text-zinc-800"><X className="h-4 w-4" /></Button>
+                                                <Button size="sm" onClick={handleSaveCardField} disabled={isSavingCardField} className="bg-amber-500 text-zinc-950 hover:bg-amber-600 h-8 px-3 disabled:opacity-50">
+                                                    {isSavingCardField ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : ""} Save
+                                                </Button>
+                                                <Button size="icon" variant="ghost" disabled={isSavingCardField} onClick={() => setEditCardField(null)} className="h-8 w-8 text-zinc-500 hover:text-zinc-800 disabled:opacity-50"><X className="h-4 w-4" /></Button>
                                             </div>
                                         </div>
                                     ) : (

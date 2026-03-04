@@ -1,6 +1,6 @@
 "use client";
 
-import { Users, Search, Download, Filter, MoreHorizontal, Trash2, UserCog, Building2, X } from "lucide-react";
+import { Users, Search, Download, Filter, MoreHorizontal, Trash2, UserCog, Building2, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useState } from "react";
@@ -15,6 +15,27 @@ export default function SuperUsersPage() {
     const [search, setSearch] = useState("");
     const [filterSocietyId, setFilterSocietyId] = useState<string>("all");
     const [activeTab, setActiveTab] = useState<"Active" | "Pending">("Active");
+    const [processingUserId, setProcessingUserId] = useState<string | null>(null);
+
+    const handleApprove = async (id: string, role: string, team: string) => {
+        if (processingUserId) return;
+        setProcessingUserId(id);
+        try {
+            await approvePendingUser(id, role, team);
+        } finally {
+            setProcessingUserId(null);
+        }
+    };
+
+    const handleReject = async (id: string) => {
+        if (processingUserId) return;
+        setProcessingUserId(id);
+        try {
+            await rejectPendingUser(id);
+        } finally {
+            setProcessingUserId(null);
+        }
+    };
 
 
     // Filter: search + optional society
@@ -164,7 +185,7 @@ export default function SuperUsersPage() {
                                                         </DropdownMenuItem>
                                                         <DropdownMenuSeparator className="bg-zinc-100 dark:bg-zinc-800 my-1" />
                                                         <DropdownMenuItem
-                                                            onClick={() => removeUser(user.id)}
+                                                            onClick={() => removeUser(user.id, user.societyIds[0] || "")}
                                                             className="flex items-center gap-2 text-rose-600 dark:text-rose-400 cursor-pointer hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg text-sm">
                                                             <Trash2 className="h-3.5 w-3.5" /> Delete User
                                                         </DropdownMenuItem>
@@ -200,15 +221,17 @@ export default function SuperUsersPage() {
                                             <td className="px-6 py-4 text-right">
                                                 <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                                     <Button
-                                                        onClick={() => approvePendingUser(user.id, "Admin", "Unassigned")}
-                                                        className="h-8 px-3 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold rounded-lg shadow-sm">
-                                                        Approve as Admin
+                                                        onClick={() => handleApprove(user.id, "Admin", "Unassigned")}
+                                                        disabled={processingUserId === user.id}
+                                                        className="h-8 px-3 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold rounded-lg shadow-sm disabled:opacity-50">
+                                                        {processingUserId === user.id ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : ""} Approve as Admin
                                                     </Button>
                                                     <Button
                                                         variant="secondary"
-                                                        onClick={() => rejectPendingUser(user.id)}
-                                                        className="h-8 px-3 text-xs font-medium rounded-lg">
-                                                        Reject
+                                                        onClick={() => handleReject(user.id)}
+                                                        disabled={processingUserId === user.id}
+                                                        className="h-8 px-3 text-xs font-medium rounded-lg disabled:opacity-50">
+                                                        {processingUserId === user.id ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : ""} Reject
                                                     </Button>
                                                 </div>
                                             </td>

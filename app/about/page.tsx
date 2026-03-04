@@ -19,21 +19,21 @@ export default function AboutPage() {
                 </div>
             </div>
 
-            <div className="bg-zinc-950 min-h-screen pb-24">
+            <div className="bg-zinc-950 min-h-screen">
                 <PageHeader
                     title="About Kaam"
                     description="Learn about the problems we are solving and the solutions we provide for multi-society management."
                 >
-                    <div className="flex gap-4 justify-center">
+                    <div className="flex gap-4 justify-center mb-16">
                         <Link href="/signup">
                             <Button size="lg" className="bg-white px-6 text-slate-900 hover:bg-white/90">Get Started</Button>
                         </Link>
                     </div>
+                    <div className="w-full relative z-10 flex flex-col gap-12">
+                        <ProblemSection className="!bg-transparent !border-none !py-0" />
+                        <SolutionSection className="!bg-transparent !border-none !py-0" />
+                    </div>
                 </PageHeader>
-                <div className="border-t border-zinc-700/30">
-                    <ProblemSection />
-                </div>
-                <SolutionSection />
             </div>
 
             <CtaSection />

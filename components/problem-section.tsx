@@ -1,10 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
-export function ProblemSection() {
+export function ProblemSection({ className }: { className?: string }) {
   return (
-    <section className="relative w-full bg-zinc-900 py-24 md:py-32 border-b border-zinc-700/30">
+    <section className={cn("w-full bg-zinc-900 py-24 md:py-32 border-b border-zinc-700/30", className)}>
       {/* Grain texture overlay */}
       <div className="pointer-events-none absolute inset-0 opacity-[0.02]" style={{
         backgroundImage: "url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22><filter id=%22noise%22><feTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%224%22 result=%22noise%22 /></filter><rect width=%22100%22 height=%22100%22 filter=%22url(%23noise)%22 fill=%22%23ffffff%22/></svg>'\")",

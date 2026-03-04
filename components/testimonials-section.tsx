@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 const testimonials = [
   {
@@ -55,7 +56,7 @@ const testimonials = [
   },
 ];
 
-export function TestimonialsSection() {
+export function TestimonialsSection({ className }: { className?: string }) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const nextTestimonial = () => {
@@ -69,7 +70,7 @@ export function TestimonialsSection() {
   };
 
   return (
-    <section className="w-full bg-zinc-900 py-24 md:py-32 border-b border-zinc-700/30">
+    <section className={cn("w-full bg-zinc-900 py-24 md:py-32 overflow-hidden border-b border-zinc-700/30", className)}>
       <div className="mx-auto max-w-7xl px-6 md:px-12 lg:px-16">
         {/* Header */}
         <div className="flex flex-col gap-6 mb-16">

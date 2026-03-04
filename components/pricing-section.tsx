@@ -71,13 +71,13 @@ const plans: PricingPlan[] = [
   },
 ];
 
-export function PricingSection() {
+export function PricingSection({ className }: { className?: string }) {
   const [isYearly, setIsYearly] = useState(false);
 
   return (
     <section
       id="pricing"
-      className="w-full bg-zinc-900 py-24 md:py-32 border-b border-zinc-700/30"
+      className={cn("w-full bg-zinc-900 py-24 md:py-32 border-b border-zinc-700/30", className)}
     >
       <div className="mx-auto max-w-7xl px-6 md:px-12 lg:px-16">
         {/* Header */}

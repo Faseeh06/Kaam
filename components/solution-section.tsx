@@ -42,7 +42,7 @@ const features: Feature[] = [
   },
 ];
 
-export function SolutionSection() {
+export function SolutionSection({ className }: { className?: string }) {
   const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
@@ -53,7 +53,7 @@ export function SolutionSection() {
   }, []);
 
   return (
-    <section className="w-full bg-zinc-900 text-white py-24 flex flex-col items-center overflow-hidden border-b border-zinc-700/30">
+    <section className={cn("w-full bg-zinc-950 py-24 md:py-32 flex flex-col items-center overflow-hidden border-b border-zinc-700/30", className)}>
       <div className="max-w-7xl w-full px-6 md:px-12 lg:px-16 space-y-12">
         {/* Header Section */}
         <div className="flex flex-col gap-4 max-w-[560px]">

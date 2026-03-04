@@ -44,7 +44,7 @@ const faqs: FAQItem[] = [
   },
 ];
 
-export function FaqSection() {
+export function FaqSection({ className }: { className?: string }) {
   const [openId, setOpenId] = useState<string | null>(null);
 
   const toggleQuestion = (id: string) => {
@@ -54,7 +54,7 @@ export function FaqSection() {
   return (
     <section
       id="faq"
-      className="w-full bg-zinc-900 py-24 md:py-32 border-b border-zinc-700/30"
+      className={cn("w-full bg-zinc-950 py-24 md:py-32 border-b border-zinc-700/30", className)}
     >
       <div className="mx-auto max-w-7xl px-6 md:px-12 lg:px-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">

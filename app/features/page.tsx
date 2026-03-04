@@ -17,20 +17,20 @@ export default function FeaturesPage() {
                 </div>
             </div>
 
-            <div className="bg-zinc-950 min-h-screen pb-24">
+            <div className="bg-zinc-950 min-h-screen">
                 <PageHeader
                     title="Powerful Features"
                     description="Discover all the tools Kaam provides to make multi-society management effortless."
                 >
-                    <div className="flex gap-4 justify-center">
+                    <div className="flex gap-4 justify-center mb-16">
                         <Link href="/signup">
                             <Button size="lg" className="bg-white px-6 text-slate-900 hover:bg-white/90">Get Started</Button>
                         </Link>
                     </div>
+                    <div className="w-full relative z-10">
+                        <FeaturesSection className="!bg-transparent !border-none !py-0" />
+                    </div>
                 </PageHeader>
-                <div className="border-t border-zinc-700/30">
-                    <FeaturesSection />
-                </div>
             </div>
 
             <CtaSection />

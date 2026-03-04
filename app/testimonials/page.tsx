@@ -17,20 +17,20 @@ export default function TestimonialsPage() {
                 </div>
             </div>
 
-            <div className="bg-zinc-950 min-h-screen pb-24">
+            <div className="bg-zinc-950 min-h-screen">
                 <PageHeader
                     title="What Our Users Say"
                     description="Hear from societies and organizations that have transformed their management with Kaam."
                 >
-                    <div className="flex gap-4 justify-center">
+                    <div className="flex gap-4 justify-center mb-16">
                         <Link href="/signup">
                             <Button size="lg" className="bg-white px-6 text-slate-900 hover:bg-white/90">Get Started</Button>
                         </Link>
                     </div>
+                    <div className="w-full relative z-10">
+                        <TestimonialsSection className="!bg-transparent !border-none !py-0" />
+                    </div>
                 </PageHeader>
-                <div className="border-t border-zinc-700/30">
-                    <TestimonialsSection />
-                </div>
             </div>
 
             <CtaSection />

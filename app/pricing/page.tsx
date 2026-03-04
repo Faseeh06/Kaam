@@ -17,20 +17,20 @@ export default function PricingPage() {
                 </div>
             </div>
 
-            <div className="bg-zinc-950 min-h-screen pb-24">
+            <div className="bg-zinc-950 min-h-screen">
                 <PageHeader
                     title="Simple Pricing"
                     description="Choose a plan that matches your organization's ambitions. Includes a free plan to get started."
                 >
-                    <div className="flex gap-4 justify-center">
+                    <div className="flex gap-4 justify-center mb-16">
                         <Link href="/signup">
                             <Button size="lg" className="bg-white px-6 text-slate-900 hover:bg-white/90">Get Started</Button>
                         </Link>
                     </div>
+                    <div className="w-full relative z-10">
+                        <PricingSection className="!bg-transparent !border-none !py-0" />
+                    </div>
                 </PageHeader>
-                <div className="border-t border-zinc-700/30">
-                    <PricingSection />
-                </div>
             </div>
 
             <CtaSection />

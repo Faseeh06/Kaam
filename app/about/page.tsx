@@ -1,4 +1,4 @@
-import { SiteHeader } from "@/components/site-header";
+import { PageHeader } from "@/components/page-header";
 import { ProblemSection } from "@/components/problem-section";
 import { SolutionSection } from "@/components/solution-section";
 import { CtaSection } from "@/components/cta-section";
@@ -17,12 +17,11 @@ export default function AboutPage() {
                 </div>
             </div>
 
-            <div className="bg-zinc-950 min-h-screen pt-4 pb-24">
-                <SiteHeader />
-                <div className="pt-24 pb-12 text-center px-6">
-                    <h1 className="text-4xl md:text-5xl font-medium tracking-tight text-white mb-6">About Kaam</h1>
-                    <p className="text-white/70 max-w-2xl mx-auto">Learn about the problems we are solving and the solutions we provide for multi-society management.</p>
-                </div>
+            <div className="bg-zinc-950 min-h-screen pb-24">
+                <PageHeader
+                    title="About Kaam"
+                    description="Learn about the problems we are solving and the solutions we provide for multi-society management."
+                />
                 <ProblemSection />
                 <SolutionSection />
             </div>

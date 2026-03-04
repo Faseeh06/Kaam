@@ -1,4 +1,4 @@
-import { SiteHeader } from "@/components/site-header";
+import { PageHeader } from "@/components/page-header";
 import { TestimonialsSection } from "@/components/testimonials-section";
 import { CtaSection } from "@/components/cta-section";
 import { Footer } from "@/components/footer";
@@ -15,12 +15,11 @@ export default function TestimonialsPage() {
                 </div>
             </div>
 
-            <div className="bg-zinc-950 min-h-screen pt-4 pb-24">
-                <SiteHeader />
-                <div className="pt-24 pb-12 text-center px-6">
-                    <h1 className="text-4xl md:text-5xl font-medium tracking-tight text-white mb-6">What Our Users Say</h1>
-                    <p className="text-white/70 max-w-2xl mx-auto">Hear from societies and organizations that have transformed their management with Kaam.</p>
-                </div>
+            <div className="bg-zinc-950 min-h-screen pb-24">
+                <PageHeader
+                    title="What Our Users Say"
+                    description="Hear from societies and organizations that have transformed their management with Kaam."
+                />
                 <TestimonialsSection />
             </div>
 

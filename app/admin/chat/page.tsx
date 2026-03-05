@@ -43,7 +43,7 @@ export default function AdminChatPage() {
             <Construction className="h-3.5 w-3.5" />
             Under Construction
           </div>
-          <h1 className="text-3xl font-bold text-white dark:text-white">
+          <h1 className="text-3xl font-bold text-zinc-900 dark:text-white">
             In-App Chat
           </h1>
           <p className="text-zinc-500 dark:text-zinc-400 text-base leading-relaxed max-w-sm mx-auto">

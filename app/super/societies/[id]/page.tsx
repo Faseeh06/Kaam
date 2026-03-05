@@ -43,7 +43,7 @@ export default function SocietyDetailPage() {
         return (
             <div className="h-full flex flex-col items-center justify-center p-8">
                 <Building2 className="h-16 w-16 text-zinc-300 mb-4" />
-                <h2 className="text-xl font-bold text-white dark:text-white">Society not found</h2>
+                <h2 className="text-xl font-bold text-zinc-900 dark:text-white">Society not found</h2>
                 <Button variant="link" onClick={() => router.push('/super/societies')} className="text-violet-600">
                     Return to Registry
                 </Button>
@@ -68,7 +68,7 @@ export default function SocietyDetailPage() {
                     <h1 className="text-sm font-semibold text-zinc-500 uppercase tracking-widest">Society Details</h1>
                     <div className="flex items-center gap-2">
                         <Building2 className="h-4 w-4 text-violet-500" />
-                        <span className="text-lg font-bold text-white dark:text-white">{society.name}</span>
+                        <span className="text-lg font-bold text-zinc-900 dark:text-white">{society.name}</span>
                     </div>
                 </div>
 
@@ -116,7 +116,7 @@ export default function SocietyDetailPage() {
 
                         <div className="flex-1 pb-1">
                             <div className="flex items-center gap-3 mb-1">
-                                <h2 className="text-2xl md:text-3xl font-bold text-white dark:text-white">{society.name}</h2>
+                                <h2 className="text-2xl md:text-3xl font-bold text-zinc-900 dark:text-white">{society.name}</h2>
                                 <Badge className={cn(
                                     society.status === 'Active' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-rose-500/10 text-rose-600 border-rose-500/20',
                                     "font-bold uppercase tracking-widest text-[10px]"
@@ -187,7 +187,7 @@ export default function SocietyDetailPage() {
                                                     {card.isCompleted ? <CheckCircle2 className="h-4 w-4" /> : <Clock className="h-4 w-4" />}
                                                 </div>
                                                 <div>
-                                                    <p className="text-sm font-bold text-white dark:text-zinc-100 leading-tight">{card.title}</p>
+                                                    <p className="text-sm font-bold text-zinc-900 dark:text-zinc-100 leading-tight">{card.title}</p>
                                                     <p className="text-[10px] text-zinc-500 uppercase font-bold tracking-tight mt-0.5">Updated recently</p>
                                                 </div>
                                             </div>
@@ -251,7 +251,7 @@ export default function SocietyDetailPage() {
                                         </div>
                                         <Badge variant="secondary" className="text-[10px] font-bold uppercase tracking-widest">{team.type}</Badge>
                                     </div>
-                                    <h4 className="font-bold text-white dark:text-white group-hover:text-violet-600 transition-colors">{team.name}</h4>
+                                    <h4 className="font-bold text-zinc-900 dark:text-white group-hover:text-violet-600 transition-colors">{team.name}</h4>
                                     <p className="text-xs text-zinc-500 mb-4">{team.members} Active Members</p>
                                     <div className="flex items-center justify-between pt-4 border-t border-zinc-100 dark:border-zinc-800/50">
                                         <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Leads: {team.leads.length}</span>
@@ -285,7 +285,7 @@ export default function SocietyDetailPage() {
                                                         <AvatarFallback className="bg-violet-50 text-violet-600 font-bold text-xs">{user.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                                                     </Avatar>
                                                     <div>
-                                                        <p className="text-sm font-bold text-white dark:text-zinc-100">{user.name}</p>
+                                                        <p className="text-sm font-bold text-zinc-900 dark:text-zinc-100">{user.name}</p>
                                                         <p className="text-xs text-zinc-500">{user.email}</p>
                                                     </div>
                                                 </div>
@@ -343,7 +343,7 @@ export default function SocietyDetailPage() {
                                             <AvatarFallback className="bg-violet-600 text-white font-bold text-lg">{admin.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                                         </Avatar>
                                         <div>
-                                            <h4 className="font-bold text-lg text-white dark:text-white leading-tight">{admin.name}</h4>
+                                            <h4 className="font-bold text-lg text-zinc-900 dark:text-white leading-tight">{admin.name}</h4>
                                             <Badge variant="outline" className="bg-violet-50 dark:bg-violet-500/10 border-violet-200 dark:border-violet-500/20 text-violet-600 dark:text-violet-400 font-bold uppercase text-[9px] mt-1">
                                                 {admin.role}
                                             </Badge>
@@ -396,7 +396,7 @@ function StatCard({ label, value, icon: Icon, color }: { label: string; value: s
                 </div>
                 <div>
                     <p className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">{label}</p>
-                    <p className="text-xl font-bold text-white dark:text-white">{value}</p>
+                    <p className="text-xl font-bold text-zinc-900 dark:text-white">{value}</p>
                 </div>
             </CardContent>
         </Card>

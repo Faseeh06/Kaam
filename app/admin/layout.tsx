@@ -121,7 +121,7 @@ export default function AdminLayout({
           <ShieldOff className="h-10 w-10 text-rose-500" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-white dark:text-white mb-2">
+          <h1 className="text-2xl font-bold text-zinc-900 dark:text-white mb-2">
             Access Restricted
           </h1>
           <p className="text-zinc-500 dark:text-zinc-400 max-w-sm">
@@ -149,7 +149,7 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="flex h-screen bg-background dark:bg-zinc-950 text-white dark:text-white overflow-hidden selection:bg-rose-500/30 transition-colors">
+    <div className="flex h-screen bg-background dark:bg-zinc-950 text-zinc-900 dark:text-white overflow-hidden selection:bg-rose-500/30 transition-colors">
 
       {/* Mobile Sidebar Overlay */}
       {isMobileMenuOpen && (
@@ -166,7 +166,7 @@ export default function AdminLayout({
         {/* Mobile Close Button */}
         <button
           onClick={() => setIsMobileMenuOpen(false)}
-          className="md:hidden absolute right-4 top-5 text-zinc-500 hover:text-white"
+          className="md:hidden absolute right-4 top-5 text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
         >
           <X className="h-5 w-5" />
         </button>
@@ -174,7 +174,7 @@ export default function AdminLayout({
         {/* Collapse Toggle Button (Desktop Only) */}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="hidden md:flex absolute -right-3.5 top-20 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 hover:text-white dark:hover:text-white rounded-full p-1 z-50 transition-colors shadow-sm"
+          className="hidden md:flex absolute -right-3.5 top-20 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white rounded-full p-1 z-50 transition-colors shadow-sm"
         >
           {isCollapsed ? (
             <ChevronRight className="h-4 w-4" />
@@ -210,7 +210,7 @@ export default function AdminLayout({
 
           <Link
             href="/admin"
-            className={`flex items-center ${isCollapsed ? "justify-center px-0" : "gap-3 px-3"} py-2.5 rounded-lg transition-colors group relative ${pathname === "/admin" ? "text-rose-600 dark:text-rose-500 bg-rose-50/80 dark:bg-rose-500/10 hover:bg-rose-100/50 dark:hover:bg-rose-500/20" : "text-zinc-500 dark:text-zinc-400 hover:text-white dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-900/50"}`}
+            className={`flex items-center ${isCollapsed ? "justify-center px-0" : "gap-3 px-3"} py-2.5 rounded-lg transition-colors group relative ${pathname === "/admin" ? "text-rose-600 dark:text-rose-500 bg-rose-50/80 dark:bg-rose-500/10 hover:bg-rose-100/50 dark:hover:bg-rose-500/20" : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-900/50"}`}
             title="Dashboard"
           >
             <LayoutDashboard
@@ -223,7 +223,7 @@ export default function AdminLayout({
 
           <Link
             href="/admin/users"
-            className={`flex items-center ${isCollapsed ? "justify-center px-0" : "gap-3 px-3"} py-2.5 rounded-lg transition-colors group relative ${pathname === "/admin/users" ? "text-rose-600 dark:text-rose-500 bg-rose-50/80 dark:bg-rose-500/10 hover:bg-rose-100/50 dark:hover:bg-rose-500/20" : "text-zinc-500 dark:text-zinc-400 hover:text-white dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-900/50"}`}
+            className={`flex items-center ${isCollapsed ? "justify-center px-0" : "gap-3 px-3"} py-2.5 rounded-lg transition-colors group relative ${pathname === "/admin/users" ? "text-rose-600 dark:text-rose-500 bg-rose-50/80 dark:bg-rose-500/10 hover:bg-rose-100/50 dark:hover:bg-rose-500/20" : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-900/50"}`}
             title="Users & Approvals"
           >
             <Users
@@ -235,7 +235,7 @@ export default function AdminLayout({
           {userData?.role === "Admin" && (
             <Link
               href="/admin/society"
-              className={`flex items-center ${isCollapsed ? "justify-center px-0" : "gap-3 px-3"} py-2.5 rounded-lg transition-colors group relative ${pathname === "/admin/society" ? "text-rose-600 dark:text-rose-500 bg-rose-50/80 dark:bg-rose-500/10 hover:bg-rose-100/50 dark:hover:bg-rose-500/20" : "text-zinc-500 dark:text-zinc-400 hover:text-white dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-900/50"}`}
+              className={`flex items-center ${isCollapsed ? "justify-center px-0" : "gap-3 px-3"} py-2.5 rounded-lg transition-colors group relative ${pathname === "/admin/society" ? "text-rose-600 dark:text-rose-500 bg-rose-50/80 dark:bg-rose-500/10 hover:bg-rose-100/50 dark:hover:bg-rose-500/20" : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-900/50"}`}
               title="Society Details"
             >
               <Building2
@@ -249,7 +249,7 @@ export default function AdminLayout({
 
           <Link
             href="/admin/teams"
-            className={`flex items-center ${isCollapsed ? "justify-center px-0" : "gap-3 px-3"} py-2.5 rounded-lg transition-colors group relative ${pathname === "/admin/teams" ? "text-rose-600 dark:text-rose-500 bg-rose-50/80 dark:bg-rose-500/10 hover:bg-rose-100/50 dark:hover:bg-rose-500/20" : "text-zinc-500 dark:text-zinc-400 hover:text-white dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-900/50"}`}
+            className={`flex items-center ${isCollapsed ? "justify-center px-0" : "gap-3 px-3"} py-2.5 rounded-lg transition-colors group relative ${pathname === "/admin/teams" ? "text-rose-600 dark:text-rose-500 bg-rose-50/80 dark:bg-rose-500/10 hover:bg-rose-100/50 dark:hover:bg-rose-500/20" : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-900/50"}`}
             title="Teams"
           >
             <UsersRound
@@ -263,7 +263,7 @@ export default function AdminLayout({
           {userData?.role === "Admin" && (
             <Link
               href="/admin/office-bearers"
-              className={`flex items-center ${isCollapsed ? "justify-center px-0" : "gap-3 px-3"} py-2.5 rounded-lg transition-colors group relative ${pathname === "/admin/office-bearers" ? "text-rose-600 dark:text-rose-500 bg-rose-50/80 dark:bg-rose-500/10 hover:bg-rose-100/50 dark:hover:bg-rose-500/20" : "text-zinc-500 dark:text-zinc-400 hover:text-white dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-900/50"}`}
+              className={`flex items-center ${isCollapsed ? "justify-center px-0" : "gap-3 px-3"} py-2.5 rounded-lg transition-colors group relative ${pathname === "/admin/office-bearers" ? "text-rose-600 dark:text-rose-500 bg-rose-50/80 dark:bg-rose-500/10 hover:bg-rose-100/50 dark:hover:bg-rose-500/20" : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-900/50"}`}
               title="Office Bearers"
             >
               <Crown
@@ -277,7 +277,7 @@ export default function AdminLayout({
 
           <Link
             href="/admin/board"
-            className={`flex items-center ${isCollapsed ? "justify-center px-0" : "gap-3 px-3"} py-2.5 rounded-lg transition-colors group relative ${pathname === "/admin/board" ? "text-rose-600 dark:text-rose-500 bg-rose-50/80 dark:bg-rose-500/10 hover:bg-rose-100/50 dark:hover:bg-rose-500/20" : "text-zinc-500 dark:text-zinc-400 hover:text-white dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-900/50"}`}
+            className={`flex items-center ${isCollapsed ? "justify-center px-0" : "gap-3 px-3"} py-2.5 rounded-lg transition-colors group relative ${pathname === "/admin/board" ? "text-rose-600 dark:text-rose-500 bg-rose-50/80 dark:bg-rose-500/10 hover:bg-rose-100/50 dark:hover:bg-rose-500/20" : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-900/50"}`}
             title="Global Board"
           >
             <KanbanSquare
@@ -290,7 +290,7 @@ export default function AdminLayout({
 
           <Link
             href="/admin/chat"
-            className={`flex items-center ${isCollapsed ? "justify-center px-0" : "gap-3 px-3"} py-2.5 rounded-lg transition-colors group relative ${pathname === "/admin/chat" ? "text-rose-600 dark:text-rose-500 bg-rose-50/80 dark:bg-rose-500/10 hover:bg-rose-100/50 dark:hover:bg-rose-500/20" : "text-zinc-500 dark:text-zinc-400 hover:text-white dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-900/50"}`}
+            className={`flex items-center ${isCollapsed ? "justify-center px-0" : "gap-3 px-3"} py-2.5 rounded-lg transition-colors group relative ${pathname === "/admin/chat" ? "text-rose-600 dark:text-rose-500 bg-rose-50/80 dark:bg-rose-500/10 hover:bg-rose-100/50 dark:hover:bg-rose-500/20" : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-900/50"}`}
             title="Chat"
           >
             <MessageCircle
@@ -302,7 +302,7 @@ export default function AdminLayout({
           {userData?.role === "Admin" && (
             <Link
               href="/admin/settings"
-              className={`flex items-center ${isCollapsed ? "justify-center px-0" : "gap-3 px-3"} py-2.5 rounded-lg transition-colors group relative ${pathname === "/admin/settings" ? "text-rose-600 dark:text-rose-500 bg-rose-50/80 dark:bg-rose-500/10 hover:bg-rose-100/50 dark:hover:bg-rose-500/20" : "text-zinc-500 dark:text-zinc-400 hover:text-white dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-900/50"}`}
+              className={`flex items-center ${isCollapsed ? "justify-center px-0" : "gap-3 px-3"} py-2.5 rounded-lg transition-colors group relative ${pathname === "/admin/settings" ? "text-rose-600 dark:text-rose-500 bg-rose-50/80 dark:bg-rose-500/10 hover:bg-rose-100/50 dark:hover:bg-rose-500/20" : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-900/50"}`}
               title="Admin Settings"
             >
               <Settings
@@ -329,7 +329,7 @@ export default function AdminLayout({
               </Avatar>
               {!isCollapsed && (
                 <div className="flex flex-col min-w-0">
-                  <span className="text-sm font-medium leading-none text-white dark:text-zinc-200 truncate">
+                  <span className="text-sm font-medium leading-none text-zinc-900 dark:text-zinc-200 truncate">
                     {userData?.name || "Loading..."}
                   </span>
                 </div>
@@ -339,7 +339,7 @@ export default function AdminLayout({
               variant="ghost"
               size="icon"
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className={`text-zinc-500 hover:text-white dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-800 shrink-0 ${isCollapsed ? "mt-2" : ""}`}
+              className={`text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-800 shrink-0 ${isCollapsed ? "mt-2" : ""}`}
               title="Toggle theme"
             >
               <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
@@ -370,7 +370,7 @@ export default function AdminLayout({
             <ShieldAlert className="h-6 w-6 text-rose-500 shrink-0" />
             <span className="font-medium text-xl tracking-tight">Kaam Admin</span>
           </div>
-          <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 -mr-2 text-zinc-500 hover:text-white">
+          <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 -mr-2 text-zinc-500 hover:text-zinc-900 dark:hover:text-white">
             <Menu className="h-6 w-6" />
           </button>
         </div>

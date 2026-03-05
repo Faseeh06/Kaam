@@ -127,7 +127,7 @@ export default function DashboardLayout({
                 <div className="w-24 h-24 bg-amber-50 dark:bg-amber-500/10 rounded-3xl flex items-center justify-center mb-8 shadow-sm border border-amber-100 dark:border-amber-500/20 animate-pulse">
                     <Shield className="h-12 w-12 text-amber-500" />
                 </div>
-                <h1 className="text-3xl font-bold text-white dark:text-white mb-3 tracking-tight">Approval Pending</h1>
+                <h1 className="text-3xl font-bold text-zinc-900 dark:text-white mb-3 tracking-tight">Approval Pending</h1>
                 <p className="text-zinc-500 dark:text-zinc-400 max-w-md leading-relaxed mb-8">
                     Your request to join the society has been received. Please wait for an administrator to review and approve your membership.
                 </p>
@@ -144,7 +144,7 @@ export default function DashboardLayout({
     }
 
     return (
-        <div suppressHydrationWarning className="flex h-screen bg-background dark:bg-zinc-950 text-white dark:text-white overflow-hidden selection:bg-amber-500/30 transition-colors">
+        <div suppressHydrationWarning className="flex h-screen bg-background dark:bg-zinc-950 text-zinc-900 dark:text-white overflow-hidden selection:bg-amber-500/30 transition-colors">
 
             {/* Mobile Sidebar Overlay */}
             {isMobileMenuOpen && (
@@ -162,7 +162,7 @@ export default function DashboardLayout({
                 {/* Mobile Close Button */}
                 <button
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="md:hidden absolute right-4 top-5 text-zinc-500 hover:text-white"
+                    className="md:hidden absolute right-4 top-5 text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
                 >
                     <X className="h-5 w-5" />
                 </button>
@@ -282,7 +282,7 @@ export default function DashboardLayout({
                         <Shield className="h-6 w-6 text-amber-500 shrink-0" />
                         <span className="font-medium text-xl tracking-tight">Kaam</span>
                     </div>
-                    <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 -mr-2 text-zinc-500 hover:text-white">
+                    <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 -mr-2 text-zinc-500 hover:text-zinc-900 dark:hover:text-white">
                         <Menu className="h-6 w-6" />
                     </button>
                 </div>

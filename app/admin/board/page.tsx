@@ -362,7 +362,7 @@ export default function BoardPage() {
         <div className="w-20 h-20 bg-rose-50 dark:bg-rose-500/10 rounded-3xl flex items-center justify-center mb-6 shadow-sm border border-rose-100 dark:border-rose-500/20">
           <LayoutGrid className="h-10 w-10 text-rose-500" />
         </div>
-        <h2 className="text-2xl font-semibold text-white dark:text-white mb-2">
+        <h2 className="text-2xl font-semibold text-zinc-900 dark:text-white mb-2">
           No Teams Found
         </h2>
         <p className="text-zinc-500 dark:text-zinc-400 max-w-sm mb-8 leading-relaxed">
@@ -382,7 +382,7 @@ export default function BoardPage() {
     <div className="h-full flex flex-col overflow-hidden relative selection:bg-rose-500/30">
       {/* Top Navigation - Board Specific */}
       <nav className="flex items-center justify-between px-6 py-4 shrink-0 bg-transparent">
-        <h1 className="font-medium text-lg text-white dark:text-white">
+        <h1 className="font-medium text-lg text-zinc-900 dark:text-white">
           {activeTeam ? `${activeTeam.name} Department Board` : "Select a Team"}
         </h1>
         <div className="flex items-center gap-2 sm:gap-4">
@@ -390,7 +390,7 @@ export default function BoardPage() {
           <Button
             variant="ghost"
             size="icon"
-            className="text-zinc-500 dark:text-zinc-400 hover:text-white dark:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-800 dark:bg-zinc-800"
+            className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-800"
           >
             <Search className="h-5 w-5" />
           </Button>
@@ -407,7 +407,7 @@ export default function BoardPage() {
                 className="w-[300px] sm:w-[320px] shrink-0 flex flex-col max-h-full bg-[#ebecf0] dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800/80 rounded-xl"
               >
                 {/* List Header */}
-                <div className="px-4 py-3 pb-2 flex justify-between items-center text-white dark:text-zinc-100 shrink-0 group">
+                <div className="px-4 py-3 pb-2 flex justify-between items-center text-zinc-900 dark:text-zinc-100 shrink-0 group">
                   {editingListId === list.id ? (
                     <input
                       type="text"
@@ -419,7 +419,7 @@ export default function BoardPage() {
                         if (e.key === "Enter") handleRenameList(list.id);
                         if (e.key === "Escape") setEditingListId(null);
                       }}
-                      className="bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700/80 rounded px-2 py-1 text-sm text-white dark:text-white w-full outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500"
+                      className="bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700/80 rounded px-2 py-1 text-sm text-zinc-900 dark:text-white w-full outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500"
                     />
                   ) : (
                     <h2
@@ -652,7 +652,7 @@ export default function BoardPage() {
                               }
                               if (e.key === "Escape") setAddingCardToList(null);
                             }}
-                            className="w-full bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700/80 rounded-lg p-3 text-sm text-white dark:text-zinc-100 placeholder:text-zinc-600 outline-none resize-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 shadow-sm"
+                            className="w-full bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700/80 rounded-lg p-3 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-600 outline-none resize-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 shadow-sm"
                             rows={2}
                           />
                           <div className="flex items-center gap-2">
@@ -669,7 +669,7 @@ export default function BoardPage() {
                               variant="ghost"
                               disabled={isSavingCard}
                               onClick={() => setAddingCardToList(null)}
-                              className="h-8 w-8 text-zinc-500 dark:text-zinc-400 hover:text-white dark:text-white disabled:opacity-50"
+                              className="h-8 w-8 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white disabled:opacity-50"
                             >
                               <X className="h-4 w-4" />
                             </Button>
@@ -708,7 +708,7 @@ export default function BoardPage() {
                       if (e.key === "Enter") handleAddList();
                       if (e.key === "Escape") setIsAddingList(false);
                     }}
-                    className="w-full bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700/80 rounded px-3 py-2 text-sm text-white dark:text-white outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 disabled:opacity-50"
+                    className="w-full bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700/80 rounded px-3 py-2 text-sm text-zinc-900 dark:text-white outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 disabled:opacity-50"
                   />
                   <div className="flex items-center gap-2">
                     <Button
@@ -724,7 +724,7 @@ export default function BoardPage() {
                       variant="ghost"
                       disabled={isSavingList}
                       onClick={() => setIsAddingList(false)}
-                      className="h-8 w-8 text-zinc-500 dark:text-zinc-400 hover:text-white dark:text-white disabled:opacity-50"
+                      className="h-8 w-8 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white disabled:opacity-50"
                     >
                       <X className="h-4 w-4" />
                     </Button>
@@ -755,7 +755,7 @@ export default function BoardPage() {
             onClick={() => setSelectedTeamId(team.id)}
             className={`flex items-center gap-2 px-4 py-2 rounded-full transition text-sm font-medium whitespace-nowrap ${selectedTeamId === team.id
               ? "bg-rose-500/10 text-rose-600 dark:text-rose-500 border border-rose-500/20"
-              : "text-zinc-500 dark:text-zinc-400 hover:text-white dark:text-zinc-100 hover:bg-zinc-200/50 dark:hover:bg-zinc-800 border border-transparent"
+              : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:text-zinc-100 hover:bg-zinc-200/50 dark:hover:bg-zinc-800 border border-transparent"
               }`}
           >
             <span
@@ -803,7 +803,7 @@ export default function BoardPage() {
                         value={editCardText}
                         disabled={isSavingCardField}
                         onChange={(e) => setEditCardText(e.target.value)}
-                        className="text-xl md:text-2xl font-semibold bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700/80 rounded px-2 py-1 text-white dark:text-white w-full outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 disabled:opacity-50"
+                        className="text-xl md:text-2xl font-semibold bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700/80 rounded px-2 py-1 text-zinc-900 dark:text-white w-full outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 disabled:opacity-50"
                       />
                       <div className="flex items-center gap-2">
                         <Button
@@ -831,7 +831,7 @@ export default function BoardPage() {
                         setEditCardField("title");
                         setEditCardText(selectedCard.card.title);
                       }}
-                      className="text-xl md:text-2xl font-semibold text-white dark:text-zinc-100 leading-tight mb-1.5 cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800 px-1 -ml-1 rounded transition-colors"
+                      className="text-xl md:text-2xl font-semibold text-zinc-900 dark:text-zinc-100 leading-tight mb-1.5 cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800 px-1 -ml-1 rounded transition-colors"
                     >
                       {selectedCard.card.title}
                     </h2>
@@ -1143,7 +1143,7 @@ export default function BoardPage() {
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <AlignLeft className="h-5 w-5 text-zinc-500 dark:text-zinc-400 shrink-0" />
-                    <h3 className="text-base font-semibold text-white dark:text-zinc-100">
+                    <h3 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
                       Description
                     </h3>
                   </div>
@@ -1166,7 +1166,7 @@ export default function BoardPage() {
                         autoFocus
                         value={editCardText}
                         onChange={(e) => setEditCardText(e.target.value)}
-                        className="w-full bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700/80 rounded-lg p-3 text-sm text-white dark:text-zinc-100 placeholder:text-zinc-600 outline-none resize-y min-h-[100px] focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 shadow-sm custom-scrollbar"
+                        className="w-full bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700/80 rounded-lg p-3 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-600 outline-none resize-y min-h-[100px] focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500 shadow-sm custom-scrollbar"
                         placeholder="Add a more detailed description..."
                       />
                       <div className="flex items-center gap-2">
@@ -1226,14 +1226,14 @@ export default function BoardPage() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 text-zinc-500 dark:text-zinc-400 hover:text-white dark:text-zinc-100 hover:bg-zinc-200/50 dark:hover:bg-zinc-800 dark:bg-zinc-800"
+                    className="h-8 w-8 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:text-zinc-100 hover:bg-zinc-200/50 dark:hover:bg-zinc-800 dark:bg-zinc-800"
                   >
                     <MoreHorizontal className="h-4 w-4" />
                   </Button>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 text-zinc-500 dark:text-zinc-400 hover:text-white dark:text-zinc-100 hover:bg-zinc-200/50 dark:hover:bg-zinc-800 dark:bg-zinc-800"
+                    className="h-8 w-8 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:text-zinc-100 hover:bg-zinc-200/50 dark:hover:bg-zinc-800 dark:bg-zinc-800"
                     onClick={() => setSelectedCard(null)}
                   >
                     <X className="h-5 w-5" />
@@ -1282,7 +1282,7 @@ export default function BoardPage() {
                       </Avatar>
                       <div className="flex-1 mt-0.5">
                         <p className="text-sm text-zinc-800 dark:text-zinc-300 leading-snug">
-                          <span className="font-semibold text-white dark:text-zinc-100 mr-1.5">
+                          <span className="font-semibold text-zinc-900 dark:text-zinc-100 mr-1.5">
                             {act.user}
                           </span>
                           {act.action}

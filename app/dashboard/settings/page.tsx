@@ -70,7 +70,7 @@ export default function SettingsPage() {
             <header className="mb-8 md:mb-10">
                 <div className="flex justify-between items-start">
                     <div>
-                        <h1 className="text-3xl font-medium tracking-tight text-white dark:text-white mb-2">Settings</h1>
+                        <h1 className="text-3xl font-medium tracking-tight text-zinc-900 dark:text-white mb-2">Settings</h1>
                         <p className="text-zinc-500 dark:text-zinc-400 text-sm md:text-base">
                             Manage your account preferences and notification settings.
                         </p>
@@ -91,13 +91,13 @@ export default function SettingsPage() {
                     <Button variant="ghost" className="w-full justify-start text-amber-600 dark:text-amber-500 bg-amber-500/10 hover:bg-amber-500/20 hover:text-amber-400 font-medium">
                         <User className="h-4 w-4 mr-3" /> Account
                     </Button>
-                    <Button variant="ghost" className="w-full justify-start text-zinc-500 dark:text-zinc-400 hover:text-white dark:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-800 dark:bg-zinc-800">
+                    <Button variant="ghost" className="w-full justify-start text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-800">
                         <Bell className="h-4 w-4 mr-3" /> Notifications
                     </Button>
-                    <Button variant="ghost" className="w-full justify-start text-zinc-500 dark:text-zinc-400 hover:text-white dark:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-800 dark:bg-zinc-800">
+                    <Button variant="ghost" className="w-full justify-start text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-800">
                         <Lock className="h-4 w-4 mr-3" /> Security
                     </Button>
-                    <Button variant="ghost" className="w-full justify-start text-zinc-500 dark:text-zinc-400 hover:text-white dark:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-800 dark:bg-zinc-800">
+                    <Button variant="ghost" className="w-full justify-start text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-800">
                         <Palette className="h-4 w-4 mr-3" /> Appearance
                     </Button>
                 </div>
@@ -108,7 +108,7 @@ export default function SettingsPage() {
                     {/* General Settings */}
                     <Card className="bg-white dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800/60 shadow-xl overflow-hidden rounded-2xl">
                         <CardHeader className="pb-4">
-                            <CardTitle className="text-lg font-medium text-white dark:text-white flex items-center gap-2">
+                            <CardTitle className="text-lg font-medium text-zinc-900 dark:text-white flex items-center gap-2">
                                 <User className="h-5 w-5 text-amber-600 dark:text-amber-500" />
                                 General Information
                             </CardTitle>
@@ -161,7 +161,7 @@ export default function SettingsPage() {
                     {/* Email Notifications */}
                     <Card className="bg-white dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800/60 shadow-xl overflow-hidden rounded-2xl">
                         <CardHeader className="pb-4">
-                            <CardTitle className="text-lg font-medium text-white dark:text-white flex items-center gap-2">
+                            <CardTitle className="text-lg font-medium text-zinc-900 dark:text-white flex items-center gap-2">
                                 <Bell className="h-5 w-5 text-zinc-500 dark:text-zinc-400" />
                                 Notifications
                             </CardTitle>

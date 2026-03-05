@@ -63,7 +63,7 @@ export default function ProfilePage() {
         <div className="h-full flex flex-col pt-4 px-4 md:px-8 pb-8 overflow-y-auto custom-scrollbar">
 
             <header className="mb-8 md:mb-10">
-                <h1 className="text-3xl font-medium tracking-tight text-white dark:text-white mb-2">My Profile</h1>
+                <h1 className="text-3xl font-medium tracking-tight text-zinc-900 dark:text-white mb-2">My Profile</h1>
                 <p className="text-zinc-500 dark:text-zinc-400 text-sm md:text-base">
                     Manage your personal information and view your activity.
                 </p>
@@ -81,7 +81,7 @@ export default function ProfilePage() {
                                 <AvatarFallback className="text-2xl font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-500">{user.initials}</AvatarFallback>
                             </Avatar>
 
-                            <h2 className="text-xl font-semibold text-white dark:text-white mb-1">{user.name}</h2>
+                            <h2 className="text-xl font-semibold text-zinc-900 dark:text-white mb-1">{user.name}</h2>
                             <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-4">{user.role}</p>
 
                             <Badge variant="secondary" className="bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-700 text-zinc-800 dark:text-zinc-300 font-normal mb-6">
@@ -116,7 +116,7 @@ export default function ProfilePage() {
                     {/* About Section */}
                     <Card className="bg-white dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800/60 rounded-2xl">
                         <CardHeader className="pb-3">
-                            <CardTitle className="text-lg font-medium text-white dark:text-white flex justify-between items-center">
+                            <CardTitle className="text-lg font-medium text-zinc-900 dark:text-white flex justify-between items-center">
                                 About Me
                                 <Button variant="ghost" size="sm" className="h-8 text-xs text-amber-600 dark:text-amber-500 hover:text-amber-400 hover:bg-amber-500/10">
                                     Edit
@@ -133,7 +133,7 @@ export default function ProfilePage() {
                     {/* Performance / System Stats */}
                     <Card className="bg-white dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800/60 rounded-2xl">
                         <CardHeader className="pb-4">
-                            <CardTitle className="text-lg font-medium text-white dark:text-white">Performance Metrics</CardTitle>
+                            <CardTitle className="text-lg font-medium text-zinc-900 dark:text-white">Performance Metrics</CardTitle>
                             <CardDescription className="text-zinc-500">Your task completion and attendance records.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
@@ -164,7 +164,7 @@ export default function ProfilePage() {
                     {/* Active Teams */}
                     <Card className="bg-white dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800/60 rounded-2xl">
                         <CardHeader className="pb-4">
-                            <CardTitle className="text-lg font-medium text-white dark:text-white">Societies & Teams</CardTitle>
+                            <CardTitle className="text-lg font-medium text-zinc-900 dark:text-white">Societies & Teams</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-4">

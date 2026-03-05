@@ -203,14 +203,14 @@ export default function SuperSocietiesPage() {
 
             <header className="mb-8 md:mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-medium tracking-tight text-white dark:text-white mb-2">Societies Registry</h1>
+                    <h1 className="text-3xl font-medium tracking-tight text-zinc-900 dark:text-white mb-2">Societies Registry</h1>
                     <p className="text-zinc-500 dark:text-zinc-400 text-sm md:text-base">Manage all registered organizations on the Kaam platform.</p>
                 </div>
                 <div className="flex items-center gap-3">
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
                         <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search societies..."
-                            className="pl-9 pr-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500 w-48" />
+                            className="pl-9 pr-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500 w-48" />
                     </div>
 
                     {/* ── Register Dialog ── */}
@@ -222,7 +222,7 @@ export default function SuperSocietiesPage() {
                         </DialogTrigger>
                         <DialogContent className="sm:max-w-lg bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 max-h-[90vh] overflow-y-auto">
                             <DialogHeader>
-                                <DialogTitle className="text-white dark:text-white flex items-center gap-2">
+                                <DialogTitle className="text-zinc-900 dark:text-white flex items-center gap-2">
                                     <Building2 className="h-5 w-5 text-violet-500" /> Register New Organization
                                 </DialogTitle>
                                 <DialogDescription className="text-zinc-500 dark:text-zinc-400">Fill in the details to register a new society.</DialogDescription>
@@ -235,17 +235,17 @@ export default function SuperSocietiesPage() {
                                     <div className="space-y-1.5 col-span-2">
                                         <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Full Name <span className="text-rose-500">*</span></label>
                                         <input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Computer Science Society"
-                                            className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500" />
+                                            className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-zinc-900 dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500" />
                                     </div>
                                     <div className="space-y-1.5">
                                         <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Acronym <span className="text-rose-500">*</span></label>
                                         <input value={acronym} onChange={e => setAcronym(e.target.value)} placeholder="CSS" maxLength={6}
-                                            className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm font-mono uppercase text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500" />
+                                            className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm font-mono uppercase text-zinc-900 dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500" />
                                     </div>
                                     <div className="space-y-1.5">
                                         <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Type</label>
                                         <select value={type} onChange={e => setType(e.target.value)}
-                                            className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500">
+                                            className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-zinc-900 dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500">
                                             <option>Academic</option><option>Cultural</option><option>Sports</option>
                                             <option>Professional</option><option>Community Service</option><option>Other</option>
                                         </select>
@@ -253,12 +253,12 @@ export default function SuperSocietiesPage() {
                                     <div className="space-y-1.5 col-span-2">
                                         <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">President Name</label>
                                         <input value={president} onChange={e => setPresident(e.target.value)} placeholder="Full name of the society president"
-                                            className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500" />
+                                            className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-zinc-900 dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500" />
                                     </div>
                                     <div className="space-y-1.5 col-span-2">
                                         <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Contact Email</label>
                                         <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="president@university.edu"
-                                            className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500" />
+                                            className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-zinc-900 dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500" />
                                     </div>
                                     <div className="space-y-2 col-span-2">
                                         <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Accent Color</label>
@@ -287,11 +287,11 @@ export default function SuperSocietiesPage() {
             <Dialog open={!!editTarget} onOpenChange={open => !open && setEditTarget(null)}>
                 <DialogContent className="sm:max-w-lg bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
-                        <DialogTitle className="text-white dark:text-white flex items-center gap-2">
+                        <DialogTitle className="text-zinc-900 dark:text-white flex items-center gap-2">
                             <Settings className="h-5 w-5 text-violet-500" /> Edit Society Profile
                         </DialogTitle>
                         <DialogDescription className="text-zinc-500 dark:text-zinc-400">
-                            Update the details for <strong className="text-white dark:text-white">{editTarget?.name}</strong>
+                            Update the details for <strong className="text-zinc-900 dark:text-white">{editTarget?.name}</strong>
                         </DialogDescription>
                     </DialogHeader>
                     <div className="space-y-4 mt-2">
@@ -301,30 +301,30 @@ export default function SuperSocietiesPage() {
                         <div className="space-y-1.5">
                             <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Society Name</label>
                             <input value={editName} onChange={e => setEditName(e.target.value)}
-                                className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500" />
+                                className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-zinc-900 dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500" />
                         </div>
                         <div className="space-y-1.5">
                             <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Description</label>
                             <textarea value={editDesc} onChange={e => setEditDesc(e.target.value)} rows={3}
-                                className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500 resize-none" />
+                                className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-zinc-900 dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500 resize-none" />
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                             <div className="space-y-1.5">
                                 <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider flex items-center gap-1"><Mail className="h-3 w-3" /> Email</label>
                                 <input type="email" value={editEmail} onChange={e => setEditEmail(e.target.value)} placeholder="contact@society.edu"
-                                    className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500" />
+                                    className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-zinc-900 dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500" />
                             </div>
                             <div className="space-y-1.5">
                                 <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider flex items-center gap-1"><Globe className="h-3 w-3" /> Website</label>
                                 <input type="url" value={editWebsite} onChange={e => setEditWebsite(e.target.value)} placeholder="https://..."
-                                    className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500" />
+                                    className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-zinc-900 dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500" />
                             </div>
                             <div className="space-y-1.5 col-span-2">
                                 <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider flex items-center gap-1">
                                     <MessageSquare className="h-3 w-3 text-[#25D366]" /> WhatsApp Group Link
                                 </label>
                                 <input value={editWhatsapp} onChange={e => setEditWhatsapp(e.target.value)} placeholder="https://chat.whatsapp.com/..."
-                                    className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500" />
+                                    className="w-full bg-background dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-zinc-900 dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500" />
                                 <p className="text-[11px] text-zinc-400">Used on the Chat page for members to join via WhatsApp.</p>
                             </div>
                             <div className="space-y-1.5 col-span-2">
@@ -401,7 +401,7 @@ export default function SuperSocietiesPage() {
                                 </div>
 
                                 <div className="flex items-center justify-between gap-2 mb-2">
-                                    <h3 className="font-bold text-lg text-white dark:text-zinc-100 leading-tight truncate flex-1 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">{soc.name}</h3>
+                                    <h3 className="font-bold text-lg text-zinc-900 dark:text-zinc-100 leading-tight truncate flex-1 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">{soc.name}</h3>
                                     <span className={cn(
                                         "px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider",
                                         soc.status === 'Active' ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400' : 'bg-rose-50 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400'
@@ -418,7 +418,7 @@ export default function SuperSocietiesPage() {
                                 <div className="grid grid-cols-3 gap-2 mb-6">
                                     {[{ label: "Members", val: metrics.members }, { label: "Boards", val: metrics.boards }, { label: "Tasks", val: metrics.tasks }].map(s => (
                                         <div key={s.label} className="flex flex-col items-center p-2 rounded-xl bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-100 dark:border-zinc-800/50 group-hover:bg-violet-50/30 dark:group-hover:bg-violet-500/5 transition-colors">
-                                            <p className="text-base font-bold text-white dark:text-white">{s.val}</p>
+                                            <p className="text-base font-bold text-zinc-900 dark:text-white">{s.val}</p>
                                             <p className="text-[9px] text-zinc-400 uppercase font-bold tracking-widest">{s.label}</p>
                                         </div>
                                     ))}

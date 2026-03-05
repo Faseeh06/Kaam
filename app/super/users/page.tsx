@@ -57,7 +57,7 @@ export default function SuperUsersPage() {
 
             <header className="mb-8 md:mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-medium tracking-tight text-white dark:text-white mb-2">Global Master Database</h1>
+                    <h1 className="text-3xl font-medium tracking-tight text-zinc-900 dark:text-white mb-2">Global Master Database</h1>
                     <p className="text-zinc-500 dark:text-zinc-400 text-sm md:text-base">
                         Every registered user across all societies. Filter by society to scope the view.
                     </p>
@@ -93,7 +93,7 @@ export default function SuperUsersPage() {
                             value={search}
                             onChange={e => setSearch(e.target.value)}
                             placeholder="Search by name or email..."
-                            className="w-full pl-9 pr-4 py-2 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm text-white dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500"
+                            className="w-full pl-9 pr-4 py-2 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 outline-none focus:ring-1 focus:ring-violet-500"
                         />
                     </div>
 
@@ -151,7 +151,7 @@ export default function SuperUsersPage() {
                                                             {user.name.charAt(0)}
                                                         </AvatarFallback>
                                                     </Avatar>
-                                                    <p className="font-medium text-white dark:text-zinc-200 whitespace-nowrap">{user.name}</p>
+                                                    <p className="font-medium text-zinc-900 dark:text-zinc-200 whitespace-nowrap">{user.name}</p>
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 text-zinc-500 font-mono text-xs whitespace-nowrap">{user.email}</td>
@@ -167,7 +167,7 @@ export default function SuperUsersPage() {
                                             </td>
                                             <td className="px-6 py-4">
                                                 <div className="flex flex-col gap-0.5">
-                                                    <span className="text-xs font-semibold text-white dark:text-zinc-300">{user.role}</span>
+                                                    <span className="text-xs font-semibold text-zinc-900 dark:text-zinc-300">{user.role}</span>
                                                     <span className="text-[11px] text-zinc-400">{user.team}</span>
                                                 </div>
                                             </td>
@@ -207,7 +207,7 @@ export default function SuperUsersPage() {
                                                             {user.name.charAt(0)}
                                                         </AvatarFallback>
                                                     </Avatar>
-                                                    <p className="font-medium text-white dark:text-zinc-200 whitespace-nowrap">{user.name}</p>
+                                                    <p className="font-medium text-zinc-900 dark:text-zinc-200 whitespace-nowrap">{user.name}</p>
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 text-zinc-500 font-mono text-xs whitespace-nowrap">{user.email}</td>

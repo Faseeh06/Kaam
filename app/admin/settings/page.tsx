@@ -58,7 +58,7 @@ export default function AdminSettingsPage() {
     return (
       <div className="h-full flex flex-col items-center justify-center p-8 text-center bg-background dark:bg-zinc-950">
         <ShieldAlert className="h-12 w-12 text-zinc-300 dark:text-zinc-700 mb-4" />
-        <h2 className="text-xl font-semibold text-white dark:text-white mb-2">
+        <h2 className="text-xl font-semibold text-zinc-900 dark:text-white mb-2">
           Access Restricted
         </h2>
         <p className="text-zinc-500 dark:text-zinc-400 max-w-sm">
@@ -71,7 +71,7 @@ export default function AdminSettingsPage() {
   return (
     <div className="h-full flex flex-col pt-4 px-4 md:px-8 pb-8 overflow-y-auto custom-scrollbar">
       <header className="mb-8 md:mb-10">
-        <h1 className="text-3xl font-medium tracking-tight text-white dark:text-white mb-2">
+        <h1 className="text-3xl font-medium tracking-tight text-zinc-900 dark:text-white mb-2">
           Global Settings
         </h1>
         <p className="text-zinc-500 dark:text-zinc-400 text-sm md:text-base">
@@ -108,7 +108,7 @@ export default function AdminSettingsPage() {
           {/* Security & Approvals Component */}
           <Card className="bg-white dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800/60 shadow-sm overflow-hidden rounded-2xl">
             <CardHeader className="pb-4 border-b border-zinc-100 dark:border-zinc-800/50">
-              <CardTitle className="text-lg font-medium text-white dark:text-white flex items-center gap-2">
+              <CardTitle className="text-lg font-medium text-zinc-900 dark:text-white flex items-center gap-2">
                 <Lock className="h-5 w-5 text-rose-500" />
                 Onboarding & Privacy
               </CardTitle>
@@ -119,7 +119,7 @@ export default function AdminSettingsPage() {
             <CardContent className="pt-6 space-y-4">
               <div className="flex items-center justify-between p-4 rounded-xl border border-zinc-200 dark:border-zinc-800/60 bg-background dark:bg-zinc-950/40">
                 <div className="pr-4">
-                  <p className="font-medium text-white dark:text-zinc-200 text-sm mb-1">
+                  <p className="font-medium text-zinc-900 dark:text-zinc-200 text-sm mb-1">
                     Require Manual Approval
                   </p>
                   <p className="text-xs text-zinc-600 dark:text-zinc-500">
@@ -134,7 +134,7 @@ export default function AdminSettingsPage() {
 
               <div className="flex items-center justify-between p-4 rounded-xl border border-zinc-200 dark:border-zinc-800/60 bg-background dark:bg-zinc-950/40">
                 <div className="pr-4">
-                  <p className="font-medium text-white dark:text-zinc-200 text-sm mb-1">
+                  <p className="font-medium text-zinc-900 dark:text-zinc-200 text-sm mb-1">
                     Domain Restriction
                   </p>
                   <p className="text-xs text-zinc-600 dark:text-zinc-500">
@@ -162,7 +162,7 @@ export default function AdminSettingsPage() {
             <CardContent className="pt-6 space-y-4">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 border border-rose-200 dark:border-rose-500/20 rounded-xl bg-white/50 dark:bg-rose-500/5">
                 <div>
-                  <p className="text-sm font-semibold text-white dark:text-zinc-200">
+                  <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-200">
                     Archive Society DB
                   </p>
                   <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1">

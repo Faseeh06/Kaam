@@ -117,7 +117,7 @@ export default function AdminDashboardPage() {
   return (
     <div className="h-full flex flex-col pt-4 px-4 md:px-8 pb-8 overflow-y-auto custom-scrollbar">
       <header className="mb-8 md:mb-10">
-        <h1 className="text-3xl font-medium tracking-tight text-white dark:text-white mb-2">
+        <h1 className="text-3xl font-medium tracking-tight text-zinc-900 dark:text-white mb-2">
           Admin Dashboard
         </h1>
         <p className="text-zinc-500 dark:text-zinc-400 text-sm md:text-base">
@@ -135,7 +135,7 @@ export default function AdminDashboardPage() {
             <Users className="h-4 w-4 text-rose-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white dark:text-white">
+            <div className="text-3xl font-bold text-zinc-900 dark:text-white">
               {societyUsers.length}
             </div>
             <p className="text-xs text-zinc-500 mt-1 flex items-center font-medium">
@@ -152,7 +152,7 @@ export default function AdminDashboardPage() {
             <Building2 className="h-4 w-4 text-indigo-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white dark:text-white">
+            <div className="text-3xl font-bold text-zinc-900 dark:text-white">
               {societyTeams.length}
             </div>
             <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 flex items-center">
@@ -169,7 +169,7 @@ export default function AdminDashboardPage() {
             <UserCheck className="h-4 w-4 text-amber-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white dark:text-white">
+            <div className="text-3xl font-bold text-zinc-900 dark:text-white">
               {filteredPending.length}
             </div>
             <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 flex items-center font-medium">
@@ -188,7 +188,7 @@ export default function AdminDashboardPage() {
             <Target className="h-4 w-4 text-emerald-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-white dark:text-white">
+            <div className="text-3xl font-bold text-zinc-900 dark:text-white">
               {societyTasks.length}
             </div>
             <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 flex items-center">
@@ -202,7 +202,7 @@ export default function AdminDashboardPage() {
         {/* Teams Overview */}
         <Card className="md:col-span-2 bg-white dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800/60 rounded-2xl shadow-sm">
           <CardHeader className="border-b border-zinc-100 dark:border-zinc-800/50 pb-4">
-            <CardTitle className="text-lg font-medium text-white dark:text-white">
+            <CardTitle className="text-lg font-medium text-zinc-900 dark:text-white">
               Society Teams
             </CardTitle>
             <CardDescription className="text-zinc-500 dark:text-zinc-400">
@@ -238,7 +238,7 @@ export default function AdminDashboardPage() {
                         {team.name.charAt(0).toUpperCase()}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-white dark:text-white truncate">
+                        <p className="text-sm font-semibold text-zinc-900 dark:text-white truncate">
                           {team.name}
                         </p>
                         <p className="text-xs text-zinc-500 dark:text-zinc-400">
@@ -247,7 +247,7 @@ export default function AdminDashboardPage() {
                       </div>
                       <div className="flex gap-4 text-right shrink-0">
                         <div>
-                          <p className="text-sm font-bold text-white dark:text-white">
+                          <p className="text-sm font-bold text-zinc-900 dark:text-white">
                             {memberCount}
                           </p>
                           <p className="text-[10px] text-zinc-400 uppercase tracking-wide">
@@ -255,7 +255,7 @@ export default function AdminDashboardPage() {
                           </p>
                         </div>
                         <div>
-                          <p className="text-sm font-bold text-white dark:text-white">
+                          <p className="text-sm font-bold text-zinc-900 dark:text-white">
                             {teamTaskCount}
                           </p>
                           <p className="text-[10px] text-zinc-400 uppercase tracking-wide">
@@ -274,14 +274,14 @@ export default function AdminDashboardPage() {
         {/* Quick Actions */}
         <Card className="md:col-span-1 bg-white dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800/60 rounded-2xl shadow-sm">
           <CardHeader className="border-b border-zinc-100 dark:border-zinc-800/50 pb-4">
-            <CardTitle className="text-lg font-medium text-white dark:text-white">
+            <CardTitle className="text-lg font-medium text-zinc-900 dark:text-white">
               Quick Actions
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-6 space-y-3">
             <button className="w-full flex items-center justify-between p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:border-rose-300 dark:hover:border-rose-500/50 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition group text-left">
               <div>
-                <p className="text-sm font-medium text-white dark:text-zinc-200 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition">
+                <p className="text-sm font-medium text-zinc-900 dark:text-zinc-200 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition">
                   Review Pending Users
                 </p>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
@@ -294,7 +294,7 @@ export default function AdminDashboardPage() {
             </button>
             <button className="w-full flex items-center justify-between p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition group text-left">
               <div>
-                <p className="text-sm font-medium text-white dark:text-zinc-200 transition">
+                <p className="text-sm font-medium text-zinc-900 dark:text-zinc-200 transition">
                   Create New Team
                 </p>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
@@ -304,7 +304,7 @@ export default function AdminDashboardPage() {
             </button>
             <button className="w-full flex items-center justify-between p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition group text-left">
               <div>
-                <p className="text-sm font-medium text-white dark:text-zinc-200 transition">
+                <p className="text-sm font-medium text-zinc-900 dark:text-zinc-200 transition">
                   Society Settings
                 </p>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">

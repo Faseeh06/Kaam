@@ -42,6 +42,9 @@ export default function SuperLayout({
             }
         };
         getUser();
+
+        // Save last workspace to cookie for smart routing on login/revisit
+        document.cookie = "last_workspace=/super; path=/; max-age=2592000";
     }, []);
 
     const handleLogout = async () => {

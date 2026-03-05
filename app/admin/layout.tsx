@@ -92,6 +92,9 @@ export default function AdminLayout({
       }
     };
     getUser();
+
+    // Save last workspace to cookie for smart routing on login/revisit
+    document.cookie = "last_workspace=/admin; path=/; max-age=2592000";
   }, []);
 
   const handleLogout = async () => {

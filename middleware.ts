@@ -60,7 +60,7 @@ export async function middleware(request: NextRequest) {
         const memberships = profile?.user_societies || [];
 
         // Define management roles
-        const managementRoles = ['Admin', 'Director', 'Deputy Director', 'HR'];
+        const managementRoles = ['Admin', 'Office Bearer'];
         const isSocietyAdmin = memberships.some((m: any) => managementRoles.includes(m.role));
 
         // 1. If hitting /join and already a Super Admin, push to /super
@@ -71,6 +71,21 @@ export async function middleware(request: NextRequest) {
 
         // 2. Redirect away from auth pages
         if (isAuthPage) {
+            const lastWorkspace = request.cookies.get('last_workspace')?.value;
+
+            if (lastWorkspace) {
+                // Validate if user has permission to go to that workspace
+                const isValidForSuper = lastWorkspace === '/super' && isSuperAdmin;
+                const isValidForAdmin = lastWorkspace === '/admin' && (isSuperAdmin || isSocietyAdmin);
+                const isValidForDashboard = lastWorkspace === '/dashboard';
+
+                if (isValidForSuper || isValidForAdmin || isValidForDashboard) {
+                    url.pathname = lastWorkspace;
+                    return NextResponse.redirect(url);
+                }
+            }
+
+            // Fallback default routing based on hierarchy
             if (isSuperAdmin) {
                 url.pathname = '/super';
             } else if (isSocietyAdmin) {

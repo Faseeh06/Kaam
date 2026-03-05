@@ -108,6 +108,9 @@ export default function DashboardLayout({
             }
         };
         getUser();
+
+        // Save last workspace to cookie for smart routing on login/revisit
+        document.cookie = "last_workspace=/dashboard; path=/; max-age=2592000";
     }, [router]);
 
 

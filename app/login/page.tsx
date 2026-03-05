@@ -63,7 +63,24 @@ export default function LoginPage() {
 
       router.refresh();
 
-      // Route based on role
+      // Get the last used workspace from cookies to smartly route back
+      const lastWorkspace = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("last_workspace="))
+        ?.split("=")[1];
+
+      if (lastWorkspace) {
+        const isValidForSuper = lastWorkspace === '/super' && isSuperAdmin;
+        const isValidForAdmin = lastWorkspace === '/admin' && (isSuperAdmin || isSocietyAdmin);
+        const isValidForDashboard = lastWorkspace === '/dashboard';
+
+        if (isValidForSuper || isValidForAdmin || isValidForDashboard) {
+          router.push(lastWorkspace);
+          return;
+        }
+      }
+
+      // Fallback default routing
       if (isSuperAdmin) {
         router.push("/super");
       } else if (isSocietyAdmin) {

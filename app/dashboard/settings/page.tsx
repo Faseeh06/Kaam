@@ -1,19 +1,87 @@
 "use client";
 
-import { Bell, Lock, User, Palette, ShieldCheck, Mail, Globe, Save } from "lucide-react";
+import { Bell, Lock, User, Palette, ShieldCheck, Mail, Globe, Save, Loader2, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createClient } from "@/lib/supabase/client";
 
 export default function SettingsPage() {
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [saveSuccess, setSaveSuccess] = useState(false);
+
+    const [fullName, setFullName] = useState("");
+    const [email, setEmail] = useState("");
+    const [phone, setPhone] = useState("");
+
+    const supabase = createClient();
+
+    useEffect(() => {
+        async function fetchSettings() {
+            setLoading(true);
+            const { data: { user: authUser } } = await supabase.auth.getUser();
+            if (authUser) {
+                const { data: profile } = await supabase
+                    .from("profiles")
+                    .select("full_name, email, phone")
+                    .eq("id", authUser.id)
+                    .single();
+
+                if (profile) {
+                    setFullName(profile.full_name || "");
+                    setEmail(profile.email || "");
+                    setPhone(profile.phone || "");
+                }
+            }
+            setLoading(false);
+        }
+        fetchSettings();
+    }, [supabase]);
+
+    const handleSave = async () => {
+        setSaving(true);
+        setSaveSuccess(false);
+        const { data: { user: authUser } } = await supabase.auth.getUser();
+        if (authUser) {
+            await supabase.from("profiles").update({
+                full_name: fullName,
+                phone: phone
+                // we omit email updating here to prevent breaking auth before verification
+            }).eq("id", authUser.id);
+
+            setSaveSuccess(true);
+            setTimeout(() => setSaveSuccess(false), 3000);
+        }
+        setSaving(false);
+    };
+
+    if (loading) {
+        return (
+            <div className="h-full flex items-center justify-center bg-background dark:bg-zinc-950">
+                <Loader2 className="h-8 w-8 animate-spin text-amber-500" />
+            </div>
+        );
+    }
+
     return (
         <div className="h-full flex flex-col pt-4 px-4 md:px-8 pb-8 overflow-y-auto custom-scrollbar">
 
             <header className="mb-8 md:mb-10">
-                <h1 className="text-3xl font-medium tracking-tight text-white dark:text-white mb-2">Settings</h1>
-                <p className="text-zinc-500 dark:text-zinc-400 text-sm md:text-base">
-                    Manage your account preferences and notification settings.
-                </p>
+                <div className="flex justify-between items-start">
+                    <div>
+                        <h1 className="text-3xl font-medium tracking-tight text-white dark:text-white mb-2">Settings</h1>
+                        <p className="text-zinc-500 dark:text-zinc-400 text-sm md:text-base">
+                            Manage your account preferences and notification settings.
+                        </p>
+                    </div>
+                    {saveSuccess && (
+                        <div className="hidden md:flex items-center text-emerald-500 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-full text-sm font-medium animate-in fade-in slide-in-from-top-4">
+                            <CheckCircle2 className="h-4 w-4 mr-2" />
+                            Success
+                        </div>
+                    )}
+                </div>
             </header>
 
             <div className="w-full grid md:grid-cols-4 gap-6 md:gap-8">
@@ -51,8 +119,18 @@ export default function SettingsPage() {
                                 <label className="text-sm font-medium text-zinc-800 dark:text-zinc-300">Full Name</label>
                                 <input
                                     type="text"
-                                    defaultValue="John Doe"
-                                    className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 placeholder:text-zinc-600 outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500 shadow-sm transition"
+                                    value={fullName}
+                                    onChange={(e) => setFullName(e.target.value)}
+                                    className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-zinc-800 dark:text-zinc-100 placeholder:text-zinc-600 outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500 shadow-sm transition"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium text-zinc-800 dark:text-zinc-300">Phone</label>
+                                <input
+                                    type="tel"
+                                    value={phone}
+                                    onChange={(e) => setPhone(e.target.value)}
+                                    className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-zinc-800 dark:text-zinc-100 placeholder:text-zinc-600 outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500 shadow-sm transition"
                                 />
                             </div>
                             <div className="space-y-2">
@@ -60,16 +138,21 @@ export default function SettingsPage() {
                                 <div className="space-y-1">
                                     <input
                                         type="email"
-                                        defaultValue="user@test.com"
-                                        className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg p-2.5 text-sm text-white dark:text-zinc-100 placeholder:text-zinc-600 outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500 shadow-sm transition"
+                                        value={email}
+                                        disabled
+                                        className="w-full bg-white dark:bg-zinc-950/50 border border-zinc-200 dark:border-zinc-800 cursor-not-allowed opacity-70 rounded-lg p-2.5 text-sm text-zinc-800 dark:text-zinc-100 shadow-sm"
                                     />
-                                    <p className="text-xs text-zinc-500">Changing your email will require verification.</p>
+                                    <p className="text-xs text-zinc-500">Contact global support to change your email.</p>
                                 </div>
                             </div>
                             <div className="pt-4 flex justify-end">
-                                <Button className="bg-amber-500 text-zinc-950 hover:bg-amber-600 font-medium px-6 shadow-sm">
-                                    <Save className="h-4 w-4 mr-2" />
-                                    Save Changes
+                                <Button
+                                    onClick={handleSave}
+                                    disabled={saving}
+                                    className="bg-amber-500 text-zinc-950 hover:bg-amber-600 font-medium px-6 shadow-sm disabled:opacity-50"
+                                >
+                                    {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
+                                    {saving ? "Saving..." : "Save Changes"}
                                 </Button>
                             </div>
                         </CardContent>

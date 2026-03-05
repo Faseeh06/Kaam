@@ -1,23 +1,63 @@
 "use client";
 
-import { UserCircle, Mail, MapPin, Building2, Briefcase, Calendar, LinkIcon, LogOut, Phone } from "lucide-react";
+import { Loader2, UserCircle, Mail, MapPin, Building2, Briefcase, Calendar, LinkIcon, LogOut, Phone } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useState, useEffect } from "react";
+import { createClient } from "@/lib/supabase/client";
 
 export default function ProfilePage() {
-    const user = {
-        name: "John Doe",
-        email: "user@test.com",
-        phone: "+1 (555) 123-4567",
-        role: "Media Director",
-        department: "Creative",
-        joinDate: "September 2025",
-        location: "New York, USA",
-        bio: "Passionate about event management, tech logistics, and creating amazing user experiences through thoughtful design.",
-        initials: "JD"
-    };
+    const [loading, setLoading] = useState(true);
+    const [user, setUser] = useState<any>(null);
+    const supabase = createClient();
+
+    useEffect(() => {
+        async function fetchProfile() {
+            const { data: { user: authUser } } = await supabase.auth.getUser();
+            if (authUser) {
+                const { data: profile } = await supabase
+                    .from("profiles")
+                    .select("full_name, email, phone, department, primary_team, created_at, avatar_url")
+                    .eq("id", authUser.id)
+                    .single();
+
+                if (profile) {
+                    const joinDate = new Date(profile.created_at).toLocaleDateString("en-US", { month: "long", year: "numeric" });
+                    const nameParts = profile.full_name?.split(" ") || [];
+                    const initials = nameParts.length > 1
+                        ? `${nameParts[0][0]}${nameParts[nameParts.length - 1][0]}`.toUpperCase()
+                        : profile.full_name?.charAt(0).toUpperCase() || "U";
+
+                    setUser({
+                        name: profile.full_name,
+                        email: profile.email,
+                        phone: profile.phone || "Not provided",
+                        role: profile.primary_team || "Member",
+                        department: profile.department || "No Department",
+                        joinDate: joinDate,
+                        location: "N/A", // Default for now
+                        bio: "Passionate about building great things and contributing to the society.",
+                        initials: initials,
+                        avatar_url: profile.avatar_url
+                    });
+                }
+            }
+            setLoading(false);
+        }
+        fetchProfile();
+    }, [supabase]);
+
+    if (loading) {
+        return (
+            <div className="h-full flex items-center justify-center bg-background dark:bg-zinc-950">
+                <Loader2 className="h-8 w-8 animate-spin text-amber-500" />
+            </div>
+        );
+    }
+
+    if (!user) return null;
 
     return (
         <div className="h-full flex flex-col pt-4 px-4 md:px-8 pb-8 overflow-y-auto custom-scrollbar">
@@ -37,7 +77,7 @@ export default function ProfilePage() {
                         <div className="h-24 md:h-28 bg-gradient-to-br from-amber-500/20 to-zinc-900 w-full relative" />
                         <CardContent className="pt-0 relative px-6 pb-6 text-center flex flex-col items-center">
                             <Avatar className="h-24 w-24 border-4 border-zinc-950 -mt-12 mb-4 bg-white dark:bg-zinc-900">
-                                <AvatarImage src="/images/avatar.png" />
+                                <AvatarImage src={user.avatar_url || ""} />
                                 <AvatarFallback className="text-2xl font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-500">{user.initials}</AvatarFallback>
                             </Avatar>
 

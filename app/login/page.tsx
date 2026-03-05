@@ -75,7 +75,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-white dark:bg-zinc-950">
+    <div className="relative min-h-[100dvh] py-12 flex items-center justify-center overflow-hidden bg-white dark:bg-zinc-950">
       {/* Background */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-amber-500/10 blur-[100px] animate-slow-pulse" />

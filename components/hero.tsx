@@ -27,7 +27,7 @@ export function Hero() {
 
         {/* Hero Content - Centered */}
         <div className="flex flex-1 flex-col items-center justify-center px-6 text-center -mt-16">
-          <h1 className="max-w-5xl text-balance text-6xl font-normal tracking-tight text-white md:text-7xl lg:text-8xl">
+          <h1 className="max-w-5xl text-balance text-5xl sm:text-6xl font-normal tracking-tight text-white md:text-7xl lg:text-8xl">
             {"Manage Societies & Teams with Ease".split(" ").map((word, i) => (
               <motion.span
                 key={i}

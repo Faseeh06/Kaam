@@ -26,7 +26,7 @@ export function PageHeader({ title, description, children }: PageHeaderProps) {
 
                 <div className="flex flex-1 flex-col items-center px-4 md:px-6 pt-16 md:pt-24 w-full justify-center">
                     <div className="text-center max-w-4xl mx-auto mb-16">
-                        <h1 className="text-balance text-5xl font-normal tracking-tight text-white md:text-6xl lg:text-7xl">
+                        <h1 className="text-balance text-4xl sm:text-5xl font-normal tracking-tight text-white md:text-6xl lg:text-7xl">
                             {title}
                         </h1>
                         <p className="mt-6 text-balance text-center text-sm leading-relaxed text-white/70 md:text-base max-w-2xl mx-auto">

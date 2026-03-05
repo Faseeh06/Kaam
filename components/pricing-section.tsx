@@ -52,7 +52,7 @@ export function PricingSection({ className }: { className?: string }) {
             <div className="w-2.5 h-2.5 bg-amber-500" />
             <span className="text-sm font-medium text-zinc-400 tracking-wide">Pricing</span>
           </div>
-          <h2 className="text-balance text-4xl md:text-5xl tracking-tight leading-tight font-normal text-white">
+          <h2 className="text-balance text-3xl sm:text-4xl md:text-5xl tracking-tight leading-tight font-normal text-white">
             <span className="block">
               {"Simple, Transparent pricing".split(" ").map((word, i) => (
                 <motion.span

@@ -120,7 +120,7 @@ export function FeaturesSection({
               {preHeading}
             </span>
           </div>
-          <h2 className="text-balance text-white text-4xl md:text-5xl lg:text-6xl font-normal leading-[1.1] max-w-[700px] tracking-tight">
+          <h2 className="text-balance text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-normal leading-[1.1] max-w-[700px] tracking-tight">
             {headline.split(" ").map((word, i) => (
               <motion.span
                 key={i}

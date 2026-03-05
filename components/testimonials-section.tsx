@@ -80,8 +80,8 @@ export function TestimonialsSection({ className }: { className?: string }) {
               Testimonials
             </span>
           </div>
-          <div className="flex items-center justify-between gap-8">
-            <h2 className="text-balance text-4xl md:text-5xl font-normal text-white">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 sm:gap-8">
+            <h2 className="text-balance text-3xl sm:text-4xl md:text-5xl font-normal text-white">
               {"What Society Leaders Say About Kaam.".split(" ").map((word, i) => (
                 <motion.span
                   key={i}

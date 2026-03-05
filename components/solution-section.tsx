@@ -64,7 +64,7 @@ export function SolutionSection({ className }: { className?: string }) {
               The Solution
             </span>
           </div>
-          <h2 className="text-balance text-4xl md:text-5xl font-normal leading-[1.1] tracking-tight text-white">
+          <h2 className="text-balance text-3xl sm:text-4xl md:text-5xl font-normal leading-[1.1] tracking-tight text-white">
             {"One Platform for All".split(" ").map((word, i) => (
               <motion.span
                 key={i}
@@ -84,7 +84,7 @@ export function SolutionSection({ className }: { className?: string }) {
         </div>
 
         {/* Interactive Content Container */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-[400px]">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center min-h-[400px]">
           {/* Left: Image Display */}
           <div className="relative aspect-[4/3] w-full overflow-hidden bg-zinc-800 group">
             <AnimatePresence mode="wait">

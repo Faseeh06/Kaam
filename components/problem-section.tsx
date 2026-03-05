@@ -20,7 +20,7 @@ export function ProblemSection({ className }: { className?: string }) {
               The Problem
             </span>
           </div>
-          <h2 className="text-balance text-5xl font-normal tracking-tight text-white md:text-6xl lg:text-5xl">
+          <h2 className="text-balance text-4xl sm:text-5xl font-normal tracking-tight text-white md:text-6xl lg:text-5xl">
             {"Managing Multiple Teams is Chaotic".split(" ").map((word, i) => (
               <motion.span
                 key={i}

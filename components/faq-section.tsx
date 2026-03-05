@@ -67,7 +67,7 @@ export function FaqSection({ className }: { className?: string }) {
               </span>
             </div>
 
-            <h2 className="text-balance text-4xl md:text-5xl lg:text-6xl font-normal text-white tracking-tight leading-[1.1]">
+            <h2 className="text-balance text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-normal text-white tracking-tight leading-[1.1]">
               {"Common Questions".split(" ").map((word, i) => (
                 <motion.span
                   key={i}

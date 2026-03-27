@@ -63,7 +63,7 @@ export function NotificationBell() {
     // Register service worker for reliable native OS notifications
     useEffect(() => {
         if ("serviceWorker" in navigator) {
-            navigator.serviceWorker.register("/notification-sw.js").catch(() => { });
+            navigator.serviceWorker.register("/sw.js").catch(() => { });
         }
         if ("Notification" in window && Notification.permission === "default") {
             Notification.requestPermission();

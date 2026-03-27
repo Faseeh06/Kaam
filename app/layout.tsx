@@ -5,6 +5,8 @@ import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 import { ThemeProvider } from "@/components/theme-provider"
 import { MockDataProvider } from "@/app/context/MockDataContext"
+import { PWARegister } from "@/components/PWARegister"
+import { PWAInstallPrompt } from "@/components/PWAInstallPrompt"
 
 const hostGrotesk = Host_Grotesk({ subsets: ["latin"], variable: "--font-host-grotesk" });
 
@@ -12,6 +14,13 @@ export const metadata: Metadata = {
   title: 'Kaam | Multi-Society Task Management',
   description: 'Manage societies and teams with ease. Assign tasks, track progress, and organize everything in one unified platform.',
   generator: 'v0.app',
+  manifest: '/manifest.webmanifest',
+  themeColor: '#f59e0b',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Kaam',
+  },
   icons: {
     icon: [
       {
@@ -48,6 +57,8 @@ export default function RootLayout({
           <MockDataProvider>
             {children}
             <Analytics />
+            <PWARegister />
+            <PWAInstallPrompt />
           </MockDataProvider>
         </ThemeProvider>
       </body>

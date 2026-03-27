@@ -2,11 +2,64 @@
 
 import { Shield, Menu, X } from "lucide-react"
 import Link from "next/link"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
+
+interface BeforeInstallPromptEvent extends Event {
+    prompt: () => Promise<void>
+    userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>
+}
 
 export function SiteHeader() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+    const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
+    const [isStandalone, setIsStandalone] = useState(false)
+    const [isIOS, setIsIOS] = useState(false)
+
+    useEffect(() => {
+        if (typeof window === "undefined") return
+
+        setIsStandalone(
+            window.matchMedia("(display-mode: standalone)").matches ||
+            (window.navigator as Navigator & { standalone?: boolean }).standalone === true
+        )
+        setIsIOS(/iPad|iPhone|iPod/.test(window.navigator.userAgent))
+
+        const onBeforeInstallPrompt = (e: Event) => {
+            e.preventDefault()
+            setDeferredPrompt(e as BeforeInstallPromptEvent)
+        }
+
+        const onAppInstalled = () => {
+            setDeferredPrompt(null)
+            setIsStandalone(true)
+        }
+
+        window.addEventListener("beforeinstallprompt", onBeforeInstallPrompt)
+        window.addEventListener("appinstalled", onAppInstalled)
+
+        return () => {
+            window.removeEventListener("beforeinstallprompt", onBeforeInstallPrompt)
+            window.removeEventListener("appinstalled", onAppInstalled)
+        }
+    }, [])
+
+    const handleInstall = async () => {
+        if (deferredPrompt) {
+            await deferredPrompt.prompt()
+            await deferredPrompt.userChoice
+            setDeferredPrompt(null)
+            setMobileMenuOpen(false)
+            return
+        }
+
+        if (isIOS) {
+            window.alert("On iPhone/iPad Safari: tap Share, then tap 'Add to Home Screen'.")
+            return
+        }
+
+        window.alert("Install is not available yet. Use the app for a bit and try again from this menu.")
+    }
 
     return (
         <nav className="relative z-50 px-6 py-10 lg:px-16 w-full">
@@ -105,6 +158,15 @@ export function SiteHeader() {
                             Get Started
                             <Shield className="h-5 w-5 text-amber-500" />
                         </Link>
+                        {!isStandalone && (
+                            <Button
+                                type="button"
+                                onClick={handleInstall}
+                                className="w-full mt-1 bg-amber-500 hover:bg-amber-600 text-white"
+                            >
+                                Install App
+                            </Button>
+                        )}
                     </div>
                 </div>
             )}

@@ -15,6 +15,8 @@ export function SiteHeader() {
     const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
     const [isStandalone, setIsStandalone] = useState(false)
     const [isIOS, setIsIOS] = useState(false)
+    const [isAndroid, setIsAndroid] = useState(false)
+    const [installHelp, setInstallHelp] = useState("")
 
     useEffect(() => {
         if (typeof window === "undefined") return
@@ -24,6 +26,7 @@ export function SiteHeader() {
             (window.navigator as Navigator & { standalone?: boolean }).standalone === true
         )
         setIsIOS(/iPad|iPhone|iPod/.test(window.navigator.userAgent))
+        setIsAndroid(/Android/i.test(window.navigator.userAgent))
 
         const onBeforeInstallPrompt = (e: Event) => {
             e.preventDefault()
@@ -45,20 +48,29 @@ export function SiteHeader() {
     }, [])
 
     const handleInstall = async () => {
+        setInstallHelp("")
+
         if (deferredPrompt) {
             await deferredPrompt.prompt()
-            await deferredPrompt.userChoice
+            const choice = await deferredPrompt.userChoice
             setDeferredPrompt(null)
-            setMobileMenuOpen(false)
+            if (choice.outcome === "accepted") {
+                setMobileMenuOpen(false)
+            }
             return
         }
 
         if (isIOS) {
-            window.alert("On iPhone/iPad Safari: tap Share, then tap 'Add to Home Screen'.")
+            setInstallHelp("On iPhone/iPad Safari: tap Share, then tap 'Add to Home Screen'.")
             return
         }
 
-        window.alert("Install is not available yet. Use the app for a bit and try again from this menu.")
+        if (isAndroid) {
+            setInstallHelp("Install prompt is unavailable in this in-app browser. Open this page in Chrome, then use Chrome menu > 'Install app' or 'Add to Home screen'.")
+            return
+        }
+
+        setInstallHelp("Install is currently unavailable in this browser. Please open the site in Chrome, Edge, or Safari and try again.")
     }
 
     return (
@@ -159,13 +171,20 @@ export function SiteHeader() {
                             <Shield className="h-5 w-5 text-amber-500" />
                         </Link>
                         {!isStandalone && (
-                            <Button
-                                type="button"
-                                onClick={handleInstall}
-                                className="w-full mt-1 bg-amber-500 hover:bg-amber-600 text-white"
-                            >
-                                Install App
-                            </Button>
+                            <div className="mt-1 space-y-2">
+                                <Button
+                                    type="button"
+                                    onClick={handleInstall}
+                                    className="w-full bg-amber-500 hover:bg-amber-600 text-white"
+                                >
+                                    Install App
+                                </Button>
+                                {installHelp && (
+                                    <p className="text-xs leading-relaxed text-zinc-300">
+                                        {installHelp}
+                                    </p>
+                                )}
+                            </div>
                         )}
                     </div>
                 </div>

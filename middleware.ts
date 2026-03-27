@@ -62,42 +62,30 @@ export async function middleware(request: NextRequest) {
         // Define management roles
         const managementRoles = ['Admin', 'Office Bearer'];
         const isSocietyAdmin = memberships.some((m: any) => managementRoles.includes(m.role));
+        const defaultWorkspace = isSuperAdmin ? '/super' : isSocietyAdmin ? '/admin' : '/dashboard';
 
-        // 1. If hitting /join and already a Super Admin, push to /super
-        if (isSuperAdmin && isJoinPage) {
-            url.pathname = '/super';
+        // 1. Join is only for standard users.
+        if (isJoinPage && (isSuperAdmin || isSocietyAdmin)) {
+            url.pathname = defaultWorkspace;
             return NextResponse.redirect(url);
         }
 
-        // 2. Redirect away from auth pages
+        // 2. Redirect away from auth pages based on strict role hierarchy.
         if (isAuthPage) {
-            const lastWorkspace = request.cookies.get('last_workspace')?.value;
-
-            if (lastWorkspace) {
-                // Validate if user has permission to go to that workspace
-                const isValidForSuper = lastWorkspace === '/super' && isSuperAdmin;
-                const isValidForAdmin = lastWorkspace === '/admin' && (isSuperAdmin || isSocietyAdmin);
-                const isValidForDashboard = lastWorkspace === '/dashboard';
-
-                if (isValidForSuper || isValidForAdmin || isValidForDashboard) {
-                    url.pathname = lastWorkspace;
-                    return NextResponse.redirect(url);
-                }
-            }
-
-            // Fallback default routing based on hierarchy
-            if (isSuperAdmin) {
-                url.pathname = '/super';
-            } else if (isSocietyAdmin) {
-                url.pathname = '/admin';
-            } else {
-                url.pathname = '/dashboard';
-            }
+            url.pathname = defaultWorkspace;
             return NextResponse.redirect(url);
         }
 
-        // 3. If a Society Admin tries to go to standard dashboard, let them (or you can force /admin)
-        // 4. If a standard user has no society, they go to /dashboard (no more forced /join)
+        // 3. Enforce panel access by role.
+        if (url.pathname.startsWith('/super') && !isSuperAdmin) {
+            url.pathname = defaultWorkspace;
+            return NextResponse.redirect(url);
+        }
+
+        if (url.pathname.startsWith('/admin') && !(isSuperAdmin || isSocietyAdmin)) {
+            url.pathname = defaultWorkspace;
+            return NextResponse.redirect(url);
+        }
     }
 
     return response;

@@ -30,7 +30,10 @@ export default function LoginPage() {
     setIsLoading(true);
 
     const supabase = createClient();
-    const { error: authError } = await supabase.auth.signInWithPassword({
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -39,10 +42,13 @@ export default function LoginPage() {
       setError(authError.message);
       setIsLoading(false);
     } else {
-      // 1. Fetch profile with all role info
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      // Fetch profile with role info using the authenticated user from sign-in.
+      if (!user) {
+        setError("Login failed. Please try again.");
+        setIsLoading(false);
+        return;
+      }
+
       const { data: profile } = await supabase
         .from("profiles")
         .select(
@@ -61,32 +67,12 @@ export default function LoginPage() {
         (m: any) => m.role === "Admin" || m.role === "Office Bearer",
       );
 
-      router.refresh();
-
-      // Get the last used workspace from cookies to smartly route back
-      const lastWorkspace = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("last_workspace="))
-        ?.split("=")[1];
-
-      if (lastWorkspace) {
-        const isValidForSuper = lastWorkspace === '/super' && isSuperAdmin;
-        const isValidForAdmin = lastWorkspace === '/admin' && (isSuperAdmin || isSocietyAdmin);
-        const isValidForDashboard = lastWorkspace === '/dashboard';
-
-        if (isValidForSuper || isValidForAdmin || isValidForDashboard) {
-          router.push(lastWorkspace);
-          return;
-        }
-      }
-
-      // Fallback default routing
       if (isSuperAdmin) {
-        router.push("/super");
+        router.replace("/super");
       } else if (isSocietyAdmin) {
-        router.push("/admin");
+        router.replace("/admin");
       } else {
-        router.push("/dashboard");
+        router.replace("/dashboard");
       }
     }
   };

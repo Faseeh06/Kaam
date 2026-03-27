@@ -2,6 +2,7 @@ const CACHE_NAME = "kaam-cache-v1";
 const PRECACHE_URLS = ["/", "/login", "/offline", "/manifest.webmanifest"];
 
 self.addEventListener("install", (event) => {
+  console.log("[Kaam][SW] install")
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE_URLS)),
   );
@@ -9,6 +10,7 @@ self.addEventListener("install", (event) => {
 });
 
 self.addEventListener("activate", (event) => {
+  console.log("[Kaam][SW] activate")
   event.waitUntil(
     caches.keys().then((keys) =>
       Promise.all(
@@ -59,6 +61,7 @@ self.addEventListener("fetch", (event) => {
 });
 
 self.addEventListener("message", (event) => {
+  console.log("[Kaam][SW] message received", event.data)
   if (event.data && event.data.type === "SHOW_NOTIFICATION") {
     const { title, body, icon } = event.data;
     self.registration.showNotification(title, {
@@ -71,6 +74,7 @@ self.addEventListener("message", (event) => {
 });
 
 self.addEventListener("notificationclick", (event) => {
+  console.log("[Kaam][SW] notificationclick")
   event.notification.close();
   event.waitUntil(
     clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
@@ -80,4 +84,8 @@ self.addEventListener("notificationclick", (event) => {
       return clients.openWindow("/dashboard");
     }),
   );
+});
+
+self.addEventListener("notificationclose", () => {
+  console.log("[Kaam][SW] notificationclose")
 });

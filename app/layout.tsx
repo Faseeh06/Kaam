@@ -1,5 +1,5 @@
 import React from "react"
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Host_Grotesk, Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
@@ -15,7 +15,6 @@ export const metadata: Metadata = {
   description: 'Manage societies and teams with ease. Assign tasks, track progress, and organize everything in one unified platform.',
   generator: 'v0.app',
   manifest: '/manifest.webmanifest',
-  themeColor: '#f59e0b',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
@@ -38,6 +37,10 @@ export const metadata: Metadata = {
     ],
     apple: '/apple-icon.png',
   },
+}
+
+export const viewport: Viewport = {
+  themeColor: '#f59e0b',
 }
 
 export default function RootLayout({

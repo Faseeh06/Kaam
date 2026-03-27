@@ -10,14 +10,9 @@
   "theme_color": "#f59e0b",
   "icons": [
     {
-      "src": "/icon.svg",
-      "type": "image/svg+xml",
-      "sizes": "any",
-      "purpose": "any"
-    },
-    {
       "src": "/apple-icon.png",
       "type": "image/png",
+      "sizes": "180x180",
       "purpose": "any"
     },
     {

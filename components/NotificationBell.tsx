@@ -85,15 +85,16 @@ export function NotificationBell() {
               return [newNotif, ...prev];
             });
 
-            if (document.visibilityState !== "visible") {
-              const pushActive = await hasActivePushSubscription();
-              if (!pushActive) {
-                await showDesktopNotification(
-                  "Kaam - New Task",
-                  newNotif.message,
-                  `notif-${newNotif.id}`,
-                );
-              }
+            // Background: Web Push (webhook) shows the tray notification when subscribed.
+            // Foreground: push often does not show a banner on mobile; always show from the page.
+            const pushActive = await hasActivePushSubscription();
+            const isForeground = document.visibilityState === "visible";
+            if (!pushActive || isForeground) {
+              await showDesktopNotification(
+                "Kaam - New Task",
+                newNotif.message,
+                `notif-${newNotif.id}`,
+              );
             }
           },
         )

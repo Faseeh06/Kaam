@@ -17,7 +17,6 @@ export function SiteHeader() {
     const [isIOS, setIsIOS] = useState(false)
     const [isAndroid, setIsAndroid] = useState(false)
     const [installHelp, setInstallHelp] = useState("")
-    const [notificationHelp, setNotificationHelp] = useState("")
 
     useEffect(() => {
         if (typeof window === "undefined") return
@@ -74,95 +73,6 @@ export function SiteHeader() {
         setInstallHelp("Install is currently unavailable in this browser. Please open the site in Chrome, Edge, or Safari and try again.")
     }
 
-    const handleTestNotification = async () => {
-        setNotificationHelp("")
-        console.log("[Kaam][NotifTest] Triggered test notification click.")
-
-        if (typeof window === "undefined") return
-        if (!("Notification" in window)) {
-            console.warn("[Kaam][NotifTest] Notification API not available in this browser.")
-            setNotificationHelp("This browser does not support notifications.")
-            return
-        }
-
-        console.log("[Kaam][NotifTest] Current permission:", Notification.permission)
-        let permission = Notification.permission
-        if (permission === "default") {
-            console.log("[Kaam][NotifTest] Requesting permission...")
-            permission = await Notification.requestPermission()
-            console.log("[Kaam][NotifTest] Permission result:", permission)
-        }
-
-        if (permission !== "granted") {
-            console.warn("[Kaam][NotifTest] Permission not granted:", permission)
-            setNotificationHelp("Notification permission is blocked. Please allow notifications in browser settings.")
-            return
-        }
-
-        let swSuccess = false
-
-        try {
-            if ("serviceWorker" in navigator) {
-                console.log("[Kaam][NotifTest] Service Worker supported. Checking registration...")
-                const existing = await navigator.serviceWorker.getRegistration()
-                console.log("[Kaam][NotifTest] Existing SW registration:", existing)
-                const registration = existing || (await navigator.serviceWorker.register("/sw.js"))
-                if (!existing) {
-                    console.log("[Kaam][NotifTest] Registered /sw.js successfully.")
-                }
-                await navigator.serviceWorker.ready
-                console.log("[Kaam][NotifTest] Service Worker ready. Sending SW notification...")
-                await registration.showNotification("Kaam Test Notification", {
-                    body: "Service worker notification test.",
-                    icon: "/apple-icon.png",
-                    badge: "/icon-dark-32x32.png",
-                    tag: `kaam-test-sw-${Date.now()}`,
-                    requireInteraction: true,
-                })
-                console.log("[Kaam][NotifTest] SW notification sent.")
-                swSuccess = true
-            } else {
-                console.warn("[Kaam][NotifTest] Service Worker API not supported.")
-            }
-        } catch (error) {
-            console.error("[Kaam][NotifTest] SW notification failed:", error)
-            swSuccess = false
-        }
-
-        // Only use direct notification as fallback to avoid duplicate popups.
-        if (!swSuccess) {
-            try {
-                console.log("[Kaam][NotifTest] Sending direct Notification API notification...")
-                const n = new Notification("Kaam Test Notification", {
-                    body: "Browser notification test.",
-                    icon: "/apple-icon.png",
-                    requireInteraction: true,
-                })
-                n.onclick = () => {
-                    window.focus()
-                    n.close()
-                }
-                console.log("[Kaam][NotifTest] Direct notification sent.")
-            } catch (error) {
-                console.error("[Kaam][NotifTest] Direct notification failed:", error)
-            }
-        }
-
-        console.log("[Kaam][NotifTest] Result:", { swSuccess })
-        if (swSuccess) {
-            setNotificationHelp("Test notification sent. If no popup appears, check Windows Focus Assist and browser site notification settings.")
-            return
-        }
-
-        if (Notification.permission === "granted") {
-            setNotificationHelp("Fallback notification attempted. If no popup appears, check Windows Focus Assist and browser site notification settings.")
-            return
-        }
-
-        console.error("[Kaam][NotifTest] Both notification methods failed.")
-        setNotificationHelp("Failed to send notification. Open this site in Chrome/Edge, allow notifications, and ensure Windows notifications are enabled.")
-    }
-
     return (
         <nav className="relative z-50 px-6 py-10 lg:px-16 w-full">
             <div className="flex items-center justify-between">
@@ -191,13 +101,6 @@ export function SiteHeader() {
                 </div>
 
                 <div className="flex items-center gap-8">
-                    <Button
-                        type="button"
-                        onClick={handleTestNotification}
-                        className="hidden lg:inline-flex bg-zinc-800/80 hover:bg-zinc-700 text-white border border-zinc-700"
-                    >
-                        Test Notification
-                    </Button>
                     <Link
                         href="/signup"
                         className="hidden text-[16px] font-semibold text-white transition-colors hover:text-white/80 lg:block"
@@ -283,20 +186,6 @@ export function SiteHeader() {
                                 )}
                             </div>
                         )}
-                        <div className="space-y-2">
-                            <Button
-                                type="button"
-                                onClick={handleTestNotification}
-                                className="w-full bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700"
-                            >
-                                Test Notification
-                            </Button>
-                            {notificationHelp && (
-                                <p className="text-xs leading-relaxed text-zinc-300">
-                                    {notificationHelp}
-                                </p>
-                            )}
-                        </div>
                     </div>
                 </div>
             )}
